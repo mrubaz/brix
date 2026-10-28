@@ -5,6 +5,7 @@ REST calls without the boilerplate. Every call returns a `Result` – the data a
 - **Dio by default**, any client possible (`http`, `chopper`, a test fake).
 - **Any REST backend**: ready readers for `{success, message, data, errors}` APIs (Node / Express, NestJS, Laravel, custom), FastAPI and Django REST – or your own.
 - **Safe**: retries only where repeating is harmless (GET, PUT, DELETE), several 401s log out once, passwords / tokens / API keys never reach the log.
+- **Files too**: `download` gives a PDF / image / spreadsheet as bytes with its type and name.
 - **Readable console log** in debug builds, nothing in release.
 
 For Firebase or Supabase you don't need this package – use their SDKs with [brix](https://pub.dev/packages/brix).
@@ -69,6 +70,14 @@ final Result<void> avatar = await api.upload(
   files: [UploadFile.path('avatar', file.path)],
   onProgress: (sent, total) => progress.value = sent / total,
 );
+
+// A file (PDF, image, spreadsheet): bytes + type + name from the server
+final Result<DownloadedFile> pdf = await api.download(
+  'documents/url',
+  query: {'key': documentKey},
+  onProgress: (received, total) => progress.value = received / total,
+);
+// pdf.data.bytes, .contentType ('application/pdf'), .fileName, .isPdf, .sizeLabel
 
 // Another API (absolute URL, no token)
 await api.get('https://maps.example.com/geocode', query: {'key': mapsKey}, withToken: false);

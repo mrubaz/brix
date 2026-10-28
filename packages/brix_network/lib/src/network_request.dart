@@ -31,6 +31,8 @@ class NetworkRequest {
     this.fields = const {},
     this.cancel,
     this.onSendProgress,
+    this.wantsBytes = false,
+    this.onReceiveProgress,
   });
 
   final HttpMethod method;
@@ -53,6 +55,14 @@ class NetworkRequest {
 
   /// Bytes sent so far and in total (total is -1 when unknown).
   final void Function(int sent, int total)? onSendProgress;
+
+  /// The answer is a file (PDF, image, …): a successful body comes back as
+  /// a `DownloadedFile`, not as text or JSON. Error bodies are still read
+  /// as JSON / text.
+  final bool wantsBytes;
+
+  /// Bytes received so far and in total (total is -1 when unknown).
+  final void Function(int received, int total)? onReceiveProgress;
 
   bool get isUpload => files.isNotEmpty;
 

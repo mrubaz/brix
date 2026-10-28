@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:brix_network/brix_network.dart';
 import 'package:test/test.dart';
 
@@ -101,6 +103,19 @@ void main() {
 
     expect(lines.first, contains('✗ NetworkFailure · 2.0 s'));
     expect(lines, contains(startsWith('│ ✗ No internet connection')));
+  });
+
+  test('a file answer shows its size and type, not its bytes', () {
+    logger().log(
+      entry(
+        responseBody: DownloadedFile(
+          bytes: Uint8List(250 * 1024),
+          contentType: 'application/pdf',
+        ),
+      ),
+    );
+
+    expect(lines, contains('│ ← <binary 250 KB · application/pdf>'));
   });
 
   test('disabled: prints nothing', () {

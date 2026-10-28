@@ -155,6 +155,46 @@ void main() {
     await expectLater(sending, throwsA(isA<CancelledFailure>()));
   });
 
+  test('wantsBytes: a file comes back with its bytes, type and name', () async {
+    final pdf = [0x25, 0x50, 0x44, 0x46, 0xFF, 0x00, 0xE2]; // not valid UTF-8
+    adapter.answer = (_) => ResponseBody.fromBytes(
+      pdf,
+      200,
+      headers: {
+        'content-type': ['application/pdf'],
+        'content-disposition': ['attachment; filename="report.pdf"'],
+      },
+    );
+
+    final response = await client.send(
+      NetworkRequest(
+        method: HttpMethod.get,
+        url: Uri.parse('https://api.test/v1/report.pdf'),
+        wantsBytes: true,
+      ),
+    );
+
+    final file = response.body! as DownloadedFile;
+    expect(file.bytes, pdf);
+    expect(file.contentType, 'application/pdf');
+    expect(file.fileName, 'report.pdf');
+    expect(file.isPdf, isTrue);
+  });
+
+  test('wantsBytes: an error answer is still read as JSON', () async {
+    adapter.answer = (_) => json(404, {'message': 'Document not found'});
+
+    final response = await client.send(
+      NetworkRequest(
+        method: HttpMethod.get,
+        url: Uri.parse('https://api.test/v1/report.pdf'),
+        wantsBytes: true,
+      ),
+    );
+
+    expect(response.body, {'message': 'Document not found'});
+  });
+
   test('upload: several files with one field name, plus fields', () async {
     await client.send(
       request(

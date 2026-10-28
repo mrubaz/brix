@@ -6,6 +6,7 @@ export 'package:brix/core.dart';
 
 export 'src/brix_api.dart';
 export 'src/dio_network_client.dart';
+export 'src/downloaded_file.dart';
 export 'src/network_client.dart';
 export 'src/network_failures.dart';
 export 'src/network_logger.dart';

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:brix_network/brix_network.dart';
 import 'package:test/test.dart';
@@ -184,6 +185,58 @@ void main() {
       await Future.wait([shared.post('a'), shared.post('a')]);
 
       expect(client.sent, hasLength(2));
+    });
+  });
+
+  group('download', () {
+    test('a file arrives with its bytes and details', () async {
+      client.answer = (request) {
+        expect(request.wantsBytes, isTrue);
+        return NetworkResponse(
+          statusCode: 200,
+          body: DownloadedFile(
+            bytes: Uint8List.fromList([1, 2, 3]),
+            contentType: 'application/pdf',
+          ),
+        );
+      };
+
+      final result = await api().download('report.pdf');
+
+      final file = (result as Success<DownloadedFile>).data;
+      expect(file.bytes, [1, 2, 3]);
+      expect(file.isPdf, isTrue);
+    });
+
+    test('an error answer becomes a failure with its message', () async {
+      client.answer = (_) => const NetworkResponse(
+        statusCode: 404,
+        body: {'message': 'Document not found'},
+      );
+
+      final result = await api().download('report.pdf');
+
+      final failure = (result as Failed).failure;
+      expect(failure, isA<ServerFailure>());
+      expect(failure.messages, ['Document not found']);
+    });
+
+    test('progress is handed to the client', () async {
+      client.answer = (request) {
+        request.onReceiveProgress!(50, 100);
+        return NetworkResponse(
+          statusCode: 200,
+          body: DownloadedFile(bytes: Uint8List(1)),
+        );
+      };
+      final seen = <int>[];
+
+      await api().download(
+        'big.zip',
+        onProgress: (received, _) => seen.add(received),
+      );
+
+      expect(seen, [50]);
     });
   });
 

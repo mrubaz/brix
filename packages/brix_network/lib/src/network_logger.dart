@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:brix/core.dart';
 
+import 'downloaded_file.dart';
 import 'network_request.dart';
 import 'network_response.dart';
 
@@ -136,6 +137,11 @@ class PrettyNetworkLogger extends NetworkLogger {
   }
 
   Iterable<String> _block(String arrow, Object? body) sync* {
+    if (body is DownloadedFile) {
+      yield '│ $arrow <binary ${body.sizeLabel}'
+          '${body.contentType == null ? '' : ' · ${body.contentType}'}>';
+      return;
+    }
     final text = body is String
         ? body
         : const JsonEncoder.withIndent('  ').convert(mask(body));

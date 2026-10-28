@@ -1,3 +1,9 @@
+## 1.1.0
+
+- `BrixApi.download`: files (PDF, image, spreadsheet, …) as a `DownloadedFile` – bytes, `contentType`, `fileName` (from `Content-Disposition`), `isPdf`, `isImage`, `sizeLabel` – with optional `onProgress`. An error answer instead of the file is read like any other call.
+- `NetworkRequest.wantsBytes` / `onReceiveProgress` for your own `NetworkClient`; `DownloadedFile.fromBytes(bytes, headers: …)` builds the file.
+- The console log shows a file as `<binary 245 KB · application/pdf>`.
+
 ## 1.0.1
 
 - README: flow diagrams showing what happens on a tap / in a call.
