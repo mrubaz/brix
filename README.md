@@ -20,7 +20,7 @@ Every app writes the same things again: login, signup, email codes, password res
 
 | Package | What it gives you | Use it when |
 |---|---|---|
-| [**brix**](packages/brix) | Login, signup, email code, forgot / reset password, app start + logout, profile, change password, delete account. `Result`, `Failure`, `Json`. | Always – it is the core. Pure Dart. |
+| [**brix**](packages/brix) | Login, signup, email code, forgot / reset password, app start + logout, profile, change password, delete account. `Result`, `Failure`, `Json`, `BrixLogger`. | Always – it is the core. Pure Dart. |
 | [**brix_getx**](packages/brix_getx) | A GetX controller for every brix screen: text fields, form key, loading state, code boxes, password checklist. One import includes brix. | Your app uses GetX. |
 | [**brix_network**](packages/brix_network) | REST calls on Dio that return a `Result`; readers for common API shapes, field errors, uploads, a readable log. | Your backend is a REST API. |
 | [**brix_storage**](packages/brix_storage) | Values and secrets (Keychain / Keystore) that survive reinstalls and broken keystores safely; a ready session store for brix. | Always useful – saves writing your own session store. |
@@ -32,6 +32,20 @@ flutter pub add brix                     # any other state library / Firebase / 
 
 Your app gets only the packages you add. Examples and the other packages are never built into it.
 
+## Everything included
+
+| Area | What you get |
+|---|---|
+| Auth | login with remember me, signup, email code (boxes, paste / autofill, resend countdown), forgot / reset password, password rules with a live checklist |
+| Account | app start (splash), logout, profile + avatar, change password, delete account with a code |
+| Errors | `Result` instead of exceptions; backend messages, else plain default texts; form errors per field (`failure.fieldError('email')`) |
+| Network | Dio by default (any client), uploads with progress, file / PDF downloads, cancel, retries only where safe, one logout for many 401s, readers for envelope / FastAPI / Django REST APIs |
+| Storage | values + secrets, reinstall-safe Keychain, broken Keystore never crashes, ready session store |
+| JSON | `Json` reads any backend's data into models without crashes |
+| Logs | readable console for your messages and every API call, secrets hidden, off in release |
+| Tests | fakes for every contract (`package:brix/testing.dart`), `MemoryStore`, fake network client examples |
+| Updates | switch-safe values and default method bodies – new versions don't break your app |
+
 ## How the pieces fit
 
 ```mermaid
@@ -42,12 +56,13 @@ flowchart LR
     A --> N["brix_network<br/>BrixApi (Dio)"]
     A --> S["Firebase / Supabase SDK"]
     N --> B[("Your REST API")]
-    F --> ST["Your storage<br/>AuthSessionStore"]
+    F --> ST["brix_storage<br/>BrixSessionStore (or your own)"]
+    ST --> K[("Keychain / Keystore<br/>+ preferences")]
     F --> NAV["Your navigator<br/>AuthNavigator"]
     F --> FB["Your alerts<br/>AuthFeedback"]
 ```
 
-You write the small classes once (backend, storage, screens, alerts). Every flow uses them.
+You write the small classes once (backend, screens, alerts); storage comes ready with `brix_storage`. Every flow uses them. `BrixLogger` (in brix) and the network log give one readable console.
 
 ## A login in a few lines (GetX + REST)
 
@@ -81,16 +96,42 @@ class MyAuth extends AuthProvider<SignupBody, User> {
   Future<Result<void>> logout() => api.post('auth/logout');
 }
 
-// 3. The screen's controller.
+// 3. Where the session lives (tokens in Keychain / Keystore).
+final store = BrixSessionStore<User>(
+  storage: BrixStorage(),
+  userToJson: (user) => user.toJson(),
+  userFromJson: User.fromJson,
+);
+
+// 4. The screen's controller.
 Get.put(BrixLoginController<User>(LoginFlow(
   provider: MyAuth(),
-  store: MyStore(),
+  store: store,
   navigator: MyNavigator(),
   feedback: MyAlerts(),
 )));
 ```
 
 The screen binds `identifierController`, `passwordController`, `isSubmitting` and calls `login()`. Remember me, the double-tap guard, saving the session, error messages and opening home are done.
+
+## Readable console
+
+`BrixLogger` (brix) for your own messages, `PrettyNetworkLogger` (brix_network) for every API call – both off in release builds, secrets hidden.
+
+```dart
+final log = BrixLogger(name: 'MyApp');
+log.error('Saving failed', error: error, stackTrace: stackTrace);
+```
+
+```
+14:32:07.210  ✗ ERROR  MyApp  Saving failed
+                ↳ Bad state: boom
+                  #0 SaveFlow.run (save_flow.dart:42)
+┌─ POST v1/auth/login ──────────────────────────── 200 · 312 ms
+│ → {"email": "ada@brix.dev", "password": "••••"}
+│ ← {"success": true, "message": "Welcome back!", …}
+└────────────────────────────────────────────────────────────────
+```
 
 ## Examples
 
@@ -99,6 +140,7 @@ The screen binds `identifierController`, `passwordController`, `isSubmitting` an
 | [Flutter demo app](packages/brix_getx/example) | Login, signup with an email code, forgot / reset password, logout – on an in-memory backend, runs without a server (`demo@brix.dev` / `Demo@1234`, code `123456`) |
 | [brix in plain Dart](packages/brix/example/main.dart) | A login without Flutter or a state library |
 | [brix_network](packages/brix_network/example/main.dart) | Loading a list from a public REST API into models |
+| [brix_storage](packages/brix_storage/example/main.dart) | Saving a value and a secret |
 
 ## Quality
 
@@ -112,6 +154,7 @@ The screen binds `identifierController`, `passwordController`, `isSubmitting` an
 git clone https://github.com/mrubaz/brix.git
 cd brix/packages/brix && dart pub get && dart test
 cd ../brix_network && dart pub get && dart test
+cd ../brix_storage && flutter pub get && flutter test
 cd ../brix_getx && flutter pub get && flutter test
 ```
 
