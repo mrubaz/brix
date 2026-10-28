@@ -23,9 +23,10 @@ Every app writes the same things again: login, signup, email codes, password res
 | [**brix**](packages/brix) | Login, signup, email code, forgot / reset password, app start + logout, profile, change password, delete account. `Result`, `Failure`, `Json`. | Always – it is the core. Pure Dart. |
 | [**brix_getx**](packages/brix_getx) | A GetX controller for every brix screen: text fields, form key, loading state, code boxes, password checklist. One import includes brix. | Your app uses GetX. |
 | [**brix_network**](packages/brix_network) | REST calls on Dio that return a `Result`; readers for common API shapes, field errors, uploads, a readable log. | Your backend is a REST API. |
+| [**brix_storage**](packages/brix_storage) | Values and secrets (Keychain / Keystore) that survive reinstalls and broken keystores safely; a ready session store for brix. | Always useful – saves writing your own session store. |
 
 ```
-flutter pub add brix_getx brix_network   # GetX app with a REST backend
+flutter pub add brix_getx brix_network brix_storage   # GetX app with a REST backend
 flutter pub add brix                     # any other state library / Firebase / Supabase
 ```
 

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:brix/core.dart';
 import 'package:dio/dio.dart';
 
+import 'downloaded_file.dart';
 import 'network_client.dart';
 import 'network_failures.dart';
 import 'network_request.dart';
@@ -57,28 +58,35 @@ class DioNetworkClient extends NetworkClient {
   Future<NetworkResponse> _sendOnce(NetworkRequest request) async {
     final cancelToken = CancelToken();
     unawaited(request.cancel?.whenCancelled.then((_) => cancelToken.cancel()));
-    final response = await dio.requestUri<String>(
+    final response = await dio.requestUri<List<int>>(
       request.url,
       data: request.isUpload ? await _formData(request) : request.body,
       cancelToken: cancelToken,
       onSendProgress: request.onSendProgress,
+      onReceiveProgress: request.onReceiveProgress,
       options: Options(
         method: request.method.verb,
         headers: request.headers,
-        responseType: ResponseType.plain,
+        responseType: ResponseType.bytes,
         connectTimeout: timeout,
         receiveTimeout: timeout,
         // Every answer goes back to BrixApi, which reads 4xx / 5xx too.
         validateStatus: (_) => true,
       ),
     );
+    final status = response.statusCode ?? 0;
+    final bytes = response.data ?? const <int>[];
+    final headers = {
+      for (final MapEntry(:key, :value) in response.headers.map.entries)
+        key: value.join(', '),
+    };
+    final isFile = request.wantsBytes && status >= 200 && status < 300;
     return NetworkResponse(
-      statusCode: response.statusCode ?? 0,
-      body: _decode(response.data),
-      headers: {
-        for (final MapEntry(:key, :value) in response.headers.map.entries)
-          key: value.join(', '),
-      },
+      statusCode: status,
+      body: isFile
+          ? DownloadedFile.fromBytes(bytes, headers: headers)
+          : _decode(utf8.decode(bytes, allowMalformed: true)),
+      headers: headers,
     );
   }
 

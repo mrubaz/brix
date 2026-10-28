@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:brix/core.dart';
 
 import 'dio_network_client.dart';
+import 'downloaded_file.dart';
 import 'network_client.dart';
 import 'network_failures.dart';
 import 'network_logger.dart';
@@ -172,6 +173,38 @@ class BrixApi {
     withToken: withToken,
   );
 
+  /// A file (PDF, image, spreadsheet, …): its bytes plus the type and name
+  /// the server sent. Error answers are read like any other call (backend
+  /// messages, failure type).
+  ///
+  /// ```dart
+  /// switch (await api.download('documents/report.pdf')) {
+  ///   case Success(:final data): savePdf(data.bytes, data.fileName);
+  ///   case Failed(:final failure): showError(failure.displayMessage);
+  /// }
+  /// ```
+  Future<Result<DownloadedFile>> download(
+    String path, {
+    Map<String, Object?>? query,
+    Map<String, String>? headers,
+    void Function(int received, int total)? onProgress,
+    RequestCancel? cancel,
+    bool withToken = true,
+  }) => request(
+    HttpMethod.get,
+    path,
+    query: query,
+    headers: headers,
+    cancel: cancel,
+    withToken: withToken,
+    wantsBytes: true,
+    onReceiveProgress: onProgress,
+    parse: (data) => switch (data.raw) {
+      final DownloadedFile file => file,
+      _ => throw const FormatException('Expected a file'),
+    },
+  );
+
   /// Multipart upload. Field names are your backend's
   /// (`UploadFile.path('avatar', file.path)`).
   Future<Result<T>> upload<T>(
@@ -206,6 +239,8 @@ class BrixApi {
     void Function(int sent, int total)? onProgress,
     RequestCancel? cancel,
     bool withToken = true,
+    bool wantsBytes = false,
+    void Function(int received, int total)? onReceiveProgress,
   }) async {
     final request = NetworkRequest(
       method: method,
@@ -220,6 +255,8 @@ class BrixApi {
       fields: fields,
       cancel: cancel,
       onSendProgress: onProgress,
+      wantsBytes: wantsBytes,
+      onReceiveProgress: onReceiveProgress,
     );
 
     final watch = Stopwatch()..start();
