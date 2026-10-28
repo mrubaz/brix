@@ -18,6 +18,17 @@ Helpers: `OtpCodeBoxes` (one box per digit), `PasswordRulesTracker` (live passwo
 
 All logic lives in [brix](https://pub.dev/packages/brix) – read its README first for the four classes you write (backend, storage, navigator, alerts).
 
+### How a screen works
+
+```
+ View (layout only)          Controller (brix_getx)             Flow (brix)
+ ──────────────────          ──────────────────────             ───────────
+ TextFormField ◀──────────── identifierController
+ FilledButton ──tap────────▶ login() ── validates form ───────▶ LoginFlow.submit
+ spinner ◀── Obx ─────────── isSubmitting ◀──── changes ──────── state
+ route closed ─────────────▶ onClose: text fields + flow disposed
+```
+
 ## Install
 
 ```

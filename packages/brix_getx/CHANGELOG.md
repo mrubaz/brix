@@ -1,3 +1,7 @@
+## 1.0.2
+
+- README: flow diagrams showing what happens on a tap / in a call.
+
 ## 1.0.1
 
 - `package:brix_getx/brix_getx.dart` also exports brix, so one import is enough.

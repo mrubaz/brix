@@ -1,3 +1,7 @@
+## 1.0.1
+
+- README: flow diagrams showing what happens on a tap / in a call.
+
 ## 1.0.0
 
 First release.

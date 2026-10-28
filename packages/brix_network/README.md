@@ -9,6 +9,21 @@ REST calls without the boilerplate. Every call returns a `Result` – the data a
 
 For Firebase or Supabase you don't need this package – use their SDKs with [brix](https://pub.dev/packages/brix).
 
+### What happens in a call
+
+```
+ api.get('users', parse: User.fromJson)
+   │
+   ├─ URL = baseUrl + path + query, headers + Bearer token
+   ├─ NetworkClient.send  (Dio: timeout, retry for GET/PUT/DELETE, cancel)
+   │     └─ no connection / timeout ─────────────────────▶ Failed(NetworkFailure)
+   ├─ ResponseReader.read  ─▶ data, message, messages, fieldErrors
+   ├─ 2xx and success != false ─▶ parse(Json) ───────────▶ Success(User, message)
+   └─ otherwise ─▶ statusMapper ─▶ Failed(Validation / Unauthorized / Server …)
+                        └─ 401 ─▶ onUnauthorized (once for many calls)
+   every call ─▶ NetworkLogger (secrets hidden)
+```
+
 ## Install
 
 ```
