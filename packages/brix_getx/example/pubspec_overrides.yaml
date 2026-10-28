@@ -1,0 +1,4 @@
+# Run the example against the brix in this repo, not the one on pub.dev.
+dependency_overrides:
+  brix:
+    path: ../../brix

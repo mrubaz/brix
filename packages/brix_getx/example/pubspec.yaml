@@ -1,0 +1,24 @@
+name: brix_getx_example
+description: Login, signup, code check and password reset on brix + GetX, with an in-memory demo backend.
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.35.0"
+
+dependencies:
+  brix: ^1.0.0
+  brix_getx:
+    path: ../
+  flutter:
+    sdk: flutter
+  get: ^4.7.3
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
