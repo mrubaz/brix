@@ -18,7 +18,7 @@ dart pub add brix
 |---|---|
 | `package:brix/auth.dart` | login, signup, email code, forgot / reset password, password rules |
 | `package:brix/account.dart` | app start + logout, profile, change password, delete account (includes auth) |
-| `package:brix/core.dart` | `Result`, `Failure`, `Json`, `BrixFlow` |
+| `package:brix/core.dart` | `Result`, `Failure`, `Json`, `BrixLogger`, `BrixFlow` |
 | `package:brix/testing.dart` | fakes for your tests |
 
 ## How it works
@@ -123,6 +123,8 @@ class MyAuthProvider extends AuthProvider<SignupBody, User> {
 ## 2. Storage, screens and alerts
 
 ```dart
+// Ready-made: `BrixSessionStore` from brix_storage (Keychain / Keystore,
+// reinstall-safe). Or write your own:
 class MySessionStore extends AuthSessionStore<User> {
   @override
   Future<void> saveSession(AuthSession<User> session) async {
@@ -373,6 +375,26 @@ A missing key or a wrong type gives the fallback (`''`, `0`, `false`, empty list
 Json.onProblem = (path, problem) => debugPrint('JSON $path: $problem');
 // JSON roles[0].level: expected a whole number, got String "high"
 ```
+
+## Logging
+
+```dart
+final log = BrixLogger(name: 'MyApp');
+
+log.banner('MyApp', details: {'version': '1.2.0', 'env': 'staging'});
+log.info('Logged in');
+log.warning('Cache is old');
+log.error('Saving failed', error: error, stackTrace: stackTrace);
+```
+
+```
+14:32:05.123  ✓ INFO   MyApp  Logged in
+14:32:07.210  ✗ ERROR  MyApp  Saving failed
+                ↳ Bad state: boom
+                  #0 SaveFlow.run (save_flow.dart:42)
+```
+
+Nothing is printed in release builds. `minLevel: LogLevel.warning` hides the chatter, `colors: false` suits the Xcode console, `stackLines` cuts long traces, `output:` sends lines elsewhere.
 
 ## With your state library
 

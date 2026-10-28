@@ -1,3 +1,8 @@
+## 1.2.0
+
+- `BrixLogger`: a readable console log (time, level, name, short stack traces, start-up banner), off in release builds; `LogLevel`.
+- README: logging, the ready `BrixSessionStore` from brix_storage.
+
 ## 1.1.1
 
 - README: flow diagrams showing what happens on a tap / in a call.
