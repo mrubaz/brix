@@ -1,0 +1,26 @@
+name: brix_getx
+description: GetX controllers for brix – login, signup, email code, password reset, profile and account screens with text fields, form key and loading state ready.
+version: 1.0.0
+repository: https://github.com/mrubaz/brix/tree/main/packages/brix_getx
+issue_tracker: https://github.com/mrubaz/brix/issues
+topics:
+  - getx
+  - authentication
+  - login
+  - otp
+  - state-management
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.35.0"
+
+dependencies:
+  brix: ^1.0.0
+  flutter:
+    sdk: flutter
+  get: ^4.7.3
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
