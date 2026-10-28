@@ -1,3 +1,8 @@
+## 1.1.0
+
+- `Json`: read decoded JSON from any backend into your models without crashes – safe conversions (`"12"` → 12, epoch → `DateTime`), paths (`profile.firstName`), lists, fallbacks, and `Json.onProblem` to see missing or wrong keys while developing.
+- `Failure.fieldErrors` and `fieldError(field)`: problems per form field; `ValidationFailure(fieldErrors: …)`.
+
 ## 1.0.1
 
 - README: how to use the flows with Riverpod, Bloc, Provider and `setState`.

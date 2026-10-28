@@ -18,7 +18,7 @@ dart pub add brix
 |---|---|
 | `package:brix/auth.dart` | login, signup, email code, forgot / reset password, password rules |
 | `package:brix/account.dart` | app start + logout, profile, change password, delete account (includes auth) |
-| `package:brix/core.dart` | `Result`, `Failure`, `BrixFlow` |
+| `package:brix/core.dart` | `Result`, `Failure`, `Json`, `BrixFlow` |
 | `package:brix/testing.dart` | fakes for your tests |
 
 ## How it works
@@ -320,6 +320,30 @@ await delete.requestDeletion(); // code sent
 await delete.confirm('123456'); // deleted, everything cleared, login opened
 ```
 
+## Reading JSON safely
+
+`Json` reads decoded JSON from any backend (REST, Firebase, Supabase, …) into your models without crashes:
+
+```dart
+factory User.fromJson(Json json) => User(
+  id: json.string('id'),
+  name: json.string('profile.firstName'),   // paths for nested values
+  age: json.integer('age'),                 // 31, 31.0 and "31" all work
+  isActive: json.boolean('active'),         // true, "true", 1
+  createdAt: json.dateOrNull('createdAt'),  // ISO text or epoch milliseconds
+  roles: json.list('roles', Role.fromJson),
+);
+
+final user = User.fromJson(Json(jsonDecode(body)));
+```
+
+A missing key or a wrong type gives the fallback (`''`, `0`, `false`, empty list) or `null` for the `…OrNull` readers – never an exception. See them while developing:
+
+```dart
+Json.onProblem = (path, problem) => debugPrint('JSON $path: $problem');
+// JSON roles[0].level: expected a whole number, got String "high"
+```
+
 ## With your state library
 
 Every flow has `state` (now) and `changes` (a stream of new states). Connect it to whatever your app uses, and `dispose()` it when the screen closes.
@@ -441,6 +465,12 @@ void warning(AuthWarning warning) => showWarning(switch (warning) {
 ```
 
 Password checklist: `for (final rule in policy.rules) Text(rule.labelFor(policy))` → "At least 8 characters", "One capital letter (A-Z)", … and `policy.unmetRules(password)` for the ticks.
+
+Form errors per field arrive in `failure.fieldErrors` – show them under the field:
+
+```dart
+TextFormField(decoration: InputDecoration(errorText: failure?.fieldError('email')))
+```
 
 Your own checks and errors use the same types: `const AuthWarning('termsNotAccepted', 'Accept the terms first.')`, or a `Failure` subclass that overrides `defaultMessage`.
 
