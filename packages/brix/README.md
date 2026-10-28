@@ -36,6 +36,36 @@ A flow holds a small immutable state (`isSubmitting`, …) and tells you when it
 
 Every backend call returns a `Result`: `Success(data, message: …)` or `Failed(failure)`. A `Failure` says what kind of problem it was – `ValidationFailure`, `UnauthorizedFailure`, `ServerFailure`, `NetworkFailure`, `UnsupportedFailure`, `UnknownFailure` – and carries the backend's messages.
 
+### What happens on a tap
+
+```
+ Your screen               brix flow                  your classes
+ ───────────               ─────────                  ────────────
+ [Log in] ──submit()────▶  LoginFlow ──login()──────▶ AuthProvider ──▶ backend
+                              │  ◀────── Result ───────────┘
+                              ├─ Success ─▶ AuthSessionStore.saveSession
+                              │             AuthFeedback.success(message)
+                              │             AuthNavigator.toHome()
+                              └─ Failed ──▶ AuthFeedback.failure(failure)
+ loader ◀── changes (isSubmitting) ──┘
+```
+
+### The journeys
+
+```
+ Signup ──▶ code after signup? ── yes ──▶ Code screen ──verify──▶ Login (email filled) ──▶ Home
+                               └─ no ───▶ Login (email filled)
+
+ Forgot ──▶ ResetMode.otp  ──▶ Reset screen (code + new password) ──▶ Login (email filled)
+        └─▶ ResetMode.link ──▶ "check your email" ──────────────────▶ Login
+
+ App start ──▶ code still waiting? ──▶ Code screen
+           ──▶ saved session ───────▶ refresh user ──▶ Home      (401 ──▶ Login)
+           ──▶ nothing saved ───────▶ Login
+
+ Logout ──▶ server logout ──▶ local session cleared (remember me kept) ──▶ Login
+```
+
 ## 1. The backend: `AuthProvider`
 
 ```dart

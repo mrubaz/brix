@@ -1,62 +1,119 @@
-# Brix
+# brix
 
 [![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
+[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
+[![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
+[![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Ready-made building blocks every app needs. Import a block, write a small adapter for your backend, build your own UI.
+**The building blocks every Flutter app needs – ready, tested, and yours to style.**
 
-```
-brix/
-  packages/
-    brix/         pure Dart core – no Flutter, no state library (works with GetX, Bloc, Riverpod, Provider, setState)
-    brix_getx/    GetX wrappers (controllers with text fields, form key, Rx state)
-    brix_network/ REST calls (Dio by default), every call a Result
-```
+Every app writes the same things again: login, signup, email codes, password reset, profile, logout, API calls, error messages. brix gives you that logic once, done right, so you only build the screens.
 
-Each state library gets its own small wrapper package next to `brix`; an app uses only the one it needs. `package:brix/testing.dart` holds fakes for tests.
+- 🔌 **Any backend** – REST (Node, FastAPI, Django, Laravel, …), Firebase, Supabase. You write one small adapter.
+- 🧩 **Any state management** – the logic is pure Dart. GetX controllers are ready; Riverpod, Bloc, Provider and `setState` work with a few lines.
+- 🎨 **Your UI** – brix has no screens. It tells your screens what to show and where to go.
+- 🛡️ **Safe by default** – passwords never trimmed or logged, double taps ignored, secrets hidden in logs, one logout for many 401s.
+- 🔄 **Updates don't break your app** – new features arrive with defaults; new values work with a default `switch` case.
 
-**Install:** `flutter pub add brix brix_getx` (or only `brix` with another state library).
+## Packages
 
-**Start here:** [packages/brix](packages/brix) (what it is, install, quick start) · [packages/brix_getx](packages/brix_getx) (GetX controllers) · [packages/brix_network](packages/brix_network) (REST calls) · [example app](packages/brix_getx/example) (runs without a server).
-
-## Blocks
-
-| Block | Status | Import |
+| Package | What it gives you | Use it when |
 |---|---|---|
-| core | `Result`, `Failure`, `Json`, `BrixFlow` | `package:brix/core.dart` |
-| auth | login, signup, forgot, reset, OTP flows, `PasswordPolicy` (step 6) | `package:brix/auth.dart` |
-| account | `AccountProvider`, `SessionFlow` (app start, logout), `ProfileFlow`, `ChangePasswordFlow`, `DeleteAccountFlow` | `package:brix/account.dart` |
-| testing | fakes for tests | `package:brix/testing.dart` |
-| network | `BrixApi` (Dio default), response readers (envelope, FastAPI, Django REST), pretty logger, uploads, 401 logout | `package:brix_network/brix_network.dart` |
-| brix_getx | login, signup, forgot, reset, OTP, change password, session, profile, delete account controllers; `OtpCodeBoxes`, `PasswordRulesTracker` | `package:brix_getx/brix_getx.dart` |
+| [**brix**](packages/brix) | Login, signup, email code, forgot / reset password, app start + logout, profile, change password, delete account. `Result`, `Failure`, `Json`. | Always – it is the core. Pure Dart. |
+| [**brix_getx**](packages/brix_getx) | A GetX controller for every brix screen: text fields, form key, loading state, code boxes, password checklist. One import includes brix. | Your app uses GetX. |
+| [**brix_network**](packages/brix_network) | REST calls on Dio that return a `Result`; readers for common API shapes, field errors, uploads, a readable log. | Your backend is a REST API. |
 
-## Updates never break your app
+```
+flutter pub add brix_getx brix_network   # GetX app with a REST backend
+flutter pub add brix                     # any other state library / Firebase / Supabase
+```
 
-Values you `switch` over (`AuthWarning`, `PasswordRule`, `OtpPurpose`) are classes, not enums. Always add a default case – new values from a brix update then just work:
+Your app gets only the packages you add. Examples and the other packages are never built into it.
+
+## How the pieces fit
+
+```mermaid
+flowchart LR
+    UI["Your screens"] --> C["brix_getx controller<br/>(or your Bloc / Riverpod / setState)"]
+    C --> F["brix flow<br/>LoginFlow, SignupFlow, …"]
+    F --> A["Your adapter<br/>AuthProvider / AccountProvider"]
+    A --> N["brix_network<br/>BrixApi (Dio)"]
+    A --> S["Firebase / Supabase SDK"]
+    N --> B[("Your REST API")]
+    F --> ST["Your storage<br/>AuthSessionStore"]
+    F --> NAV["Your navigator<br/>AuthNavigator"]
+    F --> FB["Your alerts<br/>AuthFeedback"]
+```
+
+You write the small classes once (backend, storage, screens, alerts). Every flow uses them.
+
+## A login in a few lines (GetX + REST)
 
 ```dart
-String warningText(AuthWarning warning) => switch (warning) {
-  AuthWarning.otpIncomplete => 'Please enter the full code.', // your wording
-  _ => warning.message, // brix's default English text
-};
+// 1. The API, once.
+final api = BrixApi(
+  baseUrl: 'https://api.example.com/v1/',
+  token: () => storage.readToken(),
+  onUnauthorized: () => session.logout(),
+);
+
+// 2. Your backend adapter.
+class MyAuth extends AuthProvider<SignupBody, User> {
+  @override
+  AuthCapabilities get capabilities => const AuthCapabilities(otpAfterSignup: true);
+
+  @override
+  Future<Result<AuthSession<User>>> login({
+    required String identifier,
+    required String password,
+  }) => api.post(
+    'auth/login',
+    body: {'email': identifier, 'password': password},
+    parse: (data) => AuthSession(
+      accessToken: data.string('token'),
+      user: User.fromJson(data.child('user')),
+    ),
+  );
+
+  @override
+  Future<Result<void>> logout() => api.post('auth/logout');
+}
+
+// 3. The screen's controller.
+Get.put(BrixLoginController<User>(LoginFlow(
+  provider: MyAuth(),
+  store: MyStore(),
+  navigator: MyNavigator(),
+  feedback: MyAlerts(),
+)));
 ```
 
-Your own checks can use the same type: `const AuthWarning('termsNotAccepted', 'Accept the terms first.')`.
+The screen binds `identifierController`, `passwordController`, `isSubmitting` and calls `login()`. Remember me, the double-tap guard, saving the session, error messages and opening home are done.
+
+## Examples
+
+| Example | Shows |
+|---|---|
+| [Flutter demo app](packages/brix_getx/example) | Login, signup with an email code, forgot / reset password, logout – on an in-memory backend, runs without a server (`demo@brix.dev` / `Demo@1234`, code `123456`) |
+| [brix in plain Dart](packages/brix/example/main.dart) | A login without Flutter or a state library |
+| [brix_network](packages/brix_network/example/main.dart) | Loading a list from a public REST API into models |
+
+## Quality
+
+- Every flow, controller and network piece has unit tests. CI checks format, analysis (no infos) and tests of every package and example on each push.
+- Values you switch over are classes, not enums – see [updates never break your app](packages/brix#updates-never-break-your-app).
+- MIT licensed.
 
 ## Develop
 
-CI (`.github/workflows/ci.yml`) runs the same checks on every push and pull request: format, `analyze --fatal-infos`, tests – for both packages. `main` only merges when both pass.
-
 ```
-cd packages/brix
-dart pub get
-dart analyze --fatal-infos
-dart test
+git clone https://github.com/mrubaz/brix.git
+cd brix/packages/brix && dart pub get && dart test
+cd ../brix_network && dart pub get && dart test
+cd ../brix_getx && flutter pub get && flutter test
 ```
 
-`packages/brix_getx/pubspec_overrides.yaml` points brix_getx at the brix in this repo, so both are developed together. An app can do the same with its own (git-ignored) `pubspec_overrides.yaml`:
+Each package's `pubspec_overrides.yaml` points it at the brix in this repo, so they are developed together.
 
-```yaml
-dependency_overrides:
-  brix:
-    path: ../brix/packages/brix
-```
+Issues and ideas: [GitHub issues](https://github.com/mrubaz/brix/issues).
