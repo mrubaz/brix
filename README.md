@@ -4,6 +4,7 @@
 [![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
 [![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
 [![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
+[![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **The building blocks every Flutter app needs – ready, tested, and yours to style.**
