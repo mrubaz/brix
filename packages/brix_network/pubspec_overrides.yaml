@@ -1,0 +1,5 @@
+# Develop against the brix in this repo, not the one on pub.dev. Not part
+# of the published package.
+dependency_overrides:
+  brix:
+    path: ../brix
