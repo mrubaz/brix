@@ -7,12 +7,27 @@ import 'dart:async';
 /// Open for extension: a block or an app may add its own subclasses. A
 /// `switch` over failures should therefore end with a `Failure()` case.
 abstract class Failure {
-  Failure({Iterable<String> messages = const []})
-    : messages = List.unmodifiable(messages);
+  Failure({
+    Iterable<String> messages = const [],
+    Map<String, List<String>> fieldErrors = const {},
+  }) : messages = List.unmodifiable(messages),
+       fieldErrors = Map.unmodifiable({
+         for (final entry in fieldErrors.entries)
+           entry.key: List<String>.unmodifiable(entry.value),
+       });
 
   /// Texts from the backend, ready to show. Empty when the backend gave
   /// none – then show [displayMessage] (or the app's own text).
   final List<String> messages;
+
+  /// Problems per form field, e.g. `{'email': ['Already registered']}`, so
+  /// a form can show them under the right field. Empty when the backend
+  /// sent none.
+  final Map<String, List<String>> fieldErrors;
+
+  /// The first problem for [field], or null – handy as a field's
+  /// `errorText`.
+  String? fieldError(String field) => fieldErrors[field]?.firstOrNull;
 
   /// All [messages] on one line each, or null when there are none.
   String? get message => messages.isEmpty ? null : messages.join('\n');
@@ -31,7 +46,7 @@ abstract class Failure {
 
 /// The input was rejected (HTTP 400 / 422, form rules on the server).
 class ValidationFailure extends Failure {
-  ValidationFailure({super.messages});
+  ValidationFailure({super.messages, super.fieldErrors});
 
   @override
   String get defaultMessage => 'Please check what you entered.';

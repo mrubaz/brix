@@ -82,6 +82,23 @@ void main() {
       );
     });
 
+    test('field errors: per field, read-only, first one as errorText', () {
+      final failure = ValidationFailure(
+        messages: ['Please fix the form'],
+        fieldErrors: {
+          'email': ['Already registered', 'Looks wrong'],
+        },
+      );
+
+      expect(failure.fieldError('email'), 'Already registered');
+      expect(failure.fieldError('name'), isNull);
+      expect(
+        () => failure.fieldErrors['email']!.add('x'),
+        throwsUnsupportedError,
+      );
+      expect(NetworkFailure().fieldErrors, isEmpty);
+    });
+
     test('an app failure type brings its own default text', () {
       expect(_AccountLockedFailure().displayMessage, 'Account locked.');
       expect(
