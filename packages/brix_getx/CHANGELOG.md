@@ -1,3 +1,7 @@
+## 1.0.1
+
+- `package:brix_getx/brix_getx.dart` also exports brix, so one import is enough.
+
 ## 1.0.0
 
 First public release.

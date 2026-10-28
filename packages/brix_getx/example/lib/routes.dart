@@ -1,4 +1,3 @@
-import 'package:brix/account.dart';
 import 'package:brix_getx/brix_getx.dart';
 import 'package:get/get.dart';
 

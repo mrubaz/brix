@@ -320,6 +320,108 @@ await delete.requestDeletion(); // code sent
 await delete.confirm('123456'); // deleted, everything cleared, login opened
 ```
 
+## With your state library
+
+Every flow has `state` (now) and `changes` (a stream of new states). Connect it to whatever your app uses, and `dispose()` it when the screen closes.
+
+**GetX** – ready-made controllers in [brix_getx](https://pub.dev/packages/brix_getx).
+
+**Riverpod**
+
+```dart
+final loginFlowProvider = Provider.autoDispose<LoginFlow<User>>((ref) {
+  final flow = LoginFlow<User>(provider: api, store: store, navigator: nav, feedback: alerts);
+  ref.onDispose(flow.dispose);
+  return flow;
+});
+
+final loginStateProvider = StreamProvider.autoDispose<AuthFormState>(
+  (ref) => ref.watch(loginFlowProvider).changes,
+);
+
+// Widget
+final busy = ref.watch(loginStateProvider).value?.isSubmitting ?? false;
+onPressed: busy ? null : () => ref.read(loginFlowProvider).submit(identifier: email, password: password),
+```
+
+**Bloc**
+
+```dart
+class LoginCubit extends Cubit<AuthFormState> {
+  LoginCubit(this.flow) : super(flow.state) {
+    _subscription = flow.changes.listen(emit);
+  }
+
+  final LoginFlow<User> flow;
+  late final StreamSubscription<AuthFormState> _subscription;
+
+  Future<void> login(String email, String password) =>
+      flow.submit(identifier: email, password: password);
+
+  @override
+  Future<void> close() async {
+    await _subscription.cancel();
+    await flow.dispose();
+    return super.close();
+  }
+}
+```
+
+**Provider**
+
+```dart
+class LoginNotifier extends ChangeNotifier {
+  LoginNotifier(this.flow) {
+    _subscription = flow.changes.listen((_) => notifyListeners());
+  }
+
+  final LoginFlow<User> flow;
+  late final StreamSubscription<AuthFormState> _subscription;
+
+  bool get isSubmitting => flow.state.isSubmitting;
+
+  Future<void> login(String email, String password) =>
+      flow.submit(identifier: email, password: password);
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    flow.dispose();
+    super.dispose();
+  }
+}
+```
+
+**setState**
+
+```dart
+class _LoginScreenState extends State<LoginScreen> {
+  late final flow = LoginFlow<User>(provider: api, store: store, navigator: nav, feedback: alerts);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<AuthFormState>(
+      stream: flow.changes,
+      initialData: flow.state,
+      builder: (context, snapshot) => FilledButton(
+        onPressed: snapshot.data!.isSubmitting
+            ? null
+            : () => flow.submit(identifier: email, password: password),
+        child: const Text('Log in'),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    flow.dispose();
+    super.dispose();
+  }
+}
+```
+
+The same works for every flow (signup, code, reset, profile, …) – only the state type changes.
+
 ## Texts
 
 Backend messages always come first. When the backend sends none, brix has a plain English text, so you need no own text for the basics – and you can always show your own:

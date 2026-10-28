@@ -1,3 +1,7 @@
+## 1.0.1
+
+- README: how to use the flows with Riverpod, Bloc, Provider and `setState`.
+
 ## 1.0.0
 
 First public release.

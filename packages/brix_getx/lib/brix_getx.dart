@@ -2,6 +2,9 @@
 /// GetX side (text fields, form key, Rx state, dispose).
 library;
 
+// One import for GetX apps: brix itself comes with it.
+export 'package:brix/brix.dart';
+
 export 'src/brix_auth_form_controller.dart';
 export 'src/brix_change_password_controller.dart';
 export 'src/brix_code_entry_controller.dart';
