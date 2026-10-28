@@ -32,6 +32,20 @@ flutter pub add brix                     # any other state library / Firebase / 
 
 Your app gets only the packages you add. Examples and the other packages are never built into it.
 
+## Everything included
+
+| Area | What you get |
+|---|---|
+| Auth | login with remember me, signup, email code (boxes, paste / autofill, resend countdown), forgot / reset password, password rules with a live checklist |
+| Account | app start (splash), logout, profile + avatar, change password, delete account with a code |
+| Errors | `Result` instead of exceptions; backend messages, else plain default texts; form errors per field (`failure.fieldError('email')`) |
+| Network | Dio by default (any client), uploads with progress, file / PDF downloads, cancel, retries only where safe, one logout for many 401s, readers for envelope / FastAPI / Django REST APIs |
+| Storage | values + secrets, reinstall-safe Keychain, broken Keystore never crashes, ready session store |
+| JSON | `Json` reads any backend's data into models without crashes |
+| Logs | readable console for your messages and every API call, secrets hidden, off in release |
+| Tests | fakes for every contract (`package:brix/testing.dart`), `MemoryStore`, fake network client examples |
+| Updates | switch-safe values and default method bodies – new versions don't break your app |
+
 ## How the pieces fit
 
 ```mermaid
