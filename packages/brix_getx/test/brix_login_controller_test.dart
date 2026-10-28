@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:brix/auth.dart';
 import 'package:brix/testing.dart';
 import 'package:brix_getx/brix_getx.dart';
 import 'package:flutter/material.dart';

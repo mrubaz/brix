@@ -21,7 +21,13 @@ All logic lives in [brix](https://pub.dev/packages/brix) – read its README fir
 ## Install
 
 ```
-flutter pub add brix brix_getx
+flutter pub add brix_getx
+```
+
+One import gives you the controllers and all of brix:
+
+```dart
+import 'package:brix_getx/brix_getx.dart';
 ```
 
 ## Bindings
