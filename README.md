@@ -100,6 +100,25 @@ Get.put(BrixLoginController<User>(LoginFlow(
 
 The screen binds `identifierController`, `passwordController`, `isSubmitting` and calls `login()`. Remember me, the double-tap guard, saving the session, error messages and opening home are done.
 
+## Readable console
+
+`BrixLogger` (brix) for your own messages, `PrettyNetworkLogger` (brix_network) for every API call – both off in release builds, secrets hidden.
+
+```dart
+final log = BrixLogger(name: 'MyApp');
+log.error('Saving failed', error: error, stackTrace: stackTrace);
+```
+
+```
+14:32:07.210  ✗ ERROR  MyApp  Saving failed
+                ↳ Bad state: boom
+                  #0 SaveFlow.run (save_flow.dart:42)
+┌─ POST v1/auth/login ──────────────────────────── 200 · 312 ms
+│ → {"email": "ada@brix.dev", "password": "••••"}
+│ ← {"success": true, "message": "Welcome back!", …}
+└────────────────────────────────────────────────────────────────
+```
+
 ## Examples
 
 | Example | Shows |
