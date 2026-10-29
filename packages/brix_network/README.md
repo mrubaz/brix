@@ -143,25 +143,9 @@ ResponseReader.custom((response) => ApiReply(
 
 ## Console log
 
-```
-╭─ ▰ POST v1/auth/login ─────────────────────────── 200 · 312 ms
-│ → {
-│     "email": "ada@brix.dev",
-│     "password": "••••"
-│   }
-│ ← {
-│     "success": true,
-│     "message": "Welcome back!",
-│     "data": {
-│       "accessToken": "••••",
-│       …
-╰───────────────────────────────────────────────────────────────
-╭─ ▰ GET v1/inspections?page=1&limit=5 ─────────── ✗ 500 · 1.2 s
-│ ← {
-│     "message": "Internal server error"
-│   }
-╰───────────────────────────────────────────────────────────────
-```
+Every call in one box – green when it worked, yellow for a 4xx, red for a 5xx or no connection. Passwords and tokens are hidden:
+
+![PrettyNetworkLogger in the debug console](doc/screenshots/network_log.png)
 
 `PrettyNetworkLogger(colors: false)` for the Xcode console, `hiddenKeys: {'pin_code'}` for more secrets, `maxLines` to cut bodies. Or send logs elsewhere: `class MyLogger extends NetworkLogger { void log(NetworkLogEntry entry) { … } }`.
 

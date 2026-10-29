@@ -1,3 +1,7 @@
+## 1.3.1
+
+- `BrixLogger`: writes to the IDE console through `dart:developer`, one entry at a time, so colours show on iOS too (the iOS console printed the colour codes as text) and other logs cannot land inside a box. `output: print` still prints line by line, e.g. for `flutter run` in a terminal.
+
 ## 1.3.0
 
 - `BrixLogger`: one box per message so lines that follow each other never run together; a colour per level (debug grey, info blue, success green, warning yellow, error red) with the level in a coloured badge; the brix mark `▰` and a banner with the brix logo.

@@ -24,3 +24,11 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+
+screenshots:
+  - description: "Login screen of the example app on BrixLoginController."
+    path: doc/screenshots/login.png
+  - description: "Signup with the live password checklist (PasswordRulesTracker)."
+    path: doc/screenshots/signup_password_rules.png
+  - description: "Email code boxes with resend countdown (BrixOtpController)."
+    path: doc/screenshots/code_boxes.png

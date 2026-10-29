@@ -1,0 +1,3 @@
+dependency_overrides:
+  brix:
+    path: ../../packages/brix

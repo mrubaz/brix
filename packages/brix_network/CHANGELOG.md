@@ -1,3 +1,7 @@
+## 1.2.1
+
+- `PrettyNetworkLogger`: writes to the IDE console through `dart:developer`, one call at a time, so colours show on iOS too. `output: print` for a terminal.
+
 ## 1.2.0
 
 - `PrettyNetworkLogger`: rounded boxes and the brix mark `▰`, matching `BrixLogger` from brix 1.3.0.

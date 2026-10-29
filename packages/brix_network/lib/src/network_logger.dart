@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 import 'package:brix/core.dart';
 
@@ -54,10 +55,9 @@ class PrettyNetworkLogger extends NetworkLogger {
     this.maxLines = 20,
     this.showResponseBody = true,
     Set<String> hiddenKeys = const {},
-    void Function(String line)? output,
+    this.output,
   }) : enabled = enabled ?? !_isRelease,
-       hiddenKeys = {...defaultHiddenKeys, ...hiddenKeys},
-       _output = output ?? print;
+       hiddenKeys = {...defaultHiddenKeys, ...hiddenKeys};
 
   static const _isRelease = bool.fromEnvironment('dart.vm.product');
 
@@ -88,7 +88,11 @@ class PrettyNetworkLogger extends NetworkLogger {
 
   final bool showResponseBody;
   final Set<String> hiddenKeys;
-  final void Function(String line) _output;
+
+  /// Where lines go, one call per line – e.g. `print` for `flutter run` in
+  /// a terminal. Default: the IDE console through `dart:developer`, one
+  /// call at a time, with colours on iOS too.
+  final void Function(String line)? output;
 
   static const _width = 64;
 
@@ -119,7 +123,12 @@ class PrettyNetworkLogger extends NetworkLogger {
       if (!ok && entry.response == null) '│ ✗ ${entry.failure!.displayMessage}',
       _paint('╰${'─' * (_width - 1)}', color),
     ];
-    lines.forEach(_output);
+    final output = this.output;
+    if (output != null) {
+      lines.forEach(output);
+    } else {
+      developer.log(lines.join('\n'));
+    }
   }
 
   /// [value] with every hidden key's value replaced by `••••`.

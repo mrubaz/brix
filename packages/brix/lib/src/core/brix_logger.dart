@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 /// How important a log line is. Lines below [BrixLogger.minLevel] are
 /// skipped.
 enum LogLevel { debug, info, warning, error }
@@ -6,13 +8,13 @@ enum LogLevel { debug, info, warning, error }
 /// come one after another never run together:
 ///
 /// ```
-/// ╭─ ▰ INFO · Pristine ──────────────────────────── 14:32:05.123
+/// ╭─ ▰ INFO · My App ────────────────────────────── 14:32:05.123
 /// │ Logged in
 /// ╰────────────────────────────────────────────────────────────────
-/// ╭─ ▰ ERROR · Pristine ─────────────────────────── 14:32:07.210
-/// │ Saving step failed
+/// ╭─ ▰ ERROR · My App ───────────────────────────── 14:32:07.210
+/// │ Saving failed
 /// │ ↳ Bad state: boom
-/// │   #0 InspectionStepMixin.saveStepWith (inspection_step_mixin.dart:71)
+/// │   #0 SaveFlow.run (save_flow.dart:42)
 /// ╰────────────────────────────────────────────────────────────────
 /// ```
 ///
@@ -28,9 +30,8 @@ class BrixLogger {
     this.colors = true,
     this.stackLines = 6,
     this.width = 64,
-    void Function(String line)? output,
-  }) : enabled = enabled ?? !_isRelease,
-       _output = output ?? print;
+    this.output,
+  }) : enabled = enabled ?? !_isRelease;
 
   static const _isRelease = bool.fromEnvironment('dart.vm.product');
 
@@ -50,7 +51,12 @@ class BrixLogger {
 
   /// Width of the box lines, in characters.
   final int width;
-  final void Function(String line) _output;
+
+  /// Where lines go, one call per line – e.g. `print` to read the log in a
+  /// terminal with `flutter run`. Default: the IDE console (VS Code,
+  /// Android Studio) through `dart:developer`, one entry at a time, with
+  /// colours on iOS too.
+  final void Function(String line)? output;
 
   void debug(Object? message, {Object? error, StackTrace? stackTrace}) =>
       log(LogLevel.debug, message, error: error, stackTrace: stackTrace);
@@ -84,21 +90,22 @@ class BrixLogger {
     StackTrace? stackTrace,
   ) {
     if (!enabled || level.index < minLevel.index) return;
+    final out = <String>[];
     final badge = colors ? ' ${style.label} ' : '[${style.label}]';
     final title = '▰ $badge${name.isEmpty ? '' : ' · $name'}';
     final time = _time();
     final fill = (width - title.length - time.length - 5).clamp(2, width);
 
     final rest = '${name.isEmpty ? '' : ' · $name'} ${'─' * fill} $time';
-    _output(
+    out.add(
       '${_paint('╭─ ', style.color)}${_paint('▰', _brick)} '
       '${_paint(badge, style.badge)}${_paint(rest, style.color)}',
     );
     for (final line in '$message'.split('\n')) {
-      _output('${_paint('│', style.color)} ${_paint(line, style.text)}');
+      out.add('${_paint('│', style.color)} ${_paint(line, style.text)}');
     }
     if (error != null) {
-      _output('${_paint('│', style.color)} ${_paint('↳ $error', style.text)}');
+      out.add('${_paint('│', style.color)} ${_paint('↳ $error', style.text)}');
     }
     if (stackTrace != null && stackLines > 0) {
       for (final line
@@ -107,15 +114,17 @@ class BrixLogger {
               .where((line) => line.trim().isNotEmpty)
               .take(stackLines)) {
         final frame = line.replaceAll(RegExp(r'\s+'), ' ').trim();
-        _output('${_paint('│', style.color)}   ${_paint(frame, _grey)}');
+        out.add('${_paint('│', style.color)}   ${_paint(frame, _grey)}');
       }
     }
-    _output(_paint('╰${'─' * (width - 1)}', style.color));
+    out.add(_paint('╰${'─' * (width - 1)}', style.color));
+    _emit(out);
   }
 
   /// A start-up box with the brix mark: app name, version, environment, …
   void banner(String title, {Map<String, String> details = const {}}) {
     if (!enabled) return;
+    final out = <String>[];
     const logo = ['▆▆▆▆▆▆▆', '▆▆▆ ▆▆▆'];
     final text = [
       'brix · $title',
@@ -128,18 +137,31 @@ class BrixLogger {
     );
     final inner = 2 + logo.first.length + 3 + textWidth + 2;
 
-    _output(_paint('╭${'─' * inner}╮', _brick));
+    out.add(_paint('╭${'─' * inner}╮', _brick));
     for (var i = 0; i < rows; i++) {
       final mark = i < logo.length ? logo[i] : '';
       final line = i < text.length ? text[i] : '';
       final words = line.padRight(textWidth);
-      _output(
+      out.add(
         '${_paint('│', _brick)}  '
         '${_paint(mark.padRight(logo.first.length), _brick)}   '
         '${i == 0 ? _paint(words, '1') : words}  ${_paint('│', _brick)}',
       );
     }
-    _output(_paint('╰${'─' * inner}╯', _brick));
+    out.add(_paint('╰${'─' * inner}╯', _brick));
+    _emit(out);
+  }
+
+  /// One entry goes out as one message, so other logs cannot land inside
+  /// it. `dart:developer` reaches the IDE console directly: the iOS
+  /// console turns colour codes into text, this path keeps the colours.
+  void _emit(List<String> lines) {
+    final output = this.output;
+    if (output != null) {
+      lines.forEach(output);
+    } else {
+      developer.log(lines.join('\n'));
+    }
   }
 
   String _time() {
