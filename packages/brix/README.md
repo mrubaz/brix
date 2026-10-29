@@ -404,7 +404,7 @@ log.error('Saving failed', error: error, stackTrace: stackTrace);
 ╰───────────────────────────────────────────────────────────────
 ```
 
-One box per message, so three info lines in a row still read as three. Colours: debug grey, info blue, success green (`success()` logs at info level), warning yellow, error red; the level sits in a coloured badge and `▰` is the brix mark. Nothing is printed in release builds. `minLevel: LogLevel.warning` hides the chatter, `colors: false` suits the Xcode console, `stackLines` cuts long traces, `output:` sends lines elsewhere.
+One box per message, so three info lines in a row still read as three. Colours: debug grey, info blue, success green (`success()` logs at info level), warning yellow, error red; the level sits in a coloured badge and `▰` is the brix mark. Nothing is printed in release builds. `minLevel: LogLevel.warning` hides the chatter, `colors: false` suits the Xcode console, `stackLines` cuts long traces, output goes to the IDE console (colours on iOS too); `output: print` for a terminal, or any function to send lines elsewhere.
 
 ## With your state library
 
