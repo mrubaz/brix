@@ -125,14 +125,18 @@ log.error('Saving failed', error: error, stackTrace: stackTrace);
 ```
 
 ```
-14:32:07.210  ✗ ERROR  MyApp  Saving failed
-                ↳ Bad state: boom
-                  #0 SaveFlow.run (save_flow.dart:42)
-┌─ POST v1/auth/login ──────────────────────────── 200 · 312 ms
+╭─ ▰ ERROR · MyApp ────────────────────────────── 14:32:07.210
+│ Saving failed
+│ ↳ Bad state: boom
+│   #0 SaveFlow.run (save_flow.dart:42)
+╰───────────────────────────────────────────────────────────────
+╭─ ▰ POST v1/auth/login ─────────────────────────── 200 · 312 ms
 │ → {"email": "ada@brix.dev", "password": "••••"}
 │ ← {"success": true, "message": "Welcome back!", …}
-└────────────────────────────────────────────────────────────────
+╰───────────────────────────────────────────────────────────────
 ```
+
+One box per message, so lines never run together. Each level has its colour: debug grey, info blue, success green, warning yellow, error red.
 
 ## Examples
 

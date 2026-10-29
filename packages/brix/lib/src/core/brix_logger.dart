@@ -2,18 +2,24 @@
 /// skipped.
 enum LogLevel { debug, info, warning, error }
 
-/// A readable console log for apps, one line per message:
+/// A readable console log for apps, one box per message, so lines that
+/// come one after another never run together:
 ///
 /// ```
-/// 14:32:05.123  ✓ INFO   Pristine  Logged in
-/// 14:32:06.004  ⚠ WARN   Pristine  JSON roles[0].level: expected a number
-/// 14:32:07.210  ✗ ERROR  Pristine  Saving step failed
-///                 ↳ StateError: boom
-///                   #0  InspectionStepMixin.saveStepWith (inspection_step_mixin.dart:71)
+/// ╭─ ▰ INFO · Pristine ──────────────────────────── 14:32:05.123
+/// │ Logged in
+/// ╰────────────────────────────────────────────────────────────────
+/// ╭─ ▰ ERROR · Pristine ─────────────────────────── 14:32:07.210
+/// │ Saving step failed
+/// │ ↳ Bad state: boom
+/// │   #0 InspectionStepMixin.saveStepWith (inspection_step_mixin.dart:71)
+/// ╰────────────────────────────────────────────────────────────────
 /// ```
 ///
-/// Prints nothing in release builds unless [enabled] says so. Stack traces
-/// are cut to [stackLines] lines.
+/// Each level has its own colour: debug grey, info blue, success green,
+/// warning yellow, error red; `▰` is the brix mark. Prints nothing in
+/// release builds unless [enabled] says so. Stack traces are cut to
+/// [stackLines] lines.
 class BrixLogger {
   BrixLogger({
     this.name = '',
@@ -21,6 +27,7 @@ class BrixLogger {
     this.minLevel = LogLevel.debug,
     this.colors = true,
     this.stackLines = 6,
+    this.width = 64,
     void Function(String line)? output,
   }) : enabled = enabled ?? !_isRelease,
        _output = output ?? print;
@@ -40,6 +47,9 @@ class BrixLogger {
 
   /// Stack trace lines shown with an error.
   final int stackLines;
+
+  /// Width of the box lines, in characters.
+  final int width;
   final void Function(String line) _output;
 
   void debug(Object? message, {Object? error, StackTrace? stackTrace}) =>
@@ -47,6 +57,11 @@ class BrixLogger {
 
   void info(Object? message, {Object? error, StackTrace? stackTrace}) =>
       log(LogLevel.info, message, error: error, stackTrace: stackTrace);
+
+  /// Something finished well (saved, sent, logged in). Logged at
+  /// [LogLevel.info], shown in green.
+  void success(Object? message, {Object? error, StackTrace? stackTrace}) =>
+      _write(LogLevel.info, _success, message, error, stackTrace);
 
   void warning(Object? message, {Object? error, StackTrace? stackTrace}) =>
       log(LogLevel.warning, message, error: error, stackTrace: stackTrace);
@@ -59,44 +74,72 @@ class BrixLogger {
     Object? message, {
     Object? error,
     StackTrace? stackTrace,
-  }) {
+  }) => _write(level, _styles[level]!, message, error, stackTrace);
+
+  void _write(
+    LogLevel level,
+    _Style style,
+    Object? message,
+    Object? error,
+    StackTrace? stackTrace,
+  ) {
     if (!enabled || level.index < minLevel.index) return;
-    final (icon, label, color) = switch (level) {
-      LogLevel.debug => ('·', 'DEBUG', '90'),
-      LogLevel.info => ('✓', 'INFO ', '32'),
-      LogLevel.warning => ('⚠', 'WARN ', '33'),
-      LogLevel.error => ('✗', 'ERROR', '31'),
-    };
-    final tag = name.isEmpty ? '' : '$name  ';
-    _output(_paint('${_time()}  $icon $label  $tag$message', color));
-    if (error != null) _output(_paint('                ↳ $error', color));
+    final badge = colors ? ' ${style.label} ' : '[${style.label}]';
+    final title = '▰ $badge${name.isEmpty ? '' : ' · $name'}';
+    final time = _time();
+    final fill = (width - title.length - time.length - 5).clamp(2, width);
+
+    final rest = '${name.isEmpty ? '' : ' · $name'} ${'─' * fill} $time';
+    _output(
+      '${_paint('╭─ ', style.color)}${_paint('▰', _brick)} '
+      '${_paint(badge, style.badge)}${_paint(rest, style.color)}',
+    );
+    for (final line in '$message'.split('\n')) {
+      _output('${_paint('│', style.color)} ${_paint(line, style.text)}');
+    }
+    if (error != null) {
+      _output('${_paint('│', style.color)} ${_paint('↳ $error', style.text)}');
+    }
     if (stackTrace != null && stackLines > 0) {
       for (final line
           in '$stackTrace'
               .split('\n')
               .where((line) => line.trim().isNotEmpty)
               .take(stackLines)) {
-        _output('                  ${line.replaceAll(RegExp(r'\s+'), ' ')}');
+        final frame = line.replaceAll(RegExp(r'\s+'), ' ').trim();
+        _output('${_paint('│', style.color)}   ${_paint(frame, _grey)}');
       }
     }
+    _output(_paint('╰${'─' * (width - 1)}', style.color));
   }
 
-  /// A start-up box: app name, version, environment, …
+  /// A start-up box with the brix mark: app name, version, environment, …
   void banner(String title, {Map<String, String> details = const {}}) {
     if (!enabled) return;
-    final lines = [
-      title,
+    const logo = ['▆▆▆▆▆▆▆', '▆▆▆ ▆▆▆'];
+    final text = [
+      'brix · $title',
       for (final MapEntry(:key, :value) in details.entries) '$key: $value',
     ];
-    final width = lines.fold(
+    final rows = text.length > logo.length ? text.length : logo.length;
+    final textWidth = text.fold(
       0,
       (max, line) => line.length > max ? line.length : max,
     );
-    _output(_paint('╔${'═' * (width + 2)}╗', '36'));
-    for (final line in lines) {
-      _output(_paint('║ ${line.padRight(width)} ║', '36'));
+    final inner = 2 + logo.first.length + 3 + textWidth + 2;
+
+    _output(_paint('╭${'─' * inner}╮', _brick));
+    for (var i = 0; i < rows; i++) {
+      final mark = i < logo.length ? logo[i] : '';
+      final line = i < text.length ? text[i] : '';
+      final words = line.padRight(textWidth);
+      _output(
+        '${_paint('│', _brick)}  '
+        '${_paint(mark.padRight(logo.first.length), _brick)}   '
+        '${i == 0 ? _paint(words, '1') : words}  ${_paint('│', _brick)}',
+      );
     }
-    _output(_paint('╚${'═' * (width + 2)}╝', '36'));
+    _output(_paint('╰${'─' * inner}╯', _brick));
   }
 
   String _time() {
@@ -107,5 +150,28 @@ class BrixLogger {
   }
 
   String _paint(String text, String code) =>
-      colors ? '\x1B[${code}m$text\x1B[0m' : text;
+      colors && code.isNotEmpty ? '\x1B[${code}m$text\x1B[0m' : text;
+
+  /// The brix orange (ANSI 256 colour 202).
+  static const _brick = '38;5;202';
+  static const _grey = '90';
+
+  static const _success = _Style('SUCCESS', '32', '1;30;42', '32');
+  static const _styles = {
+    LogLevel.debug: _Style('DEBUG', '90', '1;97;100', '90'),
+    LogLevel.info: _Style('INFO', '34', '1;97;44', '34'),
+    LogLevel.warning: _Style('WARN', '33', '1;30;43', '33'),
+    LogLevel.error: _Style('ERROR', '31', '1;97;41', '31'),
+  };
+}
+
+/// How one kind of line looks: its label and ANSI codes for the box, the
+/// label's badge and the text.
+class _Style {
+  const _Style(this.label, this.color, this.badge, this.text);
+
+  final String label;
+  final String color;
+  final String badge;
+  final String text;
 }

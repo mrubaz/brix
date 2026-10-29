@@ -144,7 +144,7 @@ ResponseReader.custom((response) => ApiReply(
 ## Console log
 
 ```
-┌─ POST v1/auth/login ──────────────────────────── 200 · 312 ms
+╭─ ▰ POST v1/auth/login ─────────────────────────── 200 · 312 ms
 │ → {
 │     "email": "ada@brix.dev",
 │     "password": "••••"
@@ -155,12 +155,12 @@ ResponseReader.custom((response) => ApiReply(
 │     "data": {
 │       "accessToken": "••••",
 │       …
-└────────────────────────────────────────────────────────────────
-┌─ GET v1/inspections?page=1&limit=5 ──────────── ✗ 500 · 1.2 s
+╰───────────────────────────────────────────────────────────────
+╭─ ▰ GET v1/inspections?page=1&limit=5 ─────────── ✗ 500 · 1.2 s
 │ ← {
 │     "message": "Internal server error"
 │   }
-└────────────────────────────────────────────────────────────────
+╰───────────────────────────────────────────────────────────────
 ```
 
 `PrettyNetworkLogger(colors: false)` for the Xcode console, `hiddenKeys: {'pin_code'}` for more secrets, `maxLines` to cut bodies. Or send logs elsewhere: `class MyLogger extends NetworkLogger { void log(NetworkLogEntry entry) { … } }`.

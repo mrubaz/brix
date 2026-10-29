@@ -382,19 +382,29 @@ Json.onProblem = (path, problem) => debugPrint('JSON $path: $problem');
 final log = BrixLogger(name: 'MyApp');
 
 log.banner('MyApp', details: {'version': '1.2.0', 'env': 'staging'});
-log.info('Logged in');
+log.info('Opened inspection 42');
+log.success('Logged in');
 log.warning('Cache is old');
 log.error('Saving failed', error: error, stackTrace: stackTrace);
 ```
 
 ```
-14:32:05.123  ✓ INFO   MyApp  Logged in
-14:32:07.210  ✗ ERROR  MyApp  Saving failed
-                ↳ Bad state: boom
-                  #0 SaveFlow.run (save_flow.dart:42)
+╭──────────────────────────────╮
+│  ▆▆▆▆▆▆▆   brix · MyApp      │
+│  ▆▆▆ ▆▆▆   version: 1.2.0    │
+│            env: staging      │
+╰──────────────────────────────╯
+╭─ ▰ SUCCESS · MyApp ──────────────────────────── 14:32:05.123
+│ Logged in
+╰───────────────────────────────────────────────────────────────
+╭─ ▰ ERROR · MyApp ────────────────────────────── 14:32:07.210
+│ Saving failed
+│ ↳ Bad state: boom
+│   #0 SaveFlow.run (save_flow.dart:42)
+╰───────────────────────────────────────────────────────────────
 ```
 
-Nothing is printed in release builds. `minLevel: LogLevel.warning` hides the chatter, `colors: false` suits the Xcode console, `stackLines` cuts long traces, `output:` sends lines elsewhere.
+One box per message, so three info lines in a row still read as three. Colours: debug grey, info blue, success green (`success()` logs at info level), warning yellow, error red; the level sits in a coloured badge and `▰` is the brix mark. Nothing is printed in release builds. `minLevel: LogLevel.warning` hides the chatter, `colors: false` suits the Xcode console, `stackLines` cuts long traces, `output:` sends lines elsewhere.
 
 ## With your state library
 
