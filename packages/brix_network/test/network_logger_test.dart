@@ -36,9 +36,10 @@ void main() {
   test('one box per call: method, path, status and time', () {
     logger().log(entry(responseBody: {'success': true}));
 
-    expect(lines.first, startsWith('┌─ POST v1/auth/login'));
+    expect(lines.first, startsWith('╭─ ▰ POST v1/auth/login'));
     expect(lines.first, endsWith('200 · 312 ms'));
-    expect(lines.last, startsWith('└'));
+    expect(lines.last, startsWith('╰'));
+    expect(lines.first.length, lines.last.length);
   });
 
   test('passwords, tokens and codes never reach the log', () {

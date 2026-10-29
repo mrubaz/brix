@@ -1,3 +1,7 @@
+## 1.2.0
+
+- `PrettyNetworkLogger`: rounded boxes and the brix mark `▰`, matching `BrixLogger` from brix 1.3.0.
+
 ## 1.1.0
 
 - `BrixApi.download`: files (PDF, image, spreadsheet, …) as a `DownloadedFile` – bytes, `contentType`, `fileName` (from `Content-Disposition`), `isPdf`, `isImage`, `sizeLabel` – with optional `onProgress`. An error answer instead of the file is read like any other call.

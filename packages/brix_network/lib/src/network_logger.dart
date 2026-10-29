@@ -36,11 +36,14 @@ abstract class NetworkLogger {
 /// A readable console log, one box per call:
 ///
 /// ```
-/// ┌─ POST auth/login ──────────────────────────── 200 · 312 ms
+/// ╭─ ▰ POST auth/login ────────────────────────────── 200 · 312 ms
 /// │ → {"email": "ada@brix.dev", "password": "••••"}
 /// │ ← {"success": true, "message": "Welcome back!", …}
-/// └───────────────────────────────────────────────────────────
+/// ╰────────────────────────────────────────────────────────────────
 /// ```
+///
+/// Same look as brix's `BrixLogger`: green when it worked, yellow for a 4xx,
+/// red for a 5xx or no connection; `▰` is the brix mark.
 ///
 /// Passwords, tokens, codes and API keys are hidden (`••••`), long bodies
 /// are cut, and it prints nothing in release builds.
@@ -102,18 +105,19 @@ class PrettyNetworkLogger extends NetworkLogger {
     final result =
         '${ok ? '' : '✗ '}${status ?? entry.failure.runtimeType}'
         ' · ${_duration(entry.took)}';
-    final fill = (_width - title.length - result.length - 6).clamp(2, _width);
+    final fill = (_width - title.length - result.length - 7).clamp(2, _width);
 
     final lines = <String>[
-      _paint('┌─ $title ${'─' * fill} ', color) +
-          _paint(result, color, bold: true),
+      '${_paint('╭─ ', color)}${_paint('▰', _brick)} '
+          '${_paint('$title ${'─' * fill} ', color)}'
+          '${_paint(result, color, bold: true)}',
       if (request.isUpload)
         '│ → files: ${request.files.map((file) => '${file.field}=${file.fileName ?? file.path?.split('/').last}').join(', ')}',
       if (request.body != null) ..._block('→', request.body),
       if (showResponseBody && entry.response?.body != null)
         ..._block('←', entry.response!.body),
       if (!ok && entry.response == null) '│ ✗ ${entry.failure!.displayMessage}',
-      _paint('└${'─' * _width}', color),
+      _paint('╰${'─' * (_width - 1)}', color),
     ];
     lines.forEach(_output);
   }
@@ -173,6 +177,9 @@ class PrettyNetworkLogger extends NetworkLogger {
   static const _green = '32';
   static const _yellow = '33';
   static const _red = '31';
+
+  /// The brix orange (ANSI 256 colour 202).
+  static const _brick = '38;5;202';
 
   String _paint(String text, String code, {bool bold = false}) =>
       colors ? '\x1B[${bold ? '1;' : ''}${code}m$text\x1B[0m' : text;

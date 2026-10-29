@@ -1,3 +1,9 @@
+## 1.3.0
+
+- `BrixLogger`: one box per message so lines that follow each other never run together; a colour per level (debug grey, info blue, success green, warning yellow, error red) with the level in a coloured badge; the brix mark `▰` and a banner with the brix logo.
+- `BrixLogger.success()`: something finished well, logged at info level and shown in green.
+- `BrixLogger.width`: width of the box lines (default 64).
+
 ## 1.2.0
 
 - `BrixLogger`: a readable console log (time, level, name, short stack traces, start-up banner), off in release builds; `LogLevel`.

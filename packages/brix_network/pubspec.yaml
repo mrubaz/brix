@@ -1,6 +1,6 @@
 name: brix_network
 description: REST calls for brix – Dio by default, any client possible. Every call returns a Result; backend messages, field errors and logout on 401 handled.
-version: 1.1.0
+version: 1.2.0
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_network
 issue_tracker: https://github.com/mrubaz/brix/issues
 topics:
