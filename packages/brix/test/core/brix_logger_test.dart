@@ -111,11 +111,11 @@ void main() {
   });
 
   test('banner: brix mark beside the title and details', () {
-    logger().banner('Pristine', details: {'env': 'staging'});
+    logger().banner('My App', details: {'env': 'staging'});
 
     expect(lines.first, startsWith('╭'));
-    expect(lines[1], '│  ▆▆▆▆▆▆▆   brix · Pristine  │');
-    expect(lines[2], '│  ▆▆▆ ▆▆▆   env: staging     │');
+    expect(lines[1], '│  ▆▆▆▆▆▆▆   brix · My App  │');
+    expect(lines[2], '│  ▆▆▆ ▆▆▆   env: staging   │');
     expect(lines.last, startsWith('╰'));
     expect(lines.map((line) => line.length).toSet(), hasLength(1));
   });

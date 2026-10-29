@@ -4,9 +4,15 @@ Ready-made app logic you would otherwise write again in every Flutter app: login
 
 - **Any backend.** You write one small adapter for your API (REST, Firebase, Supabase, …).
 - **Any state library.** Pure Dart – no Flutter, no GetX / Bloc / Riverpod inside. A thin wrapper connects it to yours ([brix_getx](https://pub.dev/packages/brix_getx) for GetX).
-- **Your own UI.** brix has no screens; it tells your screens what to show and where to go.
+- **Your own UI.** brix has no screens; it tells your screens what to show and where to go. Want ready widgets? [brix_ui](https://pub.dev/packages/brix_ui).
 - **Safe defaults.** Passwords are never trimmed or logged, double taps are ignored, a failed logout on the server still logs out locally.
 - **Updates do not break your app.** New calls arrive with default bodies, new values work with a default `switch` case.
+
+Screens of the [demo app](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example), all running on brix:
+
+| Login | Live password rules | Email code |
+|---|---|---|
+| ![Login](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_getx/doc/screenshots/login.png) | ![Signup with password rules](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_getx/doc/screenshots/signup_password_rules.png) | ![Code boxes](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_getx/doc/screenshots/code_boxes.png) |
 
 ## Install
 
@@ -378,11 +384,13 @@ Json.onProblem = (path, problem) => debugPrint('JSON $path: $problem');
 
 ## Logging
 
-```dart
-final log = BrixLogger(name: 'MyApp');
+![BrixLogger in the debug console](doc/screenshots/console.png)
 
-log.banner('MyApp', details: {'version': '1.2.0', 'env': 'staging'});
-log.info('Opened inspection 42');
+```dart
+final log = BrixLogger(name: 'My App');
+
+log.banner('My App', details: {'version': '1.2.0', 'env': 'staging'});
+log.info('Opened item 42');
 log.success('Logged in');
 log.warning('Cache is old');
 log.error('Saving failed', error: error, stackTrace: stackTrace);
@@ -390,14 +398,14 @@ log.error('Saving failed', error: error, stackTrace: stackTrace);
 
 ```
 ╭──────────────────────────────╮
-│  ▆▆▆▆▆▆▆   brix · MyApp      │
+│  ▆▆▆▆▆▆▆   brix · My App     │
 │  ▆▆▆ ▆▆▆   version: 1.2.0    │
 │            env: staging      │
 ╰──────────────────────────────╯
-╭─ ▰ SUCCESS · MyApp ──────────────────────────── 14:32:05.123
+╭─ ▰ SUCCESS · My App ─────────────────────────── 14:32:05.123
 │ Logged in
 ╰───────────────────────────────────────────────────────────────
-╭─ ▰ ERROR · MyApp ────────────────────────────── 14:32:07.210
+╭─ ▰ ERROR · My App ───────────────────────────── 14:32:07.210
 │ Saving failed
 │ ↳ Bad state: boom
 │   #0 SaveFlow.run (save_flow.dart:42)

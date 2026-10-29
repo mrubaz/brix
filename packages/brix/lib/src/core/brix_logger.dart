@@ -8,13 +8,13 @@ enum LogLevel { debug, info, warning, error }
 /// come one after another never run together:
 ///
 /// ```
-/// ╭─ ▰ INFO · Pristine ──────────────────────────── 14:32:05.123
+/// ╭─ ▰ INFO · My App ────────────────────────────── 14:32:05.123
 /// │ Logged in
 /// ╰────────────────────────────────────────────────────────────────
-/// ╭─ ▰ ERROR · Pristine ─────────────────────────── 14:32:07.210
-/// │ Saving step failed
+/// ╭─ ▰ ERROR · My App ───────────────────────────── 14:32:07.210
+/// │ Saving failed
 /// │ ↳ Bad state: boom
-/// │   #0 InspectionStepMixin.saveStepWith (inspection_step_mixin.dart:71)
+/// │   #0 SaveFlow.run (save_flow.dart:42)
 /// ╰────────────────────────────────────────────────────────────────
 /// ```
 ///

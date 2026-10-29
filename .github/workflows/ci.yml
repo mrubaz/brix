@@ -77,6 +77,31 @@ jobs:
       - run: flutter analyze --fatal-infos
       - run: flutter test
 
+  brix_ui:
+    name: brix_ui (widgets)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: packages/brix_ui
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: subosito/flutter-action@v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test example/lib example/test
+      - run: flutter analyze --fatal-infos
+      - run: flutter test
+      - name: Example app
+        working-directory: packages/brix_ui/example
+        run: |
+          flutter pub get
+          flutter analyze --fatal-infos
+          flutter test
+
   brix_getx:
     name: brix_getx (GetX)
     runs-on: ubuntu-24.04

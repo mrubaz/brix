@@ -8,6 +8,8 @@ Local storage that gets the tricky parts right – plain values, secrets, and a 
 - **Moves old plain-text secrets** into secure storage on the first read.
 - **Ready session store:** `BrixSessionStore` is a complete brix `AuthSessionStore` – tokens and the remembered password as secrets, the user as JSON.
 
+![What BrixStorage does with each call](doc/screenshots/storage.png)
+
 ## Install
 
 ```

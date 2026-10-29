@@ -1,0 +1,23 @@
+name: brix_screenshots
+description: Renders the README / pub.dev images of brix, brix_network and brix_storage. Not published.
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.35.0"
+
+dependencies:
+  brix:
+    path: ../../packages/brix
+  brix_network:
+    path: ../../packages/brix_network
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

@@ -104,7 +104,7 @@ void main() {
         client.answer = (_) => ok({});
 
         await api().get(
-          '/inspections',
+          '/items',
           query: {
             'page': 2,
             'status': null,
@@ -115,7 +115,7 @@ void main() {
         final url = client.sent.single.url;
         expect(
           url.toString().split('?').first,
-          'https://api.test/v1/inspections',
+          'https://api.test/v1/items',
         );
         expect(url.queryParametersAll, {
           'page': ['2'],

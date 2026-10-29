@@ -14,6 +14,12 @@ GetX controllers for [brix](https://pub.dev/packages/brix): the text fields, for
 | `BrixDeleteAccountController` | delete account with a code |
 | `BrixSessionController` | splash (`start`) and logout |
 
+| Login | Live password rules | Email code |
+|---|---|---|
+| ![Login](doc/screenshots/login.png) | ![Signup with password rules](doc/screenshots/signup_password_rules.png) | ![Code boxes](doc/screenshots/code_boxes.png) |
+
+Real screens of the [example app](example) – each one only a layout over its controller.
+
 Helpers: `OtpCodeBoxes` (one box per digit), `PasswordRulesTracker` (live password checklist).
 
 All logic lives in [brix](https://pub.dev/packages/brix) – read its README first for the four classes you write (backend, storage, navigator, alerts).
