@@ -113,10 +113,7 @@ void main() {
         );
 
         final url = client.sent.single.url;
-        expect(
-          url.toString().split('?').first,
-          'https://api.test/v1/items',
-        );
+        expect(url.toString().split('?').first, 'https://api.test/v1/items');
         expect(url.queryParametersAll, {
           'page': ['2'],
           'ids': ['1', '2'],
