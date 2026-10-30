@@ -1,6 +1,6 @@
 /// Login details kept for "remember me".
 ///
-/// The password is kept as typed (never trimmed or hashed – the server needs
+/// The password is kept as typed (never trimmed or hashed, the server needs
 /// the real one) and must only be stored in secure storage.
 class RememberedCredentials {
   const RememberedCredentials({

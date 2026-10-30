@@ -13,14 +13,14 @@ class DemoSignup {
   final String password;
 }
 
-/// The backend adapter – the only class that knows your API. This one keeps
-/// users in memory; yours calls REST, Firebase, Supabase, …
+/// The backend adapter, the only class that knows your API. This one keeps
+/// users in memory; yours calls REST, Firebase, Supabase, ...
 ///
 /// Every code is [demoCode].
 class DemoAuthProvider extends AuthProvider<DemoSignup, String> {
   static const demoCode = '123456';
 
-  /// email → password, verified or not.
+  /// email to password, verified or not.
   static final _passwords = <String, String>{'demo@brix.dev': 'Demo@1234'};
   static final _verified = <String>{'demo@brix.dev'};
 

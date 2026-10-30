@@ -14,7 +14,7 @@ import 'network_response.dart';
 ///
 /// - [timeout] for connecting and for the answer (default 20 s);
 /// - a lost connection or timeout is tried again [retries] times, with a
-///   growing pause – only for GET, PUT and DELETE, never for POST, PATCH or
+///   growing pause, only for GET, PUT and DELETE, never for POST, PATCH or
 ///   uploads, so nothing is created twice;
 /// - uploads report their progress; `RequestCancel` stops a call.
 ///

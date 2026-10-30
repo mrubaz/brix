@@ -37,7 +37,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   Future<void> _signIn() async {
     if (!_formKey.currentState!.validate()) {
-      BrixAlert.warning('Fill in your email and password.');
+      BrixDialog.warning('Fill in your email and password.');
       return;
     }
     setState(() => _signingIn = true);
@@ -48,14 +48,14 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
   Future<void> _confirmDelete() async {
-    final delete = await BrixAlert.show<bool>(
+    final delete = await BrixDialog.show<bool>(
       title: 'Delete this photo?',
       message: 'This cannot be undone.',
       icon: const BrixIcon(Icons.delete_outline),
       accent: context.brix.colors.danger,
       buttons: const [
-        BrixAlertButton(label: 'Cancel', value: false),
-        BrixAlertButton.destructive(label: 'Delete', value: true),
+        BrixDialogButton(label: 'Cancel', value: false),
+        BrixDialogButton.destructive(label: 'Delete', value: true),
       ],
     );
     if (delete ?? false) BrixToast.success('Photo deleted');
@@ -151,7 +151,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
             const SizedBox(height: 12),
             const BrixButton(label: 'Disabled', onPressed: null),
             const SizedBox(height: 32),
-            heading('Alerts and toasts'),
+            heading('Dialogs and toasts'),
             const SizedBox(height: 16),
             Wrap(
               spacing: 12,
@@ -160,12 +160,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 BrixButton.outlined(
                   label: 'Warning',
                   expand: false,
-                  onPressed: () => BrixAlert.warning('Check your input.'),
+                  onPressed: () => BrixDialog.warning('Check your input.'),
                 ),
                 BrixButton.outlined(
                   label: 'Error',
                   expand: false,
-                  onPressed: () => BrixAlert.error('No internet connection.'),
+                  onPressed: () => BrixDialog.error('No internet connection.'),
                 ),
                 BrixButton.outlined(
                   label: 'Toast',

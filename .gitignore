@@ -6,3 +6,5 @@ pubspec.lock
 *.iml
 .DS_Store
 docs/
+# The app template ships its run configurations.
+!packages/brix_cli/templates/app/.vscode/

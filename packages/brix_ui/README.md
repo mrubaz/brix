@@ -4,19 +4,19 @@
 [![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-**The basic widgets every app needs – in your colours, your font, your shape. Light and dark from day one.**
+Buttons, text fields, a loader, dialogs and toasts that look like your app. They take every colour, font and size from one theme, so switching to dark mode changes nothing in your screens.
 
-Buttons, text fields, a loader, alerts and toasts. They read everything from one theme, so the same code looks like *your* app – and switching to dark changes nothing in your widgets.
+![One kit in three brands](doc/screenshots/your_brand.png)
 
-![One kit, your brand](doc/screenshots/your_brand.png)
+What you get:
 
-- 🎨 **Your look** – colours, font, corner radius, heights, texts and icons all come from `BrixTheme`. Nothing is hard-coded.
-- 🌗 **Light and dark** – two themes, one widget tree. Theme changes animate.
-- 🧠 **Logic included** – loading buttons ignore double taps, alerts open from a controller and return the tapped value, toasts hide themselves.
-- 👀 **Readable everywhere** – alerts are a solid card on a dimmed screen, so they work on busy, colourful screens. Prefer glass? One switch.
-- 🌍 **Any language** – every built-in text can be replaced.
-- ♿ **Accessible** – 44 pt+ touch targets, labels read with their fields, toasts announced to screen readers.
-- 🪶 **Light** – depends only on Flutter and [brix](https://pub.dev/packages/brix). No state library, no font or sizing package.
+- Your look. Colours, font, corners, heights, texts and icons all come from `BrixTheme`. Nothing is fixed in the widgets.
+- Light and dark from the start. Theme changes animate.
+- The small logic is done. A loading button ignores extra taps, a dialog opens from a controller and tells you which button was tapped, a toast hides by itself.
+- Dialogs you can read on any screen. They are a solid card on a dimmed background. If you like frosted glass, it is one setting.
+- Any language. Every text the kit shows on its own can be replaced.
+- Accessible. Touch targets are at least 44 points, labels are read with their fields and toasts are announced to screen readers.
+- Light on dependencies. Only Flutter and [brix](https://pub.dev/packages/brix), no state library and no font or sizing package.
 
 ## Install
 
@@ -32,7 +32,7 @@ import 'package:brix_ui/brix_ui.dart';
 const brand = Color(0xFF1E7A4C);
 
 MaterialApp(
-  navigatorKey: BrixUi.navigatorKey ??= GlobalKey(), // alerts from anywhere
+  navigatorKey: BrixUi.navigatorKey ??= GlobalKey(), // dialogs from anywhere
   theme: BrixTheme.light(
     colors: const BrixColors.light(primary: brand),
     typography: BrixTypography(fontFamily: 'Inter'),
@@ -99,19 +99,19 @@ AutofillGroup(
 
 ![Text fields](doc/screenshots/text_fields.png)
 
-## Alerts
+## Dialogs
 
 ```dart
-BrixAlert.warning('Enter your email address.');
-BrixAlert.error('No internet connection.');
+BrixDialog.warning('Enter your email address.');
+BrixDialog.error('No internet connection.');
 
-final delete = await BrixAlert.show<bool>(
+final delete = await BrixDialog.show<bool>(
   title: 'Delete this photo?',
   message: 'This cannot be undone.',
   icon: const BrixIcon(Icons.delete_outline),
   buttons: const [
-    BrixAlertButton(label: 'Cancel', value: false),
-    BrixAlertButton.destructive(label: 'Delete', value: true),
+    BrixDialogButton(label: 'Cancel', value: false),
+    BrixDialogButton.destructive(label: 'Delete', value: true),
   ],
 );
 ```
@@ -120,7 +120,60 @@ final delete = await BrixAlert.show<bool>(
 - `show` returns the tapped button's value. Two buttons sit side by side, more are stacked.
 - Long messages scroll; the screen below cannot be tapped.
 
-![Alerts](doc/screenshots/alerts.png)
+![Dialogs](doc/screenshots/dialogs.png)
+
+## Dialog, sheet or toast?
+
+- A dialog sits in the middle of the screen and asks one clear question: "Delete this photo?". The screen behind is dimmed until a button is tapped.
+- A sheet slides up from the bottom and holds more: a list of choices, a short form, a few actions. People drag it down to close it.
+- A toast is a short note that something worked. It hides by itself and never blocks the screen.
+
+## Sheets
+
+```dart
+final folder = await BrixSheet.show<String>(
+  title: 'Move to',
+  builder: (context) => Column(children: [
+    ListTile(
+      title: const Text('Archive'),
+      onTap: () => BrixSheet.close(context, 'archive'),
+    ),
+    ListTile(
+      title: const Text('Trash'),
+      onTap: () => BrixSheet.close(context, 'trash'),
+    ),
+  ]),
+);
+```
+
+- It opens as tall as its content, or at half or full height with `height: BrixSheetHeight.half`.
+- Drag it down or tap outside to close it; `dismissible: false` keeps it open until your code closes it.
+- `show` returns the value you close it with, or `null` when it was dragged away.
+
+![Sheets](doc/screenshots/sheets.png)
+
+## Select
+
+A dropdown that matches your text fields. Up to six options open in a menu under the field, more open in a sheet with a list.
+
+```dart
+BrixSelect<String>(
+  label: 'Country',
+  isRequired: true,
+  value: country,
+  options: const [
+    BrixOption(value: 'pk', label: 'Pakistan'),
+    BrixOption(value: 'gb', label: 'United Kingdom'),
+  ],
+  onChanged: (value) => setState(() => country = value),
+)
+```
+
+- It is typed: `BrixSelect<Country>` gives you a `Country` back.
+- Inside a `Form`, a required select checks that something is chosen.
+- `mode: BrixSelectMode.menu` or `.sheet` picks the way it opens yourself.
+
+![Select](doc/screenshots/select.png)
 
 ## Toasts
 
@@ -135,28 +188,30 @@ Slides in at the top, hides after 3 seconds (or on tap / swipe up), never blocks
 
 ## Make it yours
 
-Everything has a default – change only what you need.
+Everything has a default. Change only what you need.
 
 | What | How |
 |---|---|
-| Colours | `BrixColors.light(primary: …, background: …, danger: …)` and `BrixColors.dark(…)` |
+| Colours | `BrixColors.light(primary: ..., background: ..., danger: ...)` and `BrixColors.dark(...)` |
 | Font and text sizes | `BrixTypography(fontFamily: 'Inter')`, or whole styles: `BrixTypography(title: GoogleFonts.poppins(fontSize: 22))` |
 | Corners and sizes | `BrixShape(radius: 26, buttonHeight: 54, fieldHeight: 54, borderWidth: 1.5)` |
-| Texts (any language) | `BrixUiTexts(ok: 'ٹھیک ہے', errorTitle: 'خرابی', requiredField: '…')` |
+| Texts (any language) | `BrixUiTexts(ok: 'ٹھیک ہے', errorTitle: 'خرابی', requiredField: '...')` |
 | Icons (any set, SVG too) | `BrixUiIcons(success: BrixIcon(CupertinoIcons.check_mark_circled), error: BrixIcon.custom(svg))` |
-| Frosted glass alerts and toasts | `BrixTheme.light(glass: true)` |
-| Every button's look | `BrixButtonStyle(radius: 40, height: 56, upperCase: true, gradient: true, pressedScale: 1, …)` |
-| A completely own button | `buttonBuilder: (context, button) => MyButton(...)` – brix keeps the logic |
-| Every field's look | `BrixTextFieldStyle(border: BrixFieldBorder.underline, labelInside: true, radius: 24, fillColor: …)` |
-| A completely own field | `textFieldBuilder: (context, field) => MyField(...)` – brix keeps the logic |
-| Every alert's place and look | `BrixAlertStyle(alignment: Alignment.bottomCenter, transition: BrixAlertTransition.slideUp, maxWidth: 300, showIcon: false, buttonsVertical: true, …)` |
-| A completely own alert card | `alertBuilder: (context, alert) => MyCard(...)` – brix keeps the dimmed screen and the returned value |
-| Toast place, time and look | `BrixToastStyle(position: BrixToastPosition.bottom, duration: Duration(seconds: 2), animationDuration: …, …)` – top, centre or bottom |
-| A completely own toast | `toastBuilder: (context, toast) => MyToast(...)` – brix keeps the timer and swiping |
-| Spinner | `BrixLoaderStyle(radius: 14, color: …)`, or `loaderBuilder: (context, loader) => MySpinner(...)` – loading buttons use it too |
-| Button animation speed | `BrixButtonStyle(pressDuration: …, fadeDuration: …)` |
-| Required marker and errors | `BrixTextFieldStyle(requiredMarker: ' (required)', requiredMarkerStyle: …, errorStyle: …, errorMaxLines: 2)` |
-| Dimmed screen behind alerts | `BrixAlertStyle(scrimColor: …)` – transparent to keep the screen as it is |
+| Frosted glass dialogs and toasts | `BrixTheme.light(glass: true)` |
+| Every button's look | `BrixButtonStyle(radius: 40, height: 56, upperCase: true, gradient: true, pressedScale: 1, ...)` |
+| A completely own button | `buttonBuilder: (context, button) => MyButton(...)`, brix keeps the logic |
+| Every field's look | `BrixTextFieldStyle(border: BrixFieldBorder.underline, labelInside: true, radius: 24, fillColor: ...)` |
+| A completely own field | `textFieldBuilder: (context, field) => MyField(...)`, brix keeps the logic |
+| Every dialog's place and look | `BrixDialogStyle(alignment: Alignment.bottomCenter, transition: BrixDialogTransition.slideUp, maxWidth: 300, showIcon: false, buttonsVertical: true, ...)` |
+| A completely own dialog card | `dialogBuilder: (context, dialog) => MyCard(...)`, brix keeps the dimmed screen and the returned value |
+| Toast place, time and look | `BrixToastStyle(position: BrixToastPosition.bottom, duration: Duration(seconds: 2), animationDuration: ..., ...)`, top, centre or bottom |
+| A completely own toast | `toastBuilder: (context, toast) => MyToast(...)`, brix keeps the timer and swiping |
+| Sheets | `BrixSheetStyle(radius: 16, showGrabber: false, backgroundColor: ...)`, or `sheetBuilder: (context, sheet) => MySheet(...)` |
+| Select menus and sheets | `BrixSelectStyle(menuRadius: 14, selectedColor: ...)`, or `selectBuilder: (context, select) => MyPicker(...)`; the field follows your text field style |
+| Spinner | `BrixLoaderStyle(radius: 14, color: ...)`, or `loaderBuilder: (context, loader) => MySpinner(...)`, loading buttons use it too |
+| Button animation speed | `BrixButtonStyle(pressDuration: ..., fadeDuration: ...)` |
+| Required marker and errors | `BrixTextFieldStyle(requiredMarker: ' (required)', requiredMarkerStyle: ..., errorStyle: ..., errorMaxLines: 2)` |
+| Dimmed screen behind dialogs | `BrixDialogStyle(scrimColor: ...)`, transparent to keep the screen as it is |
 
 ```dart
 BrixTheme.light(
@@ -169,7 +224,7 @@ BrixTheme.light(
 
 ### Buttons your way
 
-Three levels – use the one you need:
+Three levels: use the one you need:
 
 ```dart
 // 1. Every button in the app.
@@ -180,7 +235,7 @@ BrixTheme.light(
 // 2. One button.
 BrixButton(label: 'Skip', style: const BrixButtonStyle(height: 40), onPressed: skip)
 
-// 3. Your own widget – brix still blocks double taps, plays the haptic and
+// 3. Your own widget. brix still blocks double taps, plays the haptic and
 //    disables it while loading.
 BrixTheme.light(
   buttonBuilder: (context, button) => MyButton(
@@ -192,7 +247,7 @@ BrixTheme.light(
 )
 ```
 
-Alerts use your button too, so the whole app matches.
+Dialogs use your button too, so the whole app matches.
 
 ![Default, theme style and own builder](doc/screenshots/buttons_custom.png)
 
@@ -209,7 +264,7 @@ BrixTheme.light(
 // 2. One field.
 BrixTextField(label: 'Notes', maxLines: 4, style: const BrixTextFieldStyle(radius: 20))
 
-// 3. Your own widget – pass brix's values to your TextFormField and the
+// 3. Your own widget. Pass brix's values to your TextFormField and the
 //    required check, password show / hide and Next / Done keep working.
 BrixTheme.light(
   textFieldBuilder: (context, field) => TextFormField(
@@ -227,14 +282,14 @@ BrixTheme.light(
 
 ![Default, theme style and own builder](doc/screenshots/text_fields_custom.png)
 
-### Alerts and toasts your way
+### Dialogs and toasts your way
 
 ```dart
 BrixTheme.light(
   // Anywhere on the screen: centre (default), a bottom sheet, a top banner.
-  alert: const BrixAlertStyle(
+  dialog: const BrixDialogStyle(
     alignment: Alignment.bottomCenter,
-    transition: BrixAlertTransition.slideUp, // scale, fade, slideUp, slideDown
+    transition: BrixDialogTransition.slideUp, // scale, fade, slideUp, slideDown
     margin: EdgeInsets.all(12),
     showIcon: false,
     textAlign: TextAlign.start,
@@ -242,23 +297,23 @@ BrixTheme.light(
   ),
   toast: const BrixToastStyle(position: BrixToastPosition.bottom),
 
-  // Your own cards – brix still dims the screen, animates, returns the
+  // Your own cards. brix still dims the screen, animates, returns the
   // tapped value, runs the toast timer and handles swipes.
-  alertBuilder: (context, alert) => MyAlertCard(
-    title: alert.title,
-    message: alert.message,
+  dialogBuilder: (context, dialog) => MyDialogCard(
+    title: dialog.title,
+    message: dialog.message,
     actions: [
-      for (final button in alert.buttons)
-        MyAction(button.label, onTap: () => alert.onPressed(button.value)),
+      for (final button in dialog.buttons)
+        MyAction(button.label, onTap: () => dialog.onPressed(button.value)),
     ],
   ),
   toastBuilder: (context, toast) => MySnack(toast.message, onUndo: toast.dismiss),
 )
 ```
 
-One alert only: `BrixAlert.show(style: …, builder: …)`.
+One dialog only: `BrixDialog.show(style: ..., builder: ...)`.
 
-![Default, theme style, own alert card and own bottom toast](doc/screenshots/alerts_toasts_custom.png)
+![Default, theme style, own dialog card and own bottom toast](doc/screenshots/dialogs_toasts_custom.png)
 
 Read the tokens in your own widgets too, so they match:
 
@@ -269,7 +324,7 @@ Text('Hello', style: brix.typography.body.copyWith(color: brix.colors.text));
 
 ## With brix auth
 
-`BrixUiFeedback` is a ready [brix](https://pub.dev/packages/brix) `AuthFeedback` – failures and warnings as alerts, success messages as a toast. No adapter to write:
+`BrixUiFeedback` is a ready [brix](https://pub.dev/packages/brix) `AuthFeedback`: failures and warnings as dialogs, success messages as a toast. No adapter to write:
 
 ```dart
 LoginFlow(
@@ -280,13 +335,11 @@ LoginFlow(
 )
 ```
 
-When the backend sends no message (e.g. no connection), brix's default text is shown, so an alert is never empty.
+When the backend sends no message (e.g. no connection), brix's default text is shown, so a dialog is never empty.
 
 ## Example
 
-[`example/`](example) is every widget on one screen – switch light / dark and three brands live. Default is brix's own look; Forest uses only style settings (pill gradient buttons, underlined fields, bottom-sheet alerts, bottom toasts); Sunset draws its own buttons and toasts with builders, uses frosted glass and Urdu texts. See [`example/lib/brands.dart`](example/lib/brands.dart).
-
-![The example in three brands](doc/screenshots/example.png)
+[`example/`](example) shows every widget on one screen. Switch light and dark and three brands live; see [`example/lib/brands.dart`](example/lib/brands.dart) for how each brand is set up.
 
 ## Screenshots
 
@@ -294,11 +347,10 @@ The images on this page are rendered from the real widgets by `tool/screenshots_
 
 ```
 flutter test tool/screenshots_test.dart --update-goldens            # widgets
-cd example && flutter test tool/screenshots_test.dart --update-goldens  # example screen
 ```
 
 ## More brix
 
-brix_ui is part of [brix](https://github.com/mrubaz/brix) – auth, account, network, storage and GetX blocks that work together, each its own package.
+brix_ui is part of [brix](https://github.com/mrubaz/brix): auth, account, network, storage and GetX blocks that work together, each its own package.
 
 MIT licensed.

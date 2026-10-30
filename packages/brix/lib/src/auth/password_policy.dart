@@ -55,7 +55,7 @@ class PasswordPolicy {
   final bool requireLowercase;
   final bool requireDigit;
 
-  /// Anything that is not a letter, digit or space counts (`@`, `_`, `-`…).
+  /// Anything that is not a letter, digit or space counts (`@`, `_`, `-`...).
   final bool requireSymbol;
 
   static final _uppercase = RegExp(r'[A-Z]');

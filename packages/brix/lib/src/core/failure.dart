@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Why something did not work. Every block (auth, network, account, …)
+/// Why something did not work. Every block (auth, network, account, ...)
 /// reports problems with these classes instead of plain strings, so an app
 /// can react to the kind of problem, not only show a text.
 ///
@@ -17,7 +17,7 @@ abstract class Failure {
        });
 
   /// Texts from the backend, ready to show. Empty when the backend gave
-  /// none – then show [displayMessage] (or the app's own text).
+  /// none, then show [displayMessage] (or the app's own text).
   final List<String> messages;
 
   /// Problems per form field, e.g. `{'email': ['Already registered']}`, so
@@ -25,7 +25,7 @@ abstract class Failure {
   /// sent none.
   final Map<String, List<String>> fieldErrors;
 
-  /// The first problem for [field], or null – handy as a field's
+  /// The first problem for [field], or null, handy as a field's
   /// `errorText`.
   String? fieldError(String field) => fieldErrors[field]?.firstOrNull;
 

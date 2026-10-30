@@ -32,7 +32,7 @@ void main() {
     await shoot(
       tester,
       '$_brix/console.png',
-      Terminal(title: 'Debug console – BrixLogger', lines: lines),
+      Terminal(title: 'Debug console, BrixLogger', lines: lines),
       size: const Size(720, 600),
     );
   });
@@ -94,7 +94,7 @@ void main() {
     await shoot(
       tester,
       '$_network/network_log.png',
-      Terminal(title: 'Debug console – PrettyNetworkLogger', lines: lines),
+      Terminal(title: 'Debug console, PrettyNetworkLogger', lines: lines),
       size: const Size(720, 760),
     );
   });
@@ -109,7 +109,7 @@ void main() {
   });
 }
 
-/// What `BrixStorage` does with each call – drawn with the real API names.
+/// What `BrixStorage` does with each call, drawn with the real API names.
 class _StorageDiagram extends StatelessWidget {
   const _StorageDiagram();
 
@@ -162,7 +162,7 @@ class _StorageDiagram extends StatelessWidget {
             const SizedBox(height: 16),
             _box(
               title: 'Secrets',
-              subtitle: 'Keychain · Keystore',
+              subtitle: 'Keychain / Keystore',
               color: const Color(0xFF34A853),
               lines: const ['token', 'refresh token', 'remembered password'],
               icon: Icons.lock_outline,
@@ -209,7 +209,7 @@ class _StorageDiagram extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontFamily: 'Roboto',
+                  fontFamily: 'SF Pro',
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: color,
@@ -221,7 +221,7 @@ class _StorageDiagram extends StatelessWidget {
             Text(
               subtitle,
               style: const TextStyle(
-                fontFamily: 'Roboto',
+                fontFamily: 'SF Pro',
                 fontSize: 12,
                 color: Color(0xFF6C6C70),
               ),
@@ -277,7 +277,7 @@ class _Badge extends StatelessWidget {
         'BrixStorage',
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontFamily: 'Roboto',
+          fontFamily: 'SF Pro',
           fontSize: 17,
           fontWeight: FontWeight.w700,
           color: Colors.white,
@@ -306,7 +306,7 @@ class _Note extends StatelessWidget {
             child: Text(
               text,
               style: const TextStyle(
-                fontFamily: 'Roboto',
+                fontFamily: 'SF Pro',
                 fontSize: 13,
                 height: 1.3,
                 color: Color(0xFF3A3A3C),

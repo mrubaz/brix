@@ -1,6 +1,6 @@
 name: brix_ui
-description: Basic Flutter widgets that follow your theme – buttons, text fields, loader, alerts and toasts, with light and dark theme tokens.
-version: 1.0.0
+description: "Basic Flutter widgets that follow your theme: buttons, text fields, loader, dialogs and toasts, with light and dark theme tokens."
+version: 1.1.0
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_ui
 issue_tracker: https://github.com/mrubaz/brix/issues
 topics:
@@ -24,23 +24,23 @@ dev_dependencies:
     sdk: flutter
 
 screenshots:
-  - description: One kit in three brands – default, own colours with round corners, a dark brand with sharp corners.
+  - description: "One kit in three brands: default, own colours with round corners, a dark brand with sharp corners."
     path: doc/screenshots/your_brand.png
-  - description: "The example app: one screen in three brands – Default, Forest, Sunset (own button widgets, dark)."
-    path: doc/screenshots/example.png
-  - description: The same widgets in light and dark.
-    path: doc/screenshots/light_dark.png
-  - description: Filled, gradient, outlined, destructive, loading and disabled buttons.
+  - description: "Buttons: filled, gradient, outlined, destructive, loading and disabled."
     path: doc/screenshots/buttons.png
-  - description: "Buttons three ways: default, BrixButtonStyle in the theme, the app's own buttonBuilder."
-    path: doc/screenshots/buttons_custom.png
-  - description: Text fields with label, required error, password and read-only.
+  - description: "Text fields with a label, a required error, a password and a read only field."
     path: doc/screenshots/text_fields.png
-  - description: "Text fields three ways: default, underline with the label inside, the app's own textFieldBuilder."
-    path: doc/screenshots/text_fields_custom.png
-  - description: Warning, error and confirm alerts on a busy screen.
-    path: doc/screenshots/alerts.png
-  - description: "Alerts and toasts your way: default, a bottom sheet from BrixAlertStyle, the app's own alertBuilder card, a bottom toast from toastBuilder."
-    path: doc/screenshots/alerts_toasts_custom.png
-  - description: Success toasts at the top of the screen.
+  - description: "A select: filled in, a menu for a few options, a sheet for many."
+    path: doc/screenshots/select.png
+  - description: "Sheets: a list of choices, a short form, half height in dark mode."
+    path: doc/screenshots/sheets.png
+  - description: "Dialogs over a real screen: a warning, an error and a question that returns a value."
+    path: doc/screenshots/dialogs.png
+  - description: "Success toasts at the top of the screen."
     path: doc/screenshots/toast.png
+  - description: "Buttons three ways: default, a theme style, the app's own widget."
+    path: doc/screenshots/buttons_custom.png
+  - description: "Text fields three ways: default, underlined with the label inside, the app's own widget."
+    path: doc/screenshots/text_fields_custom.png
+  - description: "Dialogs and toasts your way: default, a plain style, the app's own card, a bottom toast."
+    path: doc/screenshots/dialogs_toasts_custom.png

@@ -1,0 +1,7 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    # A Flutter app with its own analysis (see templates/app).
+    - templates/**
+    - build/**

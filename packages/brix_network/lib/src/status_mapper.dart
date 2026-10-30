@@ -8,10 +8,10 @@ typedef StatusMapper = Failure Function(int statusCode, ApiReply reply);
 
 /// The default mapping.
 abstract final class StandardStatus {
-  /// - 400, 409, 422 → `ValidationFailure` (with field errors)
-  /// - 401 → `UnauthorizedFailure` (session ended → logout)
-  /// - 408, 504 → `NetworkFailure` (timed out)
-  /// - everything else (403, 404, 5xx, a 200 with `success: false`) →
+  /// - 400, 409, 422 to `ValidationFailure` (with field errors)
+  /// - 401 to `UnauthorizedFailure` (session ended to logout)
+  /// - 408, 504 to `NetworkFailure` (timed out)
+  /// - everything else (403, 404, 5xx, a 200 with `success: false`) to
   ///   `ServerFailure` with the status code
   static Failure map(int statusCode, ApiReply reply) => switch (statusCode) {
     400 || 409 || 422 => ValidationFailure(

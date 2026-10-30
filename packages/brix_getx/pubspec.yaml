@@ -1,5 +1,5 @@
 name: brix_getx
-description: GetX controllers for brix – login, signup, email code, password reset, profile and account screens with text fields, form key and loading state ready.
+description: "GetX controllers for brix: login, signup, email code, password reset, profile and account screens with text fields, form key and loading state ready."
 version: 1.0.2
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_getx
 issue_tracker: https://github.com/mrubaz/brix/issues
@@ -26,9 +26,7 @@ dev_dependencies:
     sdk: flutter
 
 screenshots:
-  - description: "Login screen of the example app on BrixLoginController."
-    path: doc/screenshots/login.png
-  - description: "Signup with the live password checklist (PasswordRulesTracker)."
-    path: doc/screenshots/signup_password_rules.png
-  - description: "Email code boxes with resend countdown (BrixOtpController)."
-    path: doc/screenshots/code_boxes.png
+  - description: "Login, signup with live password rules and the email code, each screen on a brix_getx controller."
+    path: doc/screenshots/app_sign_in.png
+  - description: "Home, profile and delete account screens on brix_getx controllers."
+    path: doc/screenshots/app_account.png

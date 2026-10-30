@@ -1,0 +1,13 @@
+# Develop the template against the brix in this repo. `brix create` does
+# not copy this file.
+dependency_overrides:
+  brix:
+    path: ../../../brix
+  brix_getx:
+    path: ../../../brix_getx
+  brix_network:
+    path: ../../../brix_network
+  brix_storage:
+    path: ../../../brix_storage
+  brix_ui:
+    path: ../../../brix_ui

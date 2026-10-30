@@ -1,0 +1,4 @@
+# Made with `brix create`. The brix CLI reads this file to know where new
+# files go. Folders follow the Flutter architecture guide:
+# https://docs.flutter.dev/app-architecture/case-study
+structure: flutter

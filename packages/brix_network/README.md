@@ -1,14 +1,20 @@
 # brix_network
 
-REST calls without the boilerplate. Every call returns a `Result` – the data as your model, or a `Failure` with the backend's messages and field errors. No exceptions to catch, no global error list.
+REST calls without the boilerplate. Every call returns a `Result`: either your data as a model, or a `Failure` with the backend's messages and field errors. There are no exceptions to catch and no global error list.
 
-- **Dio by default**, any client possible (`http`, `chopper`, a test fake).
-- **Any REST backend**: ready readers for `{success, message, data, errors}` APIs (Node / Express, NestJS, Laravel, custom), FastAPI and Django REST – or your own.
-- **Safe**: retries only where repeating is harmless (GET, PUT, DELETE), several 401s log out once, passwords / tokens / API keys never reach the log.
-- **Files too**: `download` gives a PDF / image / spreadsheet as bytes with its type and name.
-- **Readable console log** in debug builds, nothing in release.
+It uses Dio by default, and you can plug in any other client (`http`, `chopper` or a fake in tests).
 
-For Firebase or Supabase you don't need this package – use their SDKs with [brix](https://pub.dev/packages/brix).
+It reads common API shapes out of the box: `{success, message, data, errors}` style APIs (Node, NestJS, Laravel and most custom ones), FastAPI and Django REST. For anything else you write your own small reader.
+
+It is careful. Only safe requests are retried (GET, PUT and DELETE), many 401 answers at once log out only once, and passwords, tokens and API keys never reach the log.
+
+It handles files too. `download` gives you a PDF, image or spreadsheet as bytes, with its type and file name.
+
+In debug builds every call is printed in a readable box; in release builds nothing is printed.
+
+![PrettyNetworkLogger in the debug console](doc/screenshots/network_log.png)
+
+Using Firebase or Supabase? You do not need this package. Use their SDKs together with [brix](https://pub.dev/packages/brix).
 
 ### What happens in a call
 
@@ -83,7 +89,7 @@ final Result<DownloadedFile> pdf = await api.download(
 await api.get('https://maps.example.com/geocode', query: {'key': mapsKey}, withToken: false);
 ```
 
-Models read their JSON with brix's `Json` – no crashes on a missing key or a number sent as text:
+Models read their JSON with brix's `Json`, no crashes on a missing key or a number sent as text:
 
 ```dart
 factory User.fromJson(Json json) => User(
@@ -118,7 +124,7 @@ TextFormField(decoration: InputDecoration(errorText: failure?.fieldError('email'
 | 403, 404, 5xx, `success: false` | `ServerFailure(statusCode)` |
 | cancelled | `CancelledFailure` (usually show nothing) |
 
-Change it with `statusMapper: (status, reply) => …` (call `StandardStatus.map` for the rest).
+Change it with `statusMapper: (status, reply) => ...` (call `StandardStatus.map` for the rest).
 
 ## Your backend's answer shape
 
@@ -143,11 +149,9 @@ ResponseReader.custom((response) => ApiReply(
 
 ## Console log
 
-Every call in one box – green when it worked, yellow for a 4xx, red for a 5xx or no connection. Passwords and tokens are hidden:
+Every call gets its own box. It is green when the call worked, yellow for a 4xx answer and red for a 5xx or no connection (see the picture at the top). Passwords and tokens are hidden.
 
-![PrettyNetworkLogger in the debug console](doc/screenshots/network_log.png)
-
-`PrettyNetworkLogger(colors: false)` for the Xcode console, `hiddenKeys: {'pin_code'}` for more secrets, `maxLines` to cut bodies. Or send logs elsewhere: `class MyLogger extends NetworkLogger { void log(NetworkLogEntry entry) { … } }`.
+`PrettyNetworkLogger(colors: false)` for the Xcode console, `hiddenKeys: {'pin_code'}` for more secrets, `maxLines` to cut bodies. Or send logs elsewhere: `class MyLogger extends NetworkLogger { void log(NetworkLogEntry entry) { ... } }`.
 
 ## Cancel a call
 

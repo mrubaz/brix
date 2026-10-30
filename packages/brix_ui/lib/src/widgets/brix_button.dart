@@ -10,10 +10,10 @@ import 'brix_loader.dart';
 
 /// The app's main button, styled from the theme.
 ///
-/// - `BrixButton` – filled with `colors.primary` (or a primary → secondary
+/// - `BrixButton`, filled with `colors.primary` (or a primary to secondary
 ///   gradient with [gradient]).
-/// - `BrixButton.outlined` – the quieter second action (Back, Cancel).
-/// - `BrixButton.destructive` – filled with `colors.danger` (Delete, Log out).
+/// - `BrixButton.outlined`, the quieter second action (Back, Cancel).
+/// - `BrixButton.destructive`, filled with `colors.danger` (Delete, Log out).
 ///
 /// While [isLoading] it shows a spinner, keeps its size and ignores taps,
 /// so a request cannot be sent twice. `onPressed: null` disables it.
@@ -77,7 +77,7 @@ class BrixButton extends StatefulWidget {
   /// Optional icon before the label.
   final IconData? icon;
 
-  /// Filled button only: primary → secondary gradient instead of a flat
+  /// Filled button only: primary to secondary gradient instead of a flat
   /// colour. `null` follows the style (default: flat).
   final bool? gradient;
 
@@ -109,7 +109,7 @@ class _BrixButtonState extends State<BrixButton> {
   @override
   void didUpdateWidget(BrixButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Loading starts on tap, before the finger lifts – drop the press.
+    // Loading starts on tap, before the finger lifts, drop the press.
     if (!_enabled) _pressed = false;
   }
 

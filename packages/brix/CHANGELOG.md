@@ -23,8 +23,8 @@
 
 ## 1.1.0
 
-- `Json`: read decoded JSON from any backend into your models without crashes – safe conversions (`"12"` → 12, epoch → `DateTime`), paths (`profile.firstName`), lists, fallbacks, and `Json.onProblem` to see missing or wrong keys while developing.
-- `Failure.fieldErrors` and `fieldError(field)`: problems per form field; `ValidationFailure(fieldErrors: …)`.
+- `Json`: read decoded JSON from any backend into your models without crashes; safe conversions (`"12"` to 12, epoch to `DateTime`), paths (`profile.firstName`), lists, fallbacks, and `Json.onProblem` to see missing or wrong keys while developing.
+- `Failure.fieldErrors` and `fieldError(field)`: problems per form field; `ValidationFailure(fieldErrors: ...)`.
 
 ## 1.0.1
 
@@ -39,4 +39,4 @@ First public release.
 - **Account:** `SessionFlow` (app start, logout), `ProfileFlow` (load, save, avatar), `ChangePasswordFlow`, `DeleteAccountFlow` (confirm, password or code).
 - **App contracts:** `AuthProvider`, `AccountProvider`, `AuthSessionStore`, `AuthNavigator`, `AuthFeedback`, `AuthCapabilities`. Optional methods have default bodies, so later versions do not break your classes.
 - **Switch-safe values:** `AuthWarning`, `PasswordRule`, `OtpPurpose` are classes with a default text; switch with a default case.
-- **Testing:** `package:brix/testing.dart` – `FakeAuthProvider`, `FakeAccountProvider`, `InMemoryAuthSessionStore`, `RecordingAuthNavigator`, `RecordingAuthFeedback`.
+- **Testing:** `package:brix/testing.dart`: `FakeAuthProvider`, `FakeAccountProvider`, `InMemoryAuthSessionStore`, `RecordingAuthNavigator`, `RecordingAuthFeedback`.

@@ -1,6 +1,6 @@
 import '../../auth.dart';
 
-/// Store that keeps everything in fields – for tests.
+/// Store that keeps everything in fields, for tests.
 class InMemoryAuthSessionStore<TUser> extends AuthSessionStore<TUser> {
   AuthSession<TUser>? session;
   String? pendingIdentifier;

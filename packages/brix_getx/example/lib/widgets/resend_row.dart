@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-/// "Resend code" – disabled with a countdown until it may be used again.
+/// "Resend code", disabled with a countdown until it may be used again.
 class ResendRow extends StatelessWidget {
   const ResendRow({
     super.key,

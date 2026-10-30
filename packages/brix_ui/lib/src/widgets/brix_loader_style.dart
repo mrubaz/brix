@@ -2,7 +2,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/painting.dart';
 
-/// How `BrixLoader`s look. Set it in `BrixTheme(loader: …)`; a loader's
+/// How `BrixLoader`s look. Set it in `BrixTheme(loader: ...)`; a loader's
 /// own `radius` / `color` win.
 class BrixLoaderStyle {
   const BrixLoaderStyle({this.radius, this.color});

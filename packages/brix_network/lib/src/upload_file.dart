@@ -1,5 +1,5 @@
 /// A file in a multipart upload. The [field] name is whatever your backend
-/// expects (`avatar`, `files`, `signature`, …).
+/// expects (`avatar`, `files`, `signature`, ...).
 class UploadFile {
   /// A file on disk (mobile, desktop).
   const UploadFile.path(

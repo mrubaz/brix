@@ -23,7 +23,7 @@ class LoginFlow<TUser> extends AuthFormFlow<TUser> {
   final AuthSessionStore<TUser> _store;
   final AuthNavigator _navigator;
 
-  /// Runs after the session is saved, before home opens – for app state
+  /// Runs after the session is saved, before home opens, for app state
   /// that lives outside the store (e.g. a cached current user).
   final FutureOr<void> Function(AuthSession<TUser> session)? onLoggedIn;
 

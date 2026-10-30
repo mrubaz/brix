@@ -8,70 +8,56 @@
 [![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**The building blocks every Flutter app needs – ready, tested, and yours to style.**
+Most Flutter apps start with the same work: a login screen, signup with an email code, a forgot password flow, a profile page, API calls, saving the session and showing errors. brix does that part for you, so you can spend your time on the screens that make your app different.
 
-Every app writes the same things again: login, signup, email codes, password reset, profile, logout, API calls, local storage, error messages, buttons, fields and alerts. brix gives you all of that once, done right, so you only build what makes your app different.
+![An app made with brix](packages/brix_cli/doc/screenshots/app_sign_in.png)
 
-![brix_ui – one kit, your brand](packages/brix_ui/doc/screenshots/your_brand.png)
+It works with any backend. REST APIs (Node, Laravel, Django, FastAPI and so on), Firebase and Supabase all fit; you write one small class that talks to yours.
 
-- 🔌 **Any backend** – REST (Node, FastAPI, Django, Laravel, …), Firebase, Supabase. You write one small adapter.
-- 🧩 **Any state management** – the logic is pure Dart. GetX controllers are ready; Riverpod, Bloc, Provider and `setState` work with a few lines.
-- 🎨 **Your look** – brix_ui's widgets take your colours, font, shape, texts and icons, in light and dark. Or skip it and use your own widgets: the logic never depends on them.
-- 🛡️ **Safe by default** – passwords never trimmed or logged, double taps ignored, secrets in Keychain / Keystore and hidden in logs, one logout for many 401s.
-- 🔄 **Updates don't break your app** – new features arrive with defaults; new values work with a default `switch` case.
-- 📦 **Take only what you need** – every block is its own package.
+It works with any state library. The logic is plain Dart. Ready GetX controllers come in brix_getx, and Riverpod, Bloc, Provider or `setState` need only a few lines.
 
-## Packages
+Your app keeps its own look. brix_ui gives you buttons, fields, dialogs and toasts that take your colours, font and shape, in light and dark. You can also skip it and use your own widgets.
 
-| Package | What it gives you | Use it when |
-|---|---|---|
-| [**brix**](packages/brix) | Login, signup, email code, forgot / reset password, app start + logout, profile, change password, delete account. `Result`, `Failure`, `Json`, `BrixLogger`. | Always – it is the core. Pure Dart. |
-| [**brix_getx**](packages/brix_getx) | A GetX controller for every brix screen: text fields, form key, loading state, code boxes, password checklist. One import includes brix. | Your app uses GetX. |
-| [**brix_network**](packages/brix_network) | REST calls on Dio that return a `Result`; readers for common API shapes, field errors, uploads, downloads, a readable log. | Your backend is a REST API. |
-| [**brix_storage**](packages/brix_storage) | Values and secrets (Keychain / Keystore) that survive reinstalls and broken keystores safely; a ready session store for brix. | Always useful – saves writing your own session store. |
-| [**brix_ui**](packages/brix_ui) | Buttons, text fields, loader, alerts and toasts from one theme – light and dark, your colours, font, shape, texts and icons. A ready `AuthFeedback`. | You want ready widgets in your own look. |
+Updates are safe. New features come with defaults, so a new version does not ask you to change your code.
 
-```
-flutter pub add brix_getx brix_network brix_storage brix_ui   # GetX app with a REST backend
-flutter pub add brix                                          # any other state library / Firebase / Supabase
-```
+## The packages
 
-Your app gets only the packages you add. Examples and the other packages are never built into it.
+Take only what you need. Each one is its own package.
 
-## Everything included
-
-| Area | What you get |
+| Package | What it does |
 |---|---|
-| Auth | login with remember me, signup, email code (boxes, paste / autofill, resend countdown), forgot / reset password, password rules with a live checklist |
-| Account | app start (splash), logout, profile + avatar, change password, delete account with a code |
-| Errors | `Result` instead of exceptions; backend messages, else plain default texts; form errors per field (`failure.fieldError('email')`) |
-| Network | Dio by default (any client), uploads with progress, file / PDF downloads, cancel, retries only where safe, one logout for many 401s, readers for envelope / FastAPI / Django REST APIs |
-| Storage | values + secrets, reinstall-safe Keychain, broken Keystore never crashes, ready session store |
-| UI | theme tokens (colours, typography, shape, texts, icons) for light and dark; button, text field, loader, alerts that return a value, toasts; optional frosted glass |
-| JSON | `Json` reads any backend's data into models without crashes |
-| Logs | readable console for your messages and every API call, secrets hidden, off in release |
-| Tests | fakes for every contract (`package:brix/testing.dart`), `MemoryStore`, fake network client examples |
-| Updates | switch-safe values and default method bodies – new versions don't break your app |
+| [brix](packages/brix) | The logic: login, signup, email code, forgot and reset password, app start, logout, profile, change password, delete account. Also `Result`, `Failure`, `Json` and `BrixLogger`. Pure Dart. |
+| [brix_getx](packages/brix_getx) | A GetX controller for every brix screen, with the text fields, form key and loading state ready. |
+| [brix_network](packages/brix_network) | REST calls on Dio that return a `Result`, with readers for common API shapes, field errors, uploads and downloads. |
+| [brix_storage](packages/brix_storage) | Values and secrets (Keychain and Keystore) that survive reinstalls, plus a ready session store. |
+| [brix_ui](packages/brix_ui) | Buttons, text fields, a select, dialogs, sheets, toasts and a loader from one theme, light and dark. |
+| [brix_cli](packages/brix_cli) | `brix create my_app` makes a new app with all of the above already wired. Not on pub.dev yet. |
 
-## How the pieces fit
+```
+flutter pub add brix_getx brix_network brix_storage brix_ui
+```
+
+Using another state library, Firebase or Supabase? Start with `flutter pub add brix`.
+
+## How it fits together
 
 ```mermaid
 flowchart LR
-    UI["Your screens<br/>(brix_ui widgets or your own)"] --> C["brix_getx controller<br/>(or your Bloc / Riverpod / setState)"]
-    C --> F["brix flow<br/>LoginFlow, SignupFlow, …"]
-    F --> A["Your adapter<br/>AuthProvider / AccountProvider"]
-    A --> N["brix_network<br/>BrixApi (Dio)"]
+    UI["Your screens<br/>(brix_ui or your own widgets)"] --> C["Controller<br/>(brix_getx, or Bloc / Riverpod / setState)"]
+    C --> F["brix flow<br/>LoginFlow, SignupFlow, and so on"]
+    F --> A["Your backend class<br/>AuthProvider / AccountProvider"]
+    A --> N["brix_network<br/>BrixApi"]
     A --> S["Firebase / Supabase SDK"]
     N --> B[("Your REST API")]
-    F --> ST["brix_storage<br/>BrixSessionStore (or your own)"]
-    ST --> K[("Keychain / Keystore<br/>+ preferences")]
-    F --> NAV["Your navigator<br/>AuthNavigator"]
-    F --> FB["Alerts and toasts<br/>BrixUiFeedback (or your own)"]
+    F --> ST["brix_storage<br/>BrixSessionStore"]
+    ST --> K[("Keychain / Keystore<br/>and preferences")]
+    F --> NAV["Your navigation<br/>AuthNavigator"]
+    F --> FB["Dialogs and toasts<br/>BrixUiFeedback"]
 ```
 
-You write the small classes once (backend, navigation); storage and alerts come ready with `brix_storage` and `brix_ui`. Every flow uses them. `BrixLogger` (in brix) and the network log give one readable console.
+You write a few small classes once: one for your backend and one for navigation. Storage and dialogs come ready from brix_storage and brix_ui. Every flow then uses them.
 
-## A login in a few lines (GetX + REST)
+## A login with GetX and a REST API
 
 ```dart
 // 1. The API, once.
@@ -110,7 +96,7 @@ final store = BrixSessionStore<User>(
   userFromJson: User.fromJson,
 );
 
-// 4. The screen's controller – alerts and toasts from brix_ui.
+// 4. The screen's controller, with dialogs and toasts from brix_ui.
 Get.put(BrixLoginController<User>(LoginFlow(
   provider: MyAuth(),
   store: store,
@@ -119,6 +105,8 @@ Get.put(BrixLoginController<User>(LoginFlow(
 )));
 ```
 
+And the screen:
+
 ```dart
 // 5. The screen.
 BrixTextField(controller: c.identifierController, label: 'Email', isRequired: true),
@@ -126,11 +114,11 @@ BrixTextField(controller: c.passwordController, label: 'Password', isPassword: t
 Obx(() => BrixButton(label: 'Log in', isLoading: c.isSubmitting.value, onPressed: c.login)),
 ```
 
-Remember me, the double-tap guard, saving the session, error alerts and opening home are done.
+That is the whole login. Remember me, ignoring double taps, saving the session, showing errors and opening the home screen are already handled.
 
 ## Your look, light and dark
 
-brix_ui reads everything from one `BrixTheme`, so the same widgets look like your app – and dark mode needs no widget change.
+brix_ui reads everything from one `BrixTheme`, so the same widgets look like your app, and dark mode needs no change to your screens.
 
 ```dart
 MaterialApp(
@@ -139,66 +127,42 @@ MaterialApp(
 );
 ```
 
-![Light and dark](packages/brix_ui/doc/screenshots/light_dark.png)
+![One kit in three brands](packages/brix_ui/doc/screenshots/your_brand.png)
 
-Alerts are a solid card on a dimmed screen, so they read on any background – and they open from a controller:
+There is much more in the [brix_ui README](packages/brix_ui): buttons, fields, dialogs, toasts and how to swap in your own widgets.
 
-![Alerts](packages/brix_ui/doc/screenshots/alerts.png)
+## A console you can read
 
-More – buttons, text fields, toasts, your own texts and icons – in the [brix_ui README](packages/brix_ui).
+`BrixLogger` prints your own messages and `PrettyNetworkLogger` prints every API call, each in its own box with a colour per level. Both stay quiet in release builds, and passwords and tokens are always hidden.
 
-## Readable console
-
-`BrixLogger` (brix) for your own messages, `PrettyNetworkLogger` (brix_network) for every API call – both off in release builds, secrets hidden.
-
-```dart
-final log = BrixLogger(name: 'My App');
-log.error('Saving failed', error: error, stackTrace: stackTrace);
-```
-
-```
-╭─ ▰ ERROR · My App ───────────────────────────── 14:32:07.210
-│ Saving failed
-│ ↳ Bad state: boom
-│   #0 SaveFlow.run (save_flow.dart:42)
-╰───────────────────────────────────────────────────────────────
-╭─ ▰ POST v1/auth/login ─────────────────────────── 200 · 312 ms
-│ → {"email": "ada@brix.dev", "password": "••••"}
-│ ← {"success": true, "message": "Welcome back!", …}
-╰───────────────────────────────────────────────────────────────
-```
-
-One box per message, so lines never run together. Each level has its colour: debug grey, info blue, success green, warning yellow, error red.
+![BrixLogger in the debug console](packages/brix/doc/screenshots/console.png)
 
 ## Examples
 
-| Example | Shows |
+| Example | What you see |
 |---|---|
-| [Flutter demo app](packages/brix_getx/example) | Login, signup with an email code, forgot / reset password, logout – on an in-memory backend, runs without a server (`demo@brix.dev` / `Demo@1234`, code `123456`) |
-| [brix in plain Dart](packages/brix/example/main.dart) | A login without Flutter or a state library |
-| [brix_network](packages/brix_network/example/main.dart) | Loading a list from a public REST API into models |
+| [brix_cli app template](packages/brix_cli/templates/app) | The app `brix create` makes: every screen, a local test backend and tests |
+| [GetX demo](packages/brix_getx/example) | Login, signup with a code, password reset and logout on a demo backend, no server needed |
+| [brix in plain Dart](packages/brix/example/main.dart) | A login without Flutter |
+| [brix_network](packages/brix_network/example/main.dart) | Loading a list from a public API |
 | [brix_storage](packages/brix_storage/example/main.dart) | Saving a value and a secret |
-| [brix_ui example app](packages/brix_ui/example) | Every widget on one screen – light / dark and three brands switched live (style settings only, and own builders) |
-| [brix_ui screenshots](packages/brix_ui/tool/screenshots_test.dart) | Every widget in light, dark and three brands – the images on this page come from it |
+| [brix_ui example](packages/brix_ui/example) | Every widget on one screen, with light, dark and three brands |
 
 ## Quality
 
-- Every flow, controller, network piece and widget has tests. CI checks format, analysis (no infos) and tests of every package and example on each push.
-- The screenshots are rendered from the real widgets, not drawn.
-- Values you switch over are classes, not enums – see [updates never break your app](packages/brix#updates-never-break-your-app).
-- MIT licensed.
+Every flow, controller, network piece and widget has tests. On every push, CI checks formatting, analysis and the tests of every package and example. It also creates a fresh app with `brix create`, runs its tests and checks that its release build holds no test accounts.
 
-## Develop
+The screenshots are made from the real widgets, not drawn by hand.
+
+MIT licensed.
+
+## Working on brix
 
 ```
 git clone https://github.com/mrubaz/brix.git
 cd brix/packages/brix && dart pub get && dart test
-cd ../brix_network && dart pub get && dart test
-cd ../brix_storage && flutter pub get && flutter test
-cd ../brix_getx && flutter pub get && flutter test
-cd ../brix_ui && flutter pub get && flutter test
 ```
 
-Each package's `pubspec_overrides.yaml` points it at the brix in this repo, so they are developed together. New brix_ui screenshots: `flutter test tool/screenshots_test.dart --update-goldens` in `packages/brix_ui`.
+Each package has its own `dart test` or `flutter test`. A `pubspec_overrides.yaml` in each package points it at the others in this repo, so they are built together.
 
-Issues and ideas: [GitHub issues](https://github.com/mrubaz/brix/issues).
+Questions and ideas are welcome in the [issues](https://github.com/mrubaz/brix/issues).

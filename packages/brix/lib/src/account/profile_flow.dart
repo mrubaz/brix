@@ -61,7 +61,7 @@ class ProfileFlow<TUser, TProfileUpdate> extends BrixFlow<ProfileState<TUser>> {
   /// When given, the saved session's user is replaced on every load.
   final AuthSessionStore<TUser>? _store;
 
-  /// Runs with every loaded user – for app state outside the store.
+  /// Runs with every loaded user, for app state outside the store.
   final FutureOr<void> Function(TUser user)? onUserChanged;
 
   /// Loads the user. [showLoader] false reloads quietly (after a save): no

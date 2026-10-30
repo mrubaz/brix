@@ -54,7 +54,7 @@ class BrixColors {
   /// Screen background.
   final Color background;
 
-  /// Cards, fields, alerts and toasts – anything that sits on [background].
+  /// Cards, fields, dialogs and toasts, anything that sits on [background].
   final Color surface;
 
   /// Main text.
@@ -75,7 +75,7 @@ class BrixColors {
   /// Errors and destructive actions.
   final Color danger;
 
-  /// Dims the screen behind an alert, so it reads on any background.
+  /// Dims the screen behind a dialog, so it reads on any background.
   final Color scrim;
 
   BrixColors copyWith({

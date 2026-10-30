@@ -1,6 +1,6 @@
 import 'dart:ui' show lerpDouble;
 
-/// Sizes brix widgets use. Plain logical pixels – an app that scales its
+/// Sizes brix widgets use. Plain logical pixels, an app that scales its
 /// layout (e.g. `flutter_screenutil`) passes scaled values here.
 class BrixShape {
   /// Defaults follow the iOS touch target (44 pt minimum) with room for
@@ -12,7 +12,7 @@ class BrixShape {
     this.borderWidth = 1,
   });
 
-  /// Corner radius of buttons, fields, alerts and toasts.
+  /// Corner radius of buttons, fields, dialogs and toasts.
   final double radius;
 
   /// Height of a button.

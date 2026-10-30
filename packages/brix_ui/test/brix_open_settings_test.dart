@@ -19,7 +19,7 @@ Future<void> _pump(WidgetTester tester, Widget child, BrixTheme theme) async {
 
 void main() {
   tearDown(() {
-    BrixAlert.dismiss();
+    BrixDialog.dismiss();
     BrixToast.dismiss();
     BrixUi.navigatorKey = null;
   });
@@ -147,15 +147,15 @@ void main() {
     });
   });
 
-  group('alert scrim', () {
+  group('dialog scrim', () {
     testWidgets('own scrim colour for warnings and dialogs', (tester) async {
       const clear = Color(0x00000000);
       await _pump(
         tester,
         const SizedBox(),
-        BrixTheme.light(alert: const BrixAlertStyle(scrimColor: clear)),
+        BrixTheme.light(dialog: const BrixDialogStyle(scrimColor: clear)),
       );
-      BrixAlert.warning('x');
+      BrixDialog.warning('x');
       await tester.pumpAndSettle();
       expect(
         tester
@@ -166,9 +166,9 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      BrixAlert.show<void>(
+      BrixDialog.show<void>(
         title: 'Hi',
-        style: const BrixAlertStyle(scrimColor: Color(0x55FF0000)),
+        style: const BrixDialogStyle(scrimColor: Color(0x55FF0000)),
       );
       await tester.pumpAndSettle();
       expect(

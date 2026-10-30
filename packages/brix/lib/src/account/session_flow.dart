@@ -41,7 +41,7 @@ class SessionFlow<TUser> extends BrixFlow<SessionState> {
   /// a rejected session (401) sends the user to login.
   final AccountProvider<TUser, dynamic>? _account;
 
-  /// Runs before home opens with the (refreshed) session – for app state
+  /// Runs before home opens with the (refreshed) session, for app state
   /// outside the store (e.g. a cached current user).
   final FutureOr<void> Function(AuthSession<TUser> session)? onSessionStarted;
 
@@ -49,11 +49,11 @@ class SessionFlow<TUser> extends BrixFlow<SessionState> {
   final FutureOr<void> Function()? onSessionEnded;
 
   /// Opens the right first screen:
-  /// - a signup code still waiting → the code screen;
-  /// - a saved session → its user refreshed, then home; a rejected session
-  ///   → cleared, login; other errors (e.g. offline) → shown, home with the
+  /// - a signup code still waiting to the code screen;
+  /// - a saved session to its user refreshed, then home; a rejected session
+  ///   to cleared, login; other errors (e.g. offline) to shown, home with the
   ///   saved user;
-  /// - nothing saved → login.
+  /// - nothing saved to login.
   ///
   /// Storage errors count as nothing saved.
   Future<void> start() async {
@@ -99,7 +99,7 @@ class SessionFlow<TUser> extends BrixFlow<SessionState> {
     await _navigator.toHome();
   }
 
-  /// Logs out on the backend, then always locally – a failed server call
+  /// Logs out on the backend, then always locally, a failed server call
   /// is shown but never keeps the user logged in. "Remember me" stays.
   /// Ignored while a logout is running.
   Future<void> logout() async {

@@ -1,4 +1,4 @@
-/// GetX wrappers for brix flows. Holds no auth logic – only the Flutter and
+/// GetX wrappers for brix flows. Holds no auth logic, only the Flutter and
 /// GetX side (text fields, form key, Rx state, dispose).
 library;
 

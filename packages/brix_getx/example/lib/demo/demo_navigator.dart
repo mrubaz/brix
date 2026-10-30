@@ -6,7 +6,7 @@ import '../routes.dart';
 
 /// Opens the screens the flows ask for, on GetX named routes.
 ///
-/// Route futures are started, never awaited – they complete only when the
+/// Route futures are started, never awaited, they complete only when the
 /// new screen closes and would keep the flow busy.
 class DemoNavigator extends AuthNavigator {
   @override

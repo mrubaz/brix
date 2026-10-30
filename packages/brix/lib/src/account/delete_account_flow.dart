@@ -11,7 +11,7 @@ import 'account_provider.dart';
 
 /// Deleting the logged-in user's account, as the backend's
 /// [AccountDeletionMode] says. On success everything the store keeps is
-/// cleared ("remember me" too – the account is gone) and login opens.
+/// cleared ("remember me" too, the account is gone) and login opens.
 ///
 /// [AccountDeletionMode.code]: [requestDeletion] sends the code (the boxes
 /// show once [CodeEntryState.isCodeSent]), [confirm] checks it, `resend` sends a
@@ -36,7 +36,7 @@ class DeleteAccountFlow extends CodeEntryFlow {
   @override
   final int otpLength;
 
-  /// Runs after the local data is cleared – for app state outside the
+  /// Runs after the local data is cleared, for app state outside the
   /// store (e.g. a cached current user).
   final FutureOr<void> Function()? onAccountDeleted;
 
@@ -62,7 +62,7 @@ class DeleteAccountFlow extends CodeEntryFlow {
   }
 
   /// Code mode: deletes with the typed [code] (trimmed). A code of the
-  /// wrong length is a warning – no backend call.
+  /// wrong length is a warning, no backend call.
   Future<void> confirm(String code) async {
     final identifier = state.identifier;
     if (isDisposed || identifier == null || state.isSubmitting) return;

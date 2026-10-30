@@ -5,7 +5,7 @@ import 'brands.dart';
 import 'gallery_screen.dart';
 
 /// Every brix_ui widget on one screen. Switch light / dark and three brands
-/// live – the widgets never change, only the theme.
+/// live, the widgets never change, only the theme.
 void main() => runApp(const BrixUiExampleApp());
 
 class BrixUiExampleApp extends StatefulWidget {
@@ -24,7 +24,7 @@ class _BrixUiExampleAppState extends State<BrixUiExampleApp> {
     return MaterialApp(
       title: 'brix_ui',
       debugShowCheckedModeBanner: false,
-      // Lets alerts and toasts open without a BuildContext.
+      // Lets dialogs and toasts open without a BuildContext.
       navigatorKey: BrixUi.navigatorKey ??= GlobalKey<NavigatorState>(),
       theme: _brand.theme(Brightness.light).toThemeData(),
       darkTheme: _brand.theme(Brightness.dark).toThemeData(),

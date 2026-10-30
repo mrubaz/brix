@@ -9,7 +9,7 @@ enum HttpMethod {
   patch,
   delete;
 
-  /// `GET`, `POST`, …
+  /// `GET`, `POST`, ...
   String get verb => name.toUpperCase();
 
   /// Safe to send again after a lost connection (the server state ends up
@@ -42,7 +42,7 @@ class NetworkRequest {
 
   final Map<String, String> headers;
 
-  /// JSON-encodable body (`Map`, `List`, …) or `null`.
+  /// JSON-encodable body (`Map`, `List`, ...) or `null`.
   final Object? body;
 
   /// Files for a multipart upload; empty for a normal request.
@@ -56,7 +56,7 @@ class NetworkRequest {
   /// Bytes sent so far and in total (total is -1 when unknown).
   final void Function(int sent, int total)? onSendProgress;
 
-  /// The answer is a file (PDF, image, …): a successful body comes back as
+  /// The answer is a file (PDF, image, ...): a successful body comes back as
   /// a `DownloadedFile`, not as text or JSON. Error bodies are still read
   /// as JSON / text.
   final bool wantsBytes;

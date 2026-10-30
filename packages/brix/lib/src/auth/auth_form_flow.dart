@@ -6,7 +6,7 @@ import 'auth_feedback.dart';
 import 'auth_provider.dart';
 
 /// State of a form screen (login, forgot password, signup, change
-/// password…).
+/// password...).
 class AuthFormState {
   const AuthFormState({this.isSubmitting = false});
 

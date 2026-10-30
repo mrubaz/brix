@@ -34,7 +34,7 @@ Future<void> _pumpApp(WidgetTester tester, Widget body) async {
 
 void main() {
   tearDown(() {
-    BrixAlert.dismiss();
+    BrixDialog.dismiss();
     BrixToast.dismiss();
     BrixUi.navigatorKey = null;
   });
@@ -113,18 +113,18 @@ void main() {
   });
 
   group('widgets use the theme texts and icons', () {
-    testWidgets('warning alert', (tester) async {
+    testWidgets('warning dialog', (tester) async {
       await _pumpApp(tester, const SizedBox());
-      BrixAlert.warning('x');
+      BrixDialog.warning('x');
       await tester.pumpAndSettle();
       expect(find.text('دیکھیں'), findsOneWidget);
       expect(find.text('ٹھیک ہے'), findsOneWidget);
       expect(find.byIcon(Icons.info), findsOneWidget);
     });
 
-    testWidgets('error alert', (tester) async {
+    testWidgets('error dialog', (tester) async {
       await _pumpApp(tester, const SizedBox());
-      BrixAlert.error('x');
+      BrixDialog.error('x');
       await tester.pumpAndSettle();
       expect(find.text('خرابی'), findsOneWidget);
       expect(find.byIcon(Icons.close), findsOneWidget);
@@ -132,14 +132,14 @@ void main() {
 
     testWidgets('show() default OK button', (tester) async {
       await _pumpApp(tester, const SizedBox());
-      BrixAlert.show<void>(title: 'Hi');
+      BrixDialog.show<void>(title: 'Hi');
       await tester.pumpAndSettle();
       expect(find.text('ٹھیک ہے'), findsOneWidget);
     });
 
     testWidgets('show() with an own icon', (tester) async {
       await _pumpApp(tester, const SizedBox());
-      BrixAlert.show<void>(title: 'Hi', icon: const BrixIcon(Icons.delete));
+      BrixDialog.show<void>(title: 'Hi', icon: const BrixIcon(Icons.delete));
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.delete), findsOneWidget);
     });

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const pageColor = Color(0xFFE9ECF1);
+const pageColor = Color(0xFFF2F2F7);
 const mono = 'SFMono';
 const symbols = 'AppleSymbols';
 
@@ -32,6 +32,7 @@ Future<void> loadFonts() async {
     '$sdkFonts/Roboto-Bold.ttf',
   ]);
   await load('MaterialIcons', ['$sdkFonts/MaterialIcons-Regular.otf']);
+  await load('SF Pro', ['/System/Library/Fonts/SFNS.ttf']);
   await load(mono, ['/System/Library/Fonts/SFNSMono.ttf']);
   // ▰ and arrows are not in SF Mono / Roboto.
   await load(symbols, ['/System/Library/Fonts/Apple Symbols.ttf']);
@@ -126,7 +127,7 @@ class Terminal extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontFamily: 'Roboto',
+                    fontFamily: 'SF Pro',
                     fontSize: 13,
                     color: Color(0xFFB0B0B0),
                   ),
@@ -214,7 +215,7 @@ List<TextSpan> ansiSpans(String line) {
   return spans;
 }
 
-/// The xterm 256-colour cube (16–231).
+/// The xterm 256-colour cube (16-231).
 Color _xterm(int n) {
   if (n < 16 || n > 231) return const Color(0xFFD4D4D4);
   final i = n - 16;

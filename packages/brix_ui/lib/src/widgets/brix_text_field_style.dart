@@ -8,8 +8,8 @@ import 'brix_field_border.dart';
 /// from the theme's [BrixColors] / [BrixShape] / [BrixTypography] and brix's
 /// defaults.
 ///
-/// Set it for the whole app in `BrixTheme(textField: …)`, or for one field
-/// with `BrixTextField(style: …)` – the field's own values win.
+/// Set it for the whole app in `BrixTheme(textField: ...)`, or for one field
+/// with `BrixTextField(style: ...)`, the field's own values win.
 ///
 /// ```dart
 /// BrixTheme.light(
@@ -65,7 +65,7 @@ class BrixTextFieldStyle {
   final double? focusedBorderWidth;
 
   /// Label inside the field, moving up while typing (Material). Default:
-  /// `false` – the label sits above the field.
+  /// `false`, the label sits above the field.
   final bool? labelInside;
 
   /// Space between an outside label and the field. Default: 8.
