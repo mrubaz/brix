@@ -2,15 +2,11 @@
 
 ```
 dart pub global activate brix_cli
-brix create my_app
+brix create my_app --org com.mycompany
 cd my_app
-flutter run -t lib/main_development.dart
+flutter run
 ```
 
-Log in with `demo@brix.dev` and `Demo@1234`. Every code is `123456`.
+Log in with `demo@brix.dev` and `Demo@1234`, every code is `123456`, or tap "Skip login".
 
-When your API is ready:
-
-```
-flutter run --dart-define=API_URL=https://your.api/v1/
-```
+Add your API address in `lib/config/app_config.dart` when it is ready.

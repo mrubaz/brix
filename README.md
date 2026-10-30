@@ -50,26 +50,22 @@ The fastest way. One command makes a working app with every screen wired.
    dart pub global activate brix_cli
    ```
 
-2. Make your app (lowercase letters, digits and underscores):
+2. Make your app (lowercase letters, digits and underscores, and your company's reverse domain):
 
    ```
-   brix create my_app
+   brix create my_app --org com.mycompany
    ```
 
-3. Run it on the built-in test backend, no server needed:
+3. Run it, or press F5 in VS Code:
 
    ```
    cd my_app
-   flutter run -t lib/main_development.dart
+   flutter run
    ```
 
-   Log in with `demo@brix.dev` and `Demo@1234`. Every code is `123456`.
+   Until you add your API, debug runs use a test backend on the device: log in with `demo@brix.dev` and `Demo@1234`, every code is `123456`, or tap "Skip login".
 
-4. Point it at your API when you are ready:
-
-   ```
-   flutter run --dart-define=API_URL=https://your.api/v1/
-   ```
+4. Add your API address in `lib/config/app_config.dart` when you are ready. Release builds never contain the test backend.
 
 You get login, signup with an email code, forgot and reset password, profile, change password, delete account and logout, in the folders of the [Flutter architecture guide](https://docs.flutter.dev/app-architecture/case-study). More in the [brix_cli README](packages/brix_cli).
 
@@ -337,7 +333,7 @@ flutter pub add brix_ui
 
 ### brix_cli
 
-`brix create my_app` makes a new app on all the packages above, with a local test backend for trying it before your API exists. Release builds never contain that test backend, and CI checks it on every change.
+`brix create my_app` makes a new app on all the packages above, routed with go_router, with a test backend for debug builds so it runs before your API exists. Release builds never contain that test backend, and CI checks it on every change. `brix id` changes the app id on every platform later.
 
 ```
 dart pub global activate brix_cli

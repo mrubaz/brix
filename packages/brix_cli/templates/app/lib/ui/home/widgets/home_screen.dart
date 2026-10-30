@@ -2,6 +2,7 @@ import 'package:brix_getx/brix_getx.dart';
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
 import '../../../domain/models/user.dart';
@@ -47,13 +48,13 @@ class HomeScreen extends GetView<BrixSessionController<User>> {
                 SettingsRow(
                   icon: Icons.person_rounded,
                   label: 'Profile',
-                  onTap: () => Get.toNamed(Routes.profile),
+                  onTap: () => context.go(Routes.profile),
                 ),
                 SettingsRow(
                   icon: Icons.lock_rounded,
                   label: 'Change password',
                   iconColor: const Color(0xFF8E8E93),
-                  onTap: () => Get.toNamed(Routes.changePassword),
+                  onTap: () => context.go(Routes.changePassword),
                 ),
               ],
             ),
@@ -66,10 +67,12 @@ class HomeScreen extends GetView<BrixSessionController<User>> {
                   destructive: true,
                   onTap: () async {
                     final session = await Dependencies.session.readSession();
-                    Get.toNamed(
-                      Routes.deleteAccount,
-                      arguments: session?.user.email,
-                    );
+                    if (context.mounted) {
+                      context.go(
+                        Routes.deleteAccount,
+                        extra: session?.user.email,
+                      );
+                    }
                   },
                 ),
               ],

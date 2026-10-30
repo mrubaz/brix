@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:brix_app/data/services/local_accounts_service.dart';
+import 'package:brix_app/dev/local_accounts_service.dart';
+import 'package:brix_app/dev/local_box.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -8,7 +9,7 @@ void main() {
   setUp(() => dir = Directory.systemTemp.createTempSync('local_backend'));
   tearDown(() => dir.deleteSync(recursive: true));
 
-  File device(String name) => File('${dir.path}/$name.json');
+  LocalBox device(String name) => LocalBox(File('${dir.path}/$name.json'));
 
   test('starts with the demo account', () async {
     final account = await LocalAccountsService(device('a'))
@@ -65,7 +66,7 @@ void main() {
   });
 
   test('a broken file starts over instead of crashing', () async {
-    device('a').writeAsStringSync('{not json');
+    File('${dir.path}/a.json').writeAsStringSync('{not json');
     final account = await LocalAccountsService(device('a'))
         .find(LocalAccountsService.demoEmail);
     expect(account, isNotNull);

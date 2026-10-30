@@ -1,6 +1,6 @@
 name: brix_cli
 description: "Create a Flutter app that runs at once: login, signup, email code, password reset, theme, network and storage, built on brix."
-version: 1.0.0
+version: 1.1.0
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_cli
 issue_tracker: https://github.com/mrubaz/brix/issues
 topics:

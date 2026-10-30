@@ -31,6 +31,7 @@ class Template {
     'brix.yaml',
     'README.md',
     '.vscode/launch.json',
+    'env',
   ];
 
   final Directory directory;

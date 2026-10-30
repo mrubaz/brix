@@ -2,17 +2,24 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Development (local backend)",
+      "name": "Development",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main_development.dart"
+      "program": "lib/main.dart"
     },
     {
-      "name": "Production (your API)",
+      "name": "Staging",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "args": ["--dart-define=API_URL=https://your.api/v1/"]
+      "args": ["--dart-define-from-file=env/staging.json"]
+    },
+    {
+      "name": "Production",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--dart-define-from-file=env/production.json"]
     }
   ]
 }

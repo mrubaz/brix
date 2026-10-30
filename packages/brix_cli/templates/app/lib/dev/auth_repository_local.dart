@@ -1,8 +1,8 @@
 import 'package:brix/auth.dart';
 
-import '../../domain/models/signup_request.dart';
-import '../../domain/models/user.dart';
-import '../services/local_accounts_service.dart';
+import '../domain/models/signup_request.dart';
+import '../domain/models/user.dart';
+import 'local_accounts_service.dart';
 
 /// Auth on a backend that lives on this device, so the app runs before your
 /// API exists. Only `main_development.dart` uses it, never a release build.

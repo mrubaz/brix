@@ -1,21 +1,26 @@
-import 'package:brix_ui/brix_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import 'config/app_config.dart';
 import 'config/dependencies.dart';
 import 'data/repositories/account_repository_remote.dart';
 import 'data/repositories/auth_repository_remote.dart';
-import 'routing/app_pages.dart';
-import 'routing/routes.dart';
+import 'dev/local_backend.dart'; // local test backend
 import 'ui/core/themes/theme.dart';
 import 'ui/setup/widgets/setup_error_screen.dart';
 
-/// The real app, on your API. Release builds start here, so nothing for
-/// local testing is in them. Try the app without an API with
-/// `flutter run -t lib/main_development.dart`.
+/// Runs on your API (`lib/config/app_config.dart`).
+///
+/// Without an API, debug builds run on a local test backend (`lib/dev`) so
+/// every screen works on day one. Release builds never contain it: the
+/// compiler drops code behind `kDebugMode`.
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kDebugMode && AppConfig.apiUrl.isEmpty) {
+    startWithLocalBackend(); // local test backend
+    runApp(const App());
+    return;
+  }
   final problem = AppConfig.problem();
   if (problem != null) {
     runApp(SetupErrorScreen(message: problem));
@@ -36,15 +41,12 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dialogs and toasts open from view models without a BuildContext.
-    BrixUi.navigatorKey = Get.key;
-    return GetMaterialApp(
+    return MaterialApp.router(
       title: 'brix_app',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      initialRoute: Routes.splash,
-      getPages: AppPages.pages,
+      routerConfig: Dependencies.router,
     );
   }
 }

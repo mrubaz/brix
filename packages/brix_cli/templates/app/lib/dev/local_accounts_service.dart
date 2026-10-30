@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
+import 'local_box.dart';
 
 /// One saved account of the local backend.
 class LocalAccount {
@@ -36,18 +34,18 @@ class LocalAccount {
   };
 }
 
-/// The local backend's accounts, kept in a file on this device only: what
-/// one tester changes never reaches another device. Starts with the demo
-/// account. Only `main_development.dart` uses it.
+/// The local backend's accounts, kept on this device only: what one tester
+/// changes never reaches another device. Starts with the demo account.
+/// Debug builds only (see `main.dart`).
 class LocalAccountsService {
-  /// The file is set in tests; on the web the data stays in memory.
-  LocalAccountsService([this._file]);
+  /// [box] is set in tests.
+  LocalAccountsService([LocalBox? box]) : _box = box ?? LocalBox();
 
   static const demoEmail = 'demo@brix.dev';
   static const demoPassword = 'Demo@1234';
   static const demoCode = '123456';
 
-  File? _file;
+  final LocalBox _box;
   Map<String, LocalAccount>? _accounts;
 
   static Map<String, LocalAccount> _seed() => {
@@ -60,11 +58,10 @@ class LocalAccountsService {
 
   Future<Map<String, LocalAccount>> _load() async {
     if (_accounts != null) return _accounts!;
-    final file = await _resolveFile();
-    if (file != null && file.existsSync()) {
+    final text = await _box.read();
+    if (text != null) {
       try {
-        final json =
-            jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+        final json = jsonDecode(text) as Map<String, dynamic>;
         return _accounts = json.map(
           (email, data) => MapEntry(
             email,
@@ -78,20 +75,9 @@ class LocalAccountsService {
     return _accounts = _seed();
   }
 
-  Future<File?> _resolveFile() async {
-    if (_file != null || kIsWeb) return _file;
-    final dir = await getApplicationSupportDirectory();
-    return _file = File('${dir.path}/brix_local_backend.json');
-  }
-
-  Future<void> _save() async {
-    final file = await _resolveFile();
-    if (file == null) return;
-    file.parent.createSync(recursive: true);
-    file.writeAsStringSync(
-      jsonEncode(_accounts!.map((email, a) => MapEntry(email, a.toJson()))),
-    );
-  }
+  Future<void> _save() => _box.write(
+    jsonEncode(_accounts!.map((email, a) => MapEntry(email, a.toJson()))),
+  );
 
   Future<LocalAccount?> find(String email) async => (await _load())[email];
 

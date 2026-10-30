@@ -1,4 +1,14 @@
-## 1.0.0 (not released yet)
+## 1.1.0
+
+- One entry point. `flutter run`, F5 and Run Without Debugging just work: debug builds without an API use the local test backend, release builds never contain it (CI checks the release builds on every change).
+- The local test backend lives in `lib/dev`. Drop it by deleting that folder and the two marked lines in `main.dart`. Its data now also survives on the web.
+- "Skip login" in debug builds opens the home screen as a test user, for working on screens before the login.
+- Your API address goes in `lib/config/app_config.dart`, or in `env/staging.json` and `env/production.json` for each build. VS Code has Development, Staging and Production ready.
+- Routing on go_router, the router the Flutter architecture guide uses. GetX stays for view models.
+- `brix create my_app --org com.mycompany` sets the app id at the start, and `brix id com.mycompany.my_app` changes it later on Android, iOS, macOS and Linux.
+- The API's answer shape is one clear line in `lib/config/dependencies.dart`.
+
+## 1.0.0
 
 First release.
 

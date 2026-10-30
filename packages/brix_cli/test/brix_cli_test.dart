@@ -58,6 +58,7 @@ void main() {
     file('brix.yaml', 'structure: flutter');
     file('analysis_options.yaml', 'include: x');
     file('.vscode/launch.json', '{"name": "brix_app"}');
+    file('env/production.json', '{"API_URL": "https://your.api/"}');
     file('pubspec_overrides.yaml', 'never copied');
     template = Template(t);
     lines = [];
@@ -210,6 +211,124 @@ void main() {
       final pubspec = File(p.join(bundled.directory.path, 'pubspec.yaml'))
           .readAsStringSync();
       expect(pubspec, contains('name: ${Template.placeholder}'));
+    });
+  });
+
+  group('--org', () {
+    test('goes to flutter create and the final message', () async {
+      final runner = FakeRunner();
+      expect(await cli(runner).run(['create', 'shop', '--org', 'com.acme']), 0);
+      expect(runner.calls.first, startsWith('flutter create --org com.acme '));
+      expect(lines.join('\n'), contains('com.acme.shop'));
+      expect(read('env/production.json'), contains('API_URL'));
+    });
+
+    test('a bad org stops before anything runs', () async {
+      final runner = FakeRunner();
+      expect(
+        await cli(runner).run(['create', 'shop', '--org', 'Com.Acme']),
+        64,
+      );
+      expect(runner.calls, isEmpty);
+    });
+
+    test('--org without a value', () async {
+      expect(await cli(FakeRunner()).run(['create', 'shop', '--org']), 64);
+    });
+  });
+
+  group('AppId', () {
+    test('accepts and refuses ids', () {
+      expect(AppId.problem('com.acme.my_app'), isNull);
+      for (final id in ['app', 'Com.acme.app', 'com..app', 'com.1app', '']) {
+        expect(AppId.problem(id), isNotNull, reason: id);
+      }
+    });
+
+    test('Apple form has no underscores', () {
+      expect(AppId.apple('com.my_company.my_app'), 'com.myCompany.myApp');
+      expect(AppId.apple('com.acme.shop'), 'com.acme.shop');
+    });
+  });
+
+  group('brix id', () {
+    late String app;
+
+    void write(String path, String text) => File(p.join(app, path))
+      ..createSync(recursive: true)
+      ..writeAsStringSync(text);
+    String read(String path) => File(p.join(app, path)).readAsStringSync();
+
+    setUp(() {
+      app = p.join(work.path, 'my_app');
+      write(
+        'android/app/build.gradle.kts',
+        'namespace = "com.example.my_app"\n'
+            'applicationId = "com.example.my_app"\n',
+      );
+      write(
+        'android/app/src/main/kotlin/com/example/my_app/MainActivity.kt',
+        'package com.example.my_app\n\nclass MainActivity\n',
+      );
+      write(
+        'ios/Runner.xcodeproj/project.pbxproj',
+        'PRODUCT_BUNDLE_IDENTIFIER = com.example.myApp;\n'
+            'PRODUCT_BUNDLE_IDENTIFIER = com.example.myApp.RunnerTests;\n',
+      );
+      write(
+        'macos/Runner/Configs/AppInfo.xcconfig',
+        'PRODUCT_BUNDLE_IDENTIFIER = com.example.myApp\n'
+            'PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.\n',
+      );
+      write(
+        'linux/CMakeLists.txt',
+        'set(APPLICATION_ID "com.example.my_app")\n',
+      );
+    });
+
+    BrixCli inApp() => BrixCli(out: lines.add, workingDirectory: app);
+
+    test('changes the id on every platform', () async {
+      expect(await inApp().run(['id', 'com.acme.my_app']), 0);
+      expect(
+        read('android/app/build.gradle.kts'),
+        contains('namespace = "com.acme.my_app"'),
+      );
+      expect(
+        read('android/app/build.gradle.kts'),
+        contains('applicationId = "com.acme.my_app"'),
+      );
+      expect(
+        read('android/app/src/main/kotlin/com/acme/my_app/MainActivity.kt'),
+        startsWith('package com.acme.my_app'),
+      );
+      expect(
+        Directory(p.join(app, 'android/app/src/main/kotlin/com/example'))
+            .existsSync(),
+        isFalse,
+      );
+      final pbx = read('ios/Runner.xcodeproj/project.pbxproj');
+      expect(pbx, contains('= com.acme.myApp;'));
+      expect(pbx, contains('= com.acme.myApp.RunnerTests;'));
+      expect(
+        read('macos/Runner/Configs/AppInfo.xcconfig'),
+        contains('com.acme.myApp'),
+      );
+      expect(read('linux/CMakeLists.txt'), contains('"com.acme.my_app"'));
+    });
+
+    test('a bad id changes nothing', () async {
+      expect(await inApp().run(['id', 'Acme']), 64);
+      expect(
+        read('android/app/build.gradle.kts'),
+        contains('com.example.my_app'),
+      );
+    });
+
+    test('outside an app it says so', () async {
+      final cli = BrixCli(out: lines.add, workingDirectory: work.path);
+      expect(await cli.run(['id', 'com.acme.app']), 66);
+      expect(lines.single, contains('inside a Flutter app'));
     });
   });
 }

@@ -30,20 +30,19 @@ typedef _Entry = ({int depth, String name, String note, bool folder});
 
 const _tree = <_Entry>[
   (depth: 0, name: 'lib', note: '', folder: true),
+  (depth: 1, name: 'main.dart', note: 'starts the app', folder: false),
   (
     depth: 1,
-    name: 'main.dart',
-    note: 'the real app, on your API',
-    folder: false,
+    name: 'config',
+    note: 'your API address, services made once',
+    folder: true,
   ),
   (
     depth: 1,
-    name: 'main_development.dart',
-    note: 'the app on a local test backend',
-    folder: false,
+    name: 'routing',
+    note: 'screen addresses (go_router)',
+    folder: true,
   ),
-  (depth: 1, name: 'config', note: 'API address and services', folder: true),
-  (depth: 1, name: 'routing', note: 'screens and where they go', folder: true),
   (depth: 1, name: 'domain', note: '', folder: true),
   (
     depth: 2,
@@ -52,18 +51,7 @@ const _tree = <_Entry>[
     folder: true,
   ),
   (depth: 1, name: 'data', note: '', folder: true),
-  (
-    depth: 2,
-    name: 'repositories',
-    note: 'your API calls, and the local backend',
-    folder: true,
-  ),
-  (
-    depth: 2,
-    name: 'services',
-    note: 'where the local backend keeps its data',
-    folder: true,
-  ),
+  (depth: 2, name: 'repositories', note: 'your API calls', folder: true),
   (depth: 1, name: 'ui', note: '', folder: true),
   (depth: 2, name: 'core', note: 'theme and shared widgets', folder: true),
   (
@@ -79,6 +67,13 @@ const _tree = <_Entry>[
     folder: true,
   ),
   (depth: 2, name: 'home', note: 'your first screen', folder: true),
+  (
+    depth: 1,
+    name: 'dev',
+    note: 'test backend, debug builds only',
+    folder: true,
+  ),
+  (depth: 0, name: 'env', note: 'API addresses per build', folder: true),
   (depth: 0, name: 'test', note: 'the same folders as lib', folder: true),
   (
     depth: 0,
@@ -94,20 +89,20 @@ void main() {
   testWidgets('brix create in the terminal', (tester) async {
     final work = Directory.systemTemp.createTempSync('cli_shot');
     addTearDown(() => work.deleteSync(recursive: true));
-    final lines = <String>[r'$ brix create my_app'];
+    final lines = <String>[r'$ brix create my_app --org com.mycompany'];
     await tester.runAsync(
       () => BrixCli(
         runner: _QuietRunner(),
         template: Template(Directory('../../packages/brix_cli/templates/app')),
         out: lines.add,
         workingDirectory: work.path,
-      ).run(['create', 'my_app']),
+      ).run(['create', 'my_app', '--org', 'com.mycompany']),
     );
     await shoot(
       tester,
       '$_out/terminal.png',
       Terminal(title: 'Terminal', lines: lines),
-      size: const Size(720, 410),
+      size: const Size(760, 430),
     );
   });
 
