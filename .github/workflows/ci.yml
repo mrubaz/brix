@@ -102,6 +102,51 @@ jobs:
           flutter analyze --fatal-infos
           flutter test
 
+  brix_cli:
+    name: brix_cli (create)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: packages/brix_cli
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: subosito/flutter-action@v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed lib test bin templates/app/lib templates/app/test
+      - run: dart analyze --fatal-infos
+      - run: dart test
+      - name: Template app
+        working-directory: packages/brix_cli/templates/app
+        run: |
+          flutter pub get
+          flutter analyze --fatal-infos
+          flutter test
+      - name: A new app from brix create
+        run: |
+          dart run bin/brix.dart create ci_app
+          cd ci_app
+          flutter analyze --fatal-infos
+          flutter test
+      - name: Release builds hold no local test backend
+        working-directory: packages/brix_cli/ci_app
+        run: |
+          flutter build web --release --dart-define=API_URL=https://api.example.com/v1/
+          flutter build apk --release --target-platform android-arm64 --dart-define=API_URL=https://api.example.com/v1/
+          unzip -o -q build/app/outputs/flutter-apk/app-release.apk -d build/apk
+          for secret in 'demo@brix.dev' 'Demo@1234' 'Reset local backend'; do
+            if grep -rqa "$secret" build/web build/apk; then
+              echo "Found '$secret' in a release build"; exit 1
+            fi
+          done
+          # The check must see real app text, or it proves nothing.
+          grep -rqa 'Forgot password?' build/web
+          grep -rqa 'Forgot password?' build/apk
+
   brix_getx:
     name: brix_getx (GetX)
     runs-on: ubuntu-24.04

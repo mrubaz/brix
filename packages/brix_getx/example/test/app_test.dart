@@ -45,7 +45,7 @@ void main() {
     await tap(tester, find.text('Log out'));
     expect(find.widgetWithText(FilledButton, 'Log in'), findsOneWidget);
 
-    // Forgot → code + new password → back to login with the email.
+    // Forgot to code + new password to back to login with the email.
     await tap(tester, find.text('Forgot password?'));
     await enter(tester, 'Email', 'ada@brix.dev');
     await tap(tester, find.widgetWithText(FilledButton, 'Send code'));

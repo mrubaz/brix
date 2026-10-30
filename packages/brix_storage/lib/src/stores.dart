@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Where plain values live (settings, ids, cached JSON). Default:
-/// [SharedPrefsStore]. Write your own to use Hive, a file, …
+/// [SharedPrefsStore]. Write your own to use Hive, a file, ...
 abstract class ValueStore {
   const ValueStore();
 

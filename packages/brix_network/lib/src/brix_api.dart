@@ -18,7 +18,7 @@ import 'upload_file.dart';
 typedef Parse<T> = T Function(Json data);
 
 /// Your REST API. Every call returns a `Result`: `Success(data, message)`
-/// or `Failed(failure)` – no exceptions, no global error list.
+/// or `Failed(failure)`, no exceptions, no global error list.
 ///
 /// ```dart
 /// final api = BrixApi(
@@ -69,12 +69,12 @@ class BrixApi {
 
   final NetworkLogger? logger;
 
-  /// Runs once when the server says the session ended (401) – e.g. clear
+  /// Runs once when the server says the session ended (401), e.g. clear
   /// the session and open login. Several 401s at the same time run it once.
   final FutureOr<void> Function()? onUnauthorized;
 
   /// Which paths log out on a 401. Default: all. A wrong password on login
-  /// is often a 401 too – exclude it: `logoutOn401: (path) => path != 'auth/login'`.
+  /// is often a 401 too, exclude it: `logoutOn401: (path) => path != 'auth/login'`.
   final bool Function(String path) logoutOn401;
 
   final _inFlight = <String, Future<NetworkResponse>>{};
@@ -173,7 +173,7 @@ class BrixApi {
     withToken: withToken,
   );
 
-  /// A file (PDF, image, spreadsheet, …): its bytes plus the type and name
+  /// A file (PDF, image, spreadsheet, ...): its bytes plus the type and name
   /// the server sent. Error answers are read like any other call (backend
   /// messages, failure type).
   ///
@@ -225,7 +225,7 @@ class BrixApi {
     cancel: cancel,
   );
 
-  /// Any call. [path] may also be a full URL (another API) – then
+  /// Any call. [path] may also be a full URL (another API), then
   /// [baseUrl] is not used; pass `withToken: false` for third-party APIs.
   Future<Result<T>> request<T>(
     HttpMethod method,

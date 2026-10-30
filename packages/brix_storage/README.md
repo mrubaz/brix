@@ -1,12 +1,16 @@
 # brix_storage
 
-Local storage that gets the tricky parts right – plain values, secrets, and a ready-made session store for [brix](https://pub.dev/packages/brix).
+Local storage that handles the tricky parts for you: plain values, secrets, and a ready session store for [brix](https://pub.dev/packages/brix).
 
-- **Values** (`shared_preferences`) and **secrets** (`flutter_secure_storage`: Keychain / Keystore) behind one class.
-- **Reinstall safe:** iOS keeps Keychain items after the app is deleted – brix_storage wipes them on a fresh install, so nobody is logged in as the previous user.
-- **Never crashes on a broken Keystore** (Android after a backup restore): the read gives `null`, the error goes to `onError`.
-- **Moves old plain-text secrets** into secure storage on the first read.
-- **Ready session store:** `BrixSessionStore` is a complete brix `AuthSessionStore` – tokens and the remembered password as secrets, the user as JSON.
+Values go to `shared_preferences` and secrets to the Keychain or Keystore (through `flutter_secure_storage`), all behind one class.
+
+It is safe after a reinstall. iOS keeps Keychain items when an app is deleted, so a new install could log in as the last user. brix_storage clears them on a fresh install.
+
+It never crashes on a broken Keystore, which can happen on Android after a backup restore. The read simply returns `null` and the error goes to `onError`.
+
+It moves old plain-text secrets into secure storage the first time they are read.
+
+`BrixSessionStore` is a complete brix `AuthSessionStore`: tokens and the remembered password are kept as secrets and the user as JSON.
 
 ![What BrixStorage does with each call](doc/screenshots/storage.png)
 
@@ -61,7 +65,7 @@ BrixSessionStore<User>(
 
 ### Other backends
 
-`ValueStore` and `SecretStore` are small interfaces – plug in Hive, a file, or `MemoryStore` in tests:
+`ValueStore` and `SecretStore` are small interfaces: plug in Hive, a file, or `MemoryStore` in tests:
 
 ```dart
 final storage = BrixStorage(values: MemoryStore(), secrets: MemoryStore());

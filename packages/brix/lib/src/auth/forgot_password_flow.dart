@@ -16,7 +16,7 @@ class ForgotPasswordFlow extends AuthFormFlow<Object?> {
 
   /// Sends the reset code or link for [identifier] (trimmed).
   ///
-  /// Code: opens the reset password screen. Link: back to login – the user
+  /// Code: opens the reset password screen. Link: back to login, the user
   /// finishes in the email.
   Future<void> submit({required String identifier}) => run(() async {
     final trimmedIdentifier = identifier.trim();

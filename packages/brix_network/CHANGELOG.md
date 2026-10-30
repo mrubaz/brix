@@ -12,9 +12,9 @@
 
 ## 1.1.0
 
-- `BrixApi.download`: files (PDF, image, spreadsheet, …) as a `DownloadedFile` – bytes, `contentType`, `fileName` (from `Content-Disposition`), `isPdf`, `isImage`, `sizeLabel` – with optional `onProgress`. An error answer instead of the file is read like any other call.
-- `NetworkRequest.wantsBytes` / `onReceiveProgress` for your own `NetworkClient`; `DownloadedFile.fromBytes(bytes, headers: …)` builds the file.
-- The console log shows a file as `<binary 245 KB · application/pdf>`.
+- `BrixApi.download`: files (PDF, image, spreadsheet, ...) as a `DownloadedFile`: bytes, `contentType`, `fileName` (from `Content-Disposition`), `isPdf`, `isImage`, `sizeLabel`, with optional `onProgress`. An error answer instead of the file is read like any other call.
+- `NetworkRequest.wantsBytes` / `onReceiveProgress` for your own `NetworkClient`; `DownloadedFile.fromBytes(bytes, headers: ...)` builds the file.
+- The console log shows a file as `<binary 245 KB / application/pdf>`.
 
 ## 1.0.1
 
@@ -24,10 +24,10 @@
 
 First release.
 
-- `BrixApi`: `get`, `post`, `put`, `patch`, `delete`, `upload`, `request` – every call returns a brix `Result`, data parsed with `Json`.
+- `BrixApi`: `get`, `post`, `put`, `patch`, `delete`, `upload`, `request`; every call returns a brix `Result`, data parsed with `Json`.
 - `DioNetworkClient` (default): timeout, retries for GET / PUT / DELETE only, cancel (`RequestCancel`), upload progress; `NetworkClient` to use any other library.
 - `ResponseReader`: envelope (Node, NestJS, Laravel, custom), FastAPI, Django REST and custom readers; messages and field errors from any error shape.
-- `StandardStatus.map` (status → `Failure`), replaceable with `statusMapper`.
-- 401 → `onUnauthorized` once for many calls, `logoutOn401` to skip paths (login).
+- `StandardStatus.map` (maps a status to a `Failure`), replaceable with `statusMapper`.
+- A 401 calls `onUnauthorized` once for many calls, `logoutOn401` to skip paths (login).
 - Identical GETs at the same time share one request.
 - `PrettyNetworkLogger`: one readable box per call, secrets hidden, off in release builds.

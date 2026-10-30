@@ -38,8 +38,8 @@ abstract class NetworkLogger {
 ///
 /// ```
 /// ╭─ ▰ POST auth/login ────────────────────────────── 200 · 312 ms
-/// │ → {"email": "ada@brix.dev", "password": "••••"}
-/// │ ← {"success": true, "message": "Welcome back!", …}
+/// │ to {"email": "ada@brix.dev", "password": "••••"}
+/// │ ← {"success": true, "message": "Welcome back!", ...}
 /// ╰────────────────────────────────────────────────────────────────
 /// ```
 ///
@@ -89,7 +89,7 @@ class PrettyNetworkLogger extends NetworkLogger {
   final bool showResponseBody;
   final Set<String> hiddenKeys;
 
-  /// Where lines go, one call per line – e.g. `print` for `flutter run` in
+  /// Where lines go, one call per line, e.g. `print` for `flutter run` in
   /// a terminal. Default: the IDE console through `dart:developer`, one
   /// call at a time, with colours on iOS too.
   final void Function(String line)? output;

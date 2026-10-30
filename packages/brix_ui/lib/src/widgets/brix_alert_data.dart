@@ -29,7 +29,7 @@ class BrixAlertData {
   final String? message;
   final BrixIcon? icon;
 
-  /// The icon colour (warning, danger, primary…).
+  /// The icon colour (warning, danger, primary...).
   final Color accent;
 
   /// The app's own widget under the message, if any.
@@ -37,7 +37,7 @@ class BrixAlertData {
 
   final List<BrixAlertButton<Object?>> buttons;
 
-  /// Call with the tapped button's `value` – closes the alert.
+  /// Call with the tapped button's `value`, closes the alert.
   final ValueChanged<Object?> onPressed;
 
   /// The theme's alert style with the alert's own on top.

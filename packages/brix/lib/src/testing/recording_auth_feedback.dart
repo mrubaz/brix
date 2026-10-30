@@ -1,6 +1,6 @@
 import '../../auth.dart';
 
-/// Feedback that only records what would have been shown – for tests.
+/// Feedback that only records what would have been shown, for tests.
 class RecordingAuthFeedback extends AuthFeedback {
   final List<Failure> failures = [];
   final List<AuthWarning> warnings = [];

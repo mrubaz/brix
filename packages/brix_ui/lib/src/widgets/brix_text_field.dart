@@ -85,7 +85,7 @@ class BrixTextField extends StatefulWidget {
 
   final Widget? prefixIcon;
 
-  /// Ignored when [isPassword] – the show / hide button takes its place.
+  /// Ignored when [isPassword], the show / hide button takes its place.
   final Widget? suffixIcon;
 
   final TextInputType? keyboardType;
@@ -96,7 +96,7 @@ class BrixTextField extends StatefulWidget {
   final TextCapitalization textCapitalization;
 
   /// What the field holds, so password managers and the keyboard can fill
-  /// it (`AutofillHints.email`, `.password`, `.newPassword`…). Put the
+  /// it (`AutofillHints.email`, `.password`, `.newPassword`...). Put the
   /// form's fields in an `AutofillGroup` to save new passwords.
   final Iterable<String>? autofillHints;
 

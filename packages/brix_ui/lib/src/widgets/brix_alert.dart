@@ -15,9 +15,9 @@ import 'brix_panel.dart';
 /// A centred alert card on a dimmed screen (`colors.scrim`), so it reads on
 /// any background: optional icon, title, message, own content and buttons.
 ///
-/// - [BrixAlert.show] – opens it as a dialog route and returns the tapped
+/// - [BrixAlert.show], opens it as a dialog route and returns the tapped
 ///   button's value (confirm, pick one of a few choices).
-/// - [BrixAlert.warning] / [BrixAlert.error] – an OK alert shown above
+/// - [BrixAlert.warning] / [BrixAlert.error], an OK alert shown above
 ///   everything (an overlay, not a route): navigating right after it
 ///   changes the screen underneath and the alert stays on top. A new one
 ///   replaces the open one.
@@ -175,7 +175,7 @@ class BrixAlert extends StatelessWidget {
     entry = OverlayEntry(
       builder: (context) => _OverlayAlert(
         key: key,
-        // Only this alert's entry – a newer one may have replaced it.
+        // Only this alert's entry, a newer one may have replaced it.
         onClosed: () {
           if (_entry == entry) _removeEntry();
         },

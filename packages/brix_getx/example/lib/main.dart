@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'routes.dart';
 
 /// brix + GetX demo: login, signup with a code, forgot / reset password,
-/// logout. No server needed – see `demo/demo_auth_provider.dart`.
+/// logout. No server needed, see `demo/demo_auth_provider.dart`.
 ///
 /// Demo account: demo@brix.dev / Demo@1234. Every code: 123456.
 void main() => runApp(const BrixExampleApp());

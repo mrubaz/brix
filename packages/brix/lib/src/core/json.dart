@@ -1,11 +1,11 @@
 /// A safe way to read decoded JSON (from any backend: REST, Firebase,
-/// Supabase, …) into your own models.
+/// Supabase, ...) into your own models.
 ///
 /// Reading never throws. A missing key or a value of the wrong type gives
-/// the fallback (or `null` for the `…OrNull` readers), and is reported to
+/// the fallback (or `null` for the `...OrNull` readers), and is reported to
 /// [Json.onProblem] so you see it while developing. Values are converted
-/// when it is safe: `"12"` → 12, `12` → "12", `"true"` / `1` → true,
-/// ISO text or epoch milliseconds → [DateTime].
+/// when it is safe: `"12"` to 12, `12` to "12", `"true"` / `1` to true,
+/// ISO text or epoch milliseconds to [DateTime].
 ///
 /// Keys may be paths: `json.string('profile.firstName')`.
 ///
@@ -81,7 +81,7 @@ class Json {
   DateTime? dateOrNull(String key) => _optional(key, _toDate, 'a date');
 
   /// The list at [key], each item read with [parse]. Items that are not
-  /// objects are skipped and reported. Missing → empty list.
+  /// objects are skipped and reported. Missing to empty list.
   List<T> list<T>(String key, T Function(Json json) parse) {
     final found = _lookup(key);
     if (!found.found || found.value == null) {
@@ -203,7 +203,7 @@ class Json {
     _ => null,
   };
 
-  /// Shows the shape, not the values – a [Json] may hold tokens or
+  /// Shows the shape, not the values, a [Json] may hold tokens or
   /// personal data that must not reach a log.
   @override
   String toString() =>

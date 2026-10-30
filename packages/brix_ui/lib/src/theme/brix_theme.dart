@@ -103,7 +103,7 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
   /// cards. Off by default: a solid card reads on any screen colour.
   final bool glass;
 
-  /// Texts brix_ui shows on its own (OK, default alert titles…).
+  /// Texts brix_ui shows on its own (OK, default alert titles...).
   final BrixUiTexts texts;
 
   /// Icons brix_ui shows on its own (alerts, toast, password button).
@@ -123,7 +123,7 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
   /// logic. A field's own `builder` wins.
   final BrixTextFieldBuilder? textFieldBuilder;
 
-  /// How every `BrixAlert` looks; `BrixAlert.show(style: …)` goes on top.
+  /// How every `BrixAlert` looks; `BrixAlert.show(style: ...)` goes on top.
   final BrixAlertStyle alert;
 
   /// Draws every alert card with the app's own widget; brix keeps the
@@ -144,7 +144,7 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
   /// widget.
   final BrixLoaderBuilder? loaderBuilder;
 
-  /// The theme set in the app, or – without one – the brix defaults for the
+  /// The theme set in the app, or, without one, the brix defaults for the
   /// app's current brightness, so widgets work with no setup.
   static BrixTheme of(BuildContext context) {
     final theme = Theme.of(context);

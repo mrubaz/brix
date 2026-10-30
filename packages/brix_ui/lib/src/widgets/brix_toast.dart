@@ -11,12 +11,12 @@ import 'brix_toast_data.dart';
 import 'brix_toast_style.dart';
 
 /// A short message that slides in at the top (or bottom) and hides by
-/// itself – for things that went right ("Saved", "Email sent"). Tap or
+/// itself, for things that went right ("Saved", "Email sent"). Tap or
 /// swipe towards the edge to hide it early. A new toast replaces the open
 /// one; screen readers announce it.
 ///
 /// Its look comes from `BrixTheme.toast`; draw a completely own card with
-/// `BrixTheme.toastBuilder` – brix keeps the timer, placing and swiping.
+/// `BrixTheme.toastBuilder`, brix keeps the timer, placing and swiping.
 ///
 /// ```dart
 /// BrixToast.success('Profile saved');

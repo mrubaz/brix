@@ -5,7 +5,7 @@ import 'brands.dart';
 import 'gallery_screen.dart';
 
 /// Every brix_ui widget on one screen. Switch light / dark and three brands
-/// live – the widgets never change, only the theme.
+/// live, the widgets never change, only the theme.
 void main() => runApp(const BrixUiExampleApp());
 
 class BrixUiExampleApp extends StatefulWidget {

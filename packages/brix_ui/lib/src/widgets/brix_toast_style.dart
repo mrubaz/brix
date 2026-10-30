@@ -16,7 +16,7 @@ enum BrixToastPosition {
 
 /// How `BrixToast`s look and behave. Every value is optional: unset values
 /// come from the theme and brix's defaults. Set it in
-/// `BrixTheme(toast: …)`.
+/// `BrixTheme(toast: ...)`.
 class BrixToastStyle {
   const BrixToastStyle({
     this.position,

@@ -1,0 +1,33 @@
+name: brix_cli
+description: "Create a Flutter app that runs at once: login, signup, email code, password reset, theme, network and storage, built on brix."
+version: 1.0.0
+repository: https://github.com/mrubaz/brix/tree/main/packages/brix_cli
+issue_tracker: https://github.com/mrubaz/brix/issues
+topics:
+  - cli
+  - scaffolding
+  - template
+  - authentication
+
+environment:
+  sdk: ^3.13.0
+
+executables:
+  brix: brix
+
+dependencies:
+  path: ^1.9.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0
+
+screenshots:
+  - description: "Login, signup with live password rules and the email code in a new app."
+    path: doc/screenshots/app_sign_in.png
+  - description: "Home, profile and delete account in a new app."
+    path: doc/screenshots/app_account.png
+  - description: "brix create in the terminal."
+    path: doc/screenshots/terminal.png
+  - description: "The folders of a new app."
+    path: doc/screenshots/folders.png

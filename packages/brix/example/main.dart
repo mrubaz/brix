@@ -1,4 +1,4 @@
-// A login with brix in plain Dart – no Flutter, no state library.
+// A login with brix in plain Dart, no Flutter, no state library.
 //
 // Run: dart run example/main.dart
 //

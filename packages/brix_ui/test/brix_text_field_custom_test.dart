@@ -159,7 +159,7 @@ void main() {
       );
       expect(_decoration(tester).label, isNotNull);
       expect(find.text('Email *'), findsOneWidget);
-      // Only one label – none above the field.
+      // Only one label, none above the field.
       expect(find.byType(Column), findsNothing);
     });
 

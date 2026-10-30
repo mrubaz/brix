@@ -23,7 +23,7 @@ class ApiReply {
   final Map<String, List<String>> fieldErrors;
 
   /// The body's own success flag (`"success": false` with status 200), or
-  /// `null` when the body has none – then the status code decides.
+  /// `null` when the body has none, then the status code decides.
   final bool? success;
 }
 
@@ -32,17 +32,17 @@ class ApiReply {
 ///
 /// ```dart
 /// ResponseReader.envelope()     // {success, message, data, errors}
-/// ResponseReader.fastApi()      // FastAPI: {detail: …}
+/// ResponseReader.fastApi()      // FastAPI: {detail: ...}
 /// ResponseReader.djangoRest()   // Django REST: {field: [...], detail}
-/// ResponseReader.custom((response) => ApiReply(data: …, message: …))
+/// ResponseReader.custom((response) => ApiReply(data: ..., message: ...))
 /// ```
 abstract class ResponseReader {
   const ResponseReader();
 
-  /// `{success, message, data, errors}` style – common for Node / Express,
+  /// `{success, message, data, errors}` style, common for Node / Express,
   /// Laravel, NestJS and most custom APIs. Each key is configurable;
   /// [errorKeys] are tried in order and may be paths (`data.errors`).
-  /// Errors may be a text, a list of texts, or a map of field → texts.
+  /// Errors may be a text, a list of texts, or a map of field to texts.
   const factory ResponseReader.envelope({
     String dataKey,
     String messageKey,
@@ -50,12 +50,12 @@ abstract class ResponseReader {
     List<String> errorKeys,
   }) = EnvelopeReader;
 
-  /// FastAPI: errors in `detail` – a text, or a list of
+  /// FastAPI: errors in `detail`, a text, or a list of
   /// `{loc: [..., field], msg}` (validation). Success bodies are the data.
   const factory ResponseReader.fastApi() = FastApiReader;
 
-  /// Django REST Framework: errors as `{detail}`, `{non_field_errors: […]}`
-  /// or `{field: […]}`. Success bodies are the data.
+  /// Django REST Framework: errors as `{detail}`, `{non_field_errors: [...]}`
+  /// or `{field: [...]}`. Success bodies are the data.
   const factory ResponseReader.djangoRest() = DjangoRestReader;
 
   /// Your own rules.
@@ -197,7 +197,7 @@ String? _text(Object? value) {
   return text;
 }
 
-/// Collects error texts from any shape: text, list, or field → texts map.
+/// Collects error texts from any shape: text, list, or field to texts map.
 class _Errors {
   final messages = <String>[];
   final fields = <String, List<String>>{};
@@ -238,7 +238,7 @@ class _Errors {
           collectField(field, item);
         }
       case Map():
-        // Nested objects (e.g. `address: {city: [...]}`) → `address.city`.
+        // Nested objects (e.g. `address: {city: [...]}`) to `address.city`.
         for (final MapEntry(:key, :value) in value.entries) {
           collectField('$field.$key', value);
         }

@@ -79,7 +79,7 @@ void main() {
       expect(find.byType(CupertinoActivityIndicator), findsOneWidget);
       await tester.tap(find.byType(BrixButton));
       expect(taps, 0);
-      // Still fully visible – only a disabled button fades.
+      // Still fully visible, only a disabled button fades.
       expect(
         tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity)).opacity,
         1,

@@ -4,19 +4,19 @@
 [![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-**The basic widgets every app needs – in your colours, your font, your shape. Light and dark from day one.**
+Buttons, text fields, a loader, alerts and toasts that look like your app. They take every colour, font and size from one theme, so switching to dark mode changes nothing in your screens.
 
-Buttons, text fields, a loader, alerts and toasts. They read everything from one theme, so the same code looks like *your* app – and switching to dark changes nothing in your widgets.
+![One kit in three brands](doc/screenshots/your_brand.png)
 
-![One kit, your brand](doc/screenshots/your_brand.png)
+What you get:
 
-- 🎨 **Your look** – colours, font, corner radius, heights, texts and icons all come from `BrixTheme`. Nothing is hard-coded.
-- 🌗 **Light and dark** – two themes, one widget tree. Theme changes animate.
-- 🧠 **Logic included** – loading buttons ignore double taps, alerts open from a controller and return the tapped value, toasts hide themselves.
-- 👀 **Readable everywhere** – alerts are a solid card on a dimmed screen, so they work on busy, colourful screens. Prefer glass? One switch.
-- 🌍 **Any language** – every built-in text can be replaced.
-- ♿ **Accessible** – 44 pt+ touch targets, labels read with their fields, toasts announced to screen readers.
-- 🪶 **Light** – depends only on Flutter and [brix](https://pub.dev/packages/brix). No state library, no font or sizing package.
+- Your look. Colours, font, corners, heights, texts and icons all come from `BrixTheme`. Nothing is fixed in the widgets.
+- Light and dark from the start. Theme changes animate.
+- The small logic is done. A loading button ignores extra taps, an alert opens from a controller and tells you which button was tapped, a toast hides by itself.
+- Alerts you can read on any screen. They are a solid card on a dimmed background. If you like frosted glass, it is one setting.
+- Any language. Every text the kit shows on its own can be replaced.
+- Accessible. Touch targets are at least 44 points, labels are read with their fields and toasts are announced to screen readers.
+- Light on dependencies. Only Flutter and [brix](https://pub.dev/packages/brix), no state library and no font or sizing package.
 
 ## Install
 
@@ -135,28 +135,28 @@ Slides in at the top, hides after 3 seconds (or on tap / swipe up), never blocks
 
 ## Make it yours
 
-Everything has a default – change only what you need.
+Everything has a default. Change only what you need.
 
 | What | How |
 |---|---|
-| Colours | `BrixColors.light(primary: …, background: …, danger: …)` and `BrixColors.dark(…)` |
+| Colours | `BrixColors.light(primary: ..., background: ..., danger: ...)` and `BrixColors.dark(...)` |
 | Font and text sizes | `BrixTypography(fontFamily: 'Inter')`, or whole styles: `BrixTypography(title: GoogleFonts.poppins(fontSize: 22))` |
 | Corners and sizes | `BrixShape(radius: 26, buttonHeight: 54, fieldHeight: 54, borderWidth: 1.5)` |
-| Texts (any language) | `BrixUiTexts(ok: 'ٹھیک ہے', errorTitle: 'خرابی', requiredField: '…')` |
+| Texts (any language) | `BrixUiTexts(ok: 'ٹھیک ہے', errorTitle: 'خرابی', requiredField: '...')` |
 | Icons (any set, SVG too) | `BrixUiIcons(success: BrixIcon(CupertinoIcons.check_mark_circled), error: BrixIcon.custom(svg))` |
 | Frosted glass alerts and toasts | `BrixTheme.light(glass: true)` |
-| Every button's look | `BrixButtonStyle(radius: 40, height: 56, upperCase: true, gradient: true, pressedScale: 1, …)` |
-| A completely own button | `buttonBuilder: (context, button) => MyButton(...)` – brix keeps the logic |
-| Every field's look | `BrixTextFieldStyle(border: BrixFieldBorder.underline, labelInside: true, radius: 24, fillColor: …)` |
-| A completely own field | `textFieldBuilder: (context, field) => MyField(...)` – brix keeps the logic |
-| Every alert's place and look | `BrixAlertStyle(alignment: Alignment.bottomCenter, transition: BrixAlertTransition.slideUp, maxWidth: 300, showIcon: false, buttonsVertical: true, …)` |
-| A completely own alert card | `alertBuilder: (context, alert) => MyCard(...)` – brix keeps the dimmed screen and the returned value |
-| Toast place, time and look | `BrixToastStyle(position: BrixToastPosition.bottom, duration: Duration(seconds: 2), animationDuration: …, …)` – top, centre or bottom |
-| A completely own toast | `toastBuilder: (context, toast) => MyToast(...)` – brix keeps the timer and swiping |
-| Spinner | `BrixLoaderStyle(radius: 14, color: …)`, or `loaderBuilder: (context, loader) => MySpinner(...)` – loading buttons use it too |
-| Button animation speed | `BrixButtonStyle(pressDuration: …, fadeDuration: …)` |
-| Required marker and errors | `BrixTextFieldStyle(requiredMarker: ' (required)', requiredMarkerStyle: …, errorStyle: …, errorMaxLines: 2)` |
-| Dimmed screen behind alerts | `BrixAlertStyle(scrimColor: …)` – transparent to keep the screen as it is |
+| Every button's look | `BrixButtonStyle(radius: 40, height: 56, upperCase: true, gradient: true, pressedScale: 1, ...)` |
+| A completely own button | `buttonBuilder: (context, button) => MyButton(...)`, brix keeps the logic |
+| Every field's look | `BrixTextFieldStyle(border: BrixFieldBorder.underline, labelInside: true, radius: 24, fillColor: ...)` |
+| A completely own field | `textFieldBuilder: (context, field) => MyField(...)`, brix keeps the logic |
+| Every alert's place and look | `BrixAlertStyle(alignment: Alignment.bottomCenter, transition: BrixAlertTransition.slideUp, maxWidth: 300, showIcon: false, buttonsVertical: true, ...)` |
+| A completely own alert card | `alertBuilder: (context, alert) => MyCard(...)`, brix keeps the dimmed screen and the returned value |
+| Toast place, time and look | `BrixToastStyle(position: BrixToastPosition.bottom, duration: Duration(seconds: 2), animationDuration: ..., ...)`, top, centre or bottom |
+| A completely own toast | `toastBuilder: (context, toast) => MyToast(...)`, brix keeps the timer and swiping |
+| Spinner | `BrixLoaderStyle(radius: 14, color: ...)`, or `loaderBuilder: (context, loader) => MySpinner(...)`, loading buttons use it too |
+| Button animation speed | `BrixButtonStyle(pressDuration: ..., fadeDuration: ...)` |
+| Required marker and errors | `BrixTextFieldStyle(requiredMarker: ' (required)', requiredMarkerStyle: ..., errorStyle: ..., errorMaxLines: 2)` |
+| Dimmed screen behind alerts | `BrixAlertStyle(scrimColor: ...)`, transparent to keep the screen as it is |
 
 ```dart
 BrixTheme.light(
@@ -169,7 +169,7 @@ BrixTheme.light(
 
 ### Buttons your way
 
-Three levels – use the one you need:
+Three levels: use the one you need:
 
 ```dart
 // 1. Every button in the app.
@@ -256,7 +256,7 @@ BrixTheme.light(
 )
 ```
 
-One alert only: `BrixAlert.show(style: …, builder: …)`.
+One alert only: `BrixAlert.show(style: ..., builder: ...)`.
 
 ![Default, theme style, own alert card and own bottom toast](doc/screenshots/alerts_toasts_custom.png)
 
@@ -269,7 +269,7 @@ Text('Hello', style: brix.typography.body.copyWith(color: brix.colors.text));
 
 ## With brix auth
 
-`BrixUiFeedback` is a ready [brix](https://pub.dev/packages/brix) `AuthFeedback` – failures and warnings as alerts, success messages as a toast. No adapter to write:
+`BrixUiFeedback` is a ready [brix](https://pub.dev/packages/brix) `AuthFeedback`: failures and warnings as alerts, success messages as a toast. No adapter to write:
 
 ```dart
 LoginFlow(
@@ -284,7 +284,7 @@ When the backend sends no message (e.g. no connection), brix's default text is s
 
 ## Example
 
-[`example/`](example) is every widget on one screen – switch light / dark and three brands live. Default is brix's own look; Forest uses only style settings (pill gradient buttons, underlined fields, bottom-sheet alerts, bottom toasts); Sunset draws its own buttons and toasts with builders, uses frosted glass and Urdu texts. See [`example/lib/brands.dart`](example/lib/brands.dart).
+[`example/`](example) is every widget on one screen. Switch light / dark and three brands live. Default is brix's own look; Forest uses only style settings (pill gradient buttons, underlined fields, bottom-sheet alerts, bottom toasts); Sunset draws its own buttons and toasts with builders, uses frosted glass and Urdu texts. See [`example/lib/brands.dart`](example/lib/brands.dart).
 
 ![The example in three brands](doc/screenshots/example.png)
 
@@ -299,6 +299,6 @@ cd example && flutter test tool/screenshots_test.dart --update-goldens  # exampl
 
 ## More brix
 
-brix_ui is part of [brix](https://github.com/mrubaz/brix) – auth, account, network, storage and GetX blocks that work together, each its own package.
+brix_ui is part of [brix](https://github.com/mrubaz/brix): auth, account, network, storage and GetX blocks that work together, each its own package.
 
 MIT licensed.

@@ -8,7 +8,7 @@ class NetworkResponse {
 
   final int statusCode;
 
-  /// Decoded JSON (`Map`, `List`, …), the text when it was not JSON,
+  /// Decoded JSON (`Map`, `List`, ...), the text when it was not JSON,
   /// `null` for an empty body, or a `DownloadedFile` for a successful
   /// file download (`NetworkRequest.wantsBytes`).
   final Object? body;

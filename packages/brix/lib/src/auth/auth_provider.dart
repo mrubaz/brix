@@ -5,17 +5,17 @@ import 'auth_session.dart';
 import 'otp_purpose.dart';
 
 /// The backend behind the auth flows. Each app writes one subclass for its
-/// backend (REST, Firebase, Supabase, …).
+/// backend (REST, Firebase, Supabase, ...).
 ///
 /// [TSignup] is the app's own typed signup body; [TUser] its user model.
 ///
 /// Only [login] and [logout] must be written. Every other call fails with
 /// [UnsupportedFailure] until the subclass overrides it, and calls added to
-/// brix later arrive the same way – so adapters never break on update.
+/// brix later arrive the same way, so adapters never break on update.
 ///
 /// Return [Failed] for anything the backend rejects. Errors may also be
 /// thrown; the flows catch them and turn them into a [Failure] with
-/// [mapError]. Pass values through as given – never trim or change a
+/// [mapError]. Pass values through as given, never trim or change a
 /// password.
 abstract class AuthProvider<TSignup, TUser> {
   const AuthProvider();

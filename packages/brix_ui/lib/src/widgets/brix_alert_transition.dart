@@ -7,9 +7,9 @@ enum BrixAlertTransition {
   /// Fades in only.
   fade,
 
-  /// Slides up from below – pairs with a bottom alignment (sheet look).
+  /// Slides up from below, pairs with a bottom alignment (sheet look).
   slideUp,
 
-  /// Slides down from above – pairs with a top alignment (banner look).
+  /// Slides down from above, pairs with a top alignment (banner look).
   slideDown,
 }

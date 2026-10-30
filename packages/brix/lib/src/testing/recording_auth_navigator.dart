@@ -1,6 +1,6 @@
 import '../../auth.dart';
 
-/// Navigator that only records where the flows went – for tests.
+/// Navigator that only records where the flows went, for tests.
 class RecordingAuthNavigator extends AuthNavigator {
   /// One entry per call, e.g. `home`, `login`, `login:a@b.com`,
   /// `otp:signup:a@b.com`, `forgot`, `back`.

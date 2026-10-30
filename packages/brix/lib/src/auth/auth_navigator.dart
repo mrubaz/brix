@@ -4,7 +4,7 @@ import 'otp_purpose.dart';
 /// Opens the app's screens for the auth flows, so brix never knows route
 /// names or the navigation library.
 ///
-/// Every call completes once the screen is opened – never wait for the new
+/// Every call completes once the screen is opened, never wait for the new
 /// screen to close (e.g. do not return `Get.toNamed`'s future), or the flow
 /// stays busy.
 ///

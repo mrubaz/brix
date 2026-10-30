@@ -1,9 +1,9 @@
 /// A button in a `BrixAlert`: its [label] and the [value] `BrixAlert.show`
 /// returns when it is tapped.
 ///
-/// - `BrixAlertButton` – outlined, the quiet choice (Cancel).
-/// - `BrixAlertButton.primary` – filled, the main choice.
-/// - `BrixAlertButton.destructive` – filled red (Delete, Log out).
+/// - `BrixAlertButton`, outlined, the quiet choice (Cancel).
+/// - `BrixAlertButton.primary`, filled, the main choice.
+/// - `BrixAlertButton.destructive`, filled red (Delete, Log out).
 class BrixAlertButton<T> {
   const BrixAlertButton({required this.label, this.value})
     : isPrimary = false,

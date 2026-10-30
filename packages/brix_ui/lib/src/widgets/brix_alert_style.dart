@@ -7,8 +7,8 @@ import 'brix_alert_transition.dart';
 /// How `BrixAlert`s look. Every value is optional: unset values come from
 /// the theme and brix's defaults.
 ///
-/// Set it for the whole app in `BrixTheme(alert: …)`, or for one alert
-/// with `BrixAlert.show(style: …)` – the alert's own values win.
+/// Set it for the whole app in `BrixTheme(alert: ...)`, or for one alert
+/// with `BrixAlert.show(style: ...)`, the alert's own values win.
 class BrixAlertStyle {
   const BrixAlertStyle({
     this.alignment,

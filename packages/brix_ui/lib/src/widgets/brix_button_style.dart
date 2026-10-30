@@ -5,8 +5,8 @@ import 'package:flutter/painting.dart';
 /// How `BrixButton`s look. Every value is optional: unset values come from
 /// the theme's [BrixShape] / [BrixTypography] and brix's defaults.
 ///
-/// Set it for the whole app in `BrixTheme(button: …)`, or for one button
-/// with `BrixButton(style: …)` – the button's own values win.
+/// Set it for the whole app in `BrixTheme(button: ...)`, or for one button
+/// with `BrixButton(style: ...)`, the button's own values win.
 ///
 /// ```dart
 /// BrixTheme.light(
@@ -68,7 +68,7 @@ class BrixButtonStyle {
   /// Outline width of `BrixButton.outlined`. Default: `shape.borderWidth`.
   final double? borderWidth;
 
-  /// Filled buttons use a primary → secondary gradient. Default: `false`.
+  /// Filled buttons use a primary to secondary gradient. Default: `false`.
   final bool? gradient;
 
   /// A light tap feel on press. Default: `true`.

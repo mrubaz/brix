@@ -52,7 +52,7 @@ class BrixLogger {
   /// Width of the box lines, in characters.
   final int width;
 
-  /// Where lines go, one call per line – e.g. `print` to read the log in a
+  /// Where lines go, one call per line, e.g. `print` to read the log in a
   /// terminal with `flutter run`. Default: the IDE console (VS Code,
   /// Android Studio) through `dart:developer`, one entry at a time, with
   /// colours on iOS too.
@@ -121,7 +121,7 @@ class BrixLogger {
     _emit(out);
   }
 
-  /// A start-up box with the brix mark: app name, version, environment, …
+  /// A start-up box with the brix mark: app name, version, environment, ...
   void banner(String title, {Map<String, String> details = const {}}) {
     if (!enabled) return;
     final out = <String>[];

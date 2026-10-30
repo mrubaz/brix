@@ -1,5 +1,5 @@
 name: brix_ui
-description: Basic Flutter widgets that follow your theme – buttons, text fields, loader, alerts and toasts, with light and dark theme tokens.
+description: "Basic Flutter widgets that follow your theme: buttons, text fields, loader, alerts and toasts, with light and dark theme tokens."
 version: 1.0.0
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_ui
 issue_tracker: https://github.com/mrubaz/brix/issues
@@ -24,23 +24,23 @@ dev_dependencies:
     sdk: flutter
 
 screenshots:
-  - description: One kit in three brands – default, own colours with round corners, a dark brand with sharp corners.
+  - description: "One kit in three brands: default, own colours with round corners, a dark brand with sharp corners."
     path: doc/screenshots/your_brand.png
-  - description: "The example app: one screen in three brands – Default, Forest, Sunset (own button widgets, dark)."
+  - description: "The example app, one screen in three brands: Default, Forest, Sunset (own button widgets, dark)."
     path: doc/screenshots/example.png
-  - description: The same widgets in light and dark.
+  - description: "The same widgets in light and dark."
     path: doc/screenshots/light_dark.png
-  - description: Filled, gradient, outlined, destructive, loading and disabled buttons.
+  - description: "Filled, gradient, outlined, destructive, loading and disabled buttons."
     path: doc/screenshots/buttons.png
   - description: "Buttons three ways: default, BrixButtonStyle in the theme, the app's own buttonBuilder."
     path: doc/screenshots/buttons_custom.png
-  - description: Text fields with label, required error, password and read-only.
+  - description: "Text fields with label, required error, password and read-only."
     path: doc/screenshots/text_fields.png
   - description: "Text fields three ways: default, underline with the label inside, the app's own textFieldBuilder."
     path: doc/screenshots/text_fields_custom.png
-  - description: Warning, error and confirm alerts on a busy screen.
+  - description: "Warning, error and confirm alerts on a busy screen."
     path: doc/screenshots/alerts.png
   - description: "Alerts and toasts your way: default, a bottom sheet from BrixAlertStyle, the app's own alertBuilder card, a bottom toast from toastBuilder."
     path: doc/screenshots/alerts_toasts_custom.png
-  - description: Success toasts at the top of the screen.
+  - description: "Success toasts at the top of the screen."
     path: doc/screenshots/toast.png

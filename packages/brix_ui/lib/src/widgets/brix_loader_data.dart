@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-/// Draws every `BrixLoader` – also the spinner inside a loading
-/// `BrixButton` – with the app's own widget (a Lottie, a branded
-/// spinner…).
+/// Draws every `BrixLoader`, also the spinner inside a loading
+/// `BrixButton`, with the app's own widget (a Lottie, a branded
+/// spinner...).
 typedef BrixLoaderBuilder = Widget Function(
   BuildContext context,
   BrixLoaderData loader,

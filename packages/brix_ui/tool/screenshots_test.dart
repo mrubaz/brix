@@ -4,43 +4,18 @@
 //
 // Not part of `flutter test` (only `test/` runs there): font rendering
 // differs a little between machines, so these images are made on demand.
-import 'dart:io';
 
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../tool/screenshot_kit/iphone.dart';
+
 const _out = '../doc/screenshots';
-const _pageColor = Color(0xFFE9ECF1);
-const _captionColor = Color(0xFF5B6270);
 
-Future<void> _loadFonts() async {
-  final root =
-      Platform.environment['FLUTTER_ROOT'] ??
-      File(Process.runSync('which', ['flutter']).stdout.toString().trim())
-          .resolveSymbolicLinksSync()
-          .replaceAll('/bin/flutter', '');
-  final dir = '$root/bin/cache/artifacts/material_fonts';
+Future<void> _loadFonts() => loadAppleFonts();
 
-  Future<void> load(String family, List<String> files) async {
-    final loader = FontLoader(family);
-    for (final file in files) {
-      final bytes = File('$dir/$file').readAsBytesSync();
-      loader.addFont(Future.value(ByteData.sublistView(bytes)));
-    }
-    await loader.load();
-  }
-
-  await load('Roboto', [
-    'Roboto-Regular.ttf',
-    'Roboto-Medium.ttf',
-    'Roboto-Bold.ttf',
-  ]);
-  await load('MaterialIcons', ['MaterialIcons-Regular.otf']);
-}
-
-BrixTypography _type() => BrixTypography(fontFamily: 'Roboto');
+BrixTypography _type() => BrixTypography(fontFamily: sfPro);
 
 final _light = BrixTheme.light(typography: _type());
 final _dark = BrixTheme.dark(typography: _type());
@@ -50,45 +25,29 @@ Widget _screen(
   BrixTheme theme,
   String caption,
   Widget child, {
-  double width = 340,
   double height = 520,
+  bool fullBleed = false,
 }) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Theme(
-        data: theme.toThemeData(),
+  final dark = theme.brightness == Brightness.dark;
+  return Captioned(
+    caption: caption,
+    child: IPhone(
+      dark: dark,
+      child: Theme(
+        data: iosTheme(theme.toThemeData()),
         child: Builder(
-          builder: (context) => Container(
-            width: width,
-            height: height,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: context.brix.colors.background,
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x22000000),
-                  blurRadius: 24,
-                  offset: Offset(0, 10),
-                ),
-              ],
+          builder: (context) => Material(
+            color: context.brix.colors.background,
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: fullBleed || child is _FullBleed ? 0 : 40,
+              ),
+              child: child,
             ),
-            child: Material(type: MaterialType.transparency, child: child),
           ),
         ),
       ),
-      const SizedBox(height: 14),
-      Text(
-        caption,
-        style: const TextStyle(
-          fontFamily: 'Roboto',
-          fontSize: 15,
-          fontWeight: FontWeight.w500,
-          color: _captionColor,
-        ),
-      ),
-    ],
+    ),
   );
 }
 
@@ -155,7 +114,7 @@ Widget _colourfulBackground() {
   ];
   return GridView.count(
     crossAxisCount: 2,
-    padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
+    padding: const EdgeInsets.fromLTRB(16, 90, 16, 16),
     mainAxisSpacing: 12,
     crossAxisSpacing: 12,
     physics: const NeverScrollableScrollPhysics(),
@@ -173,16 +132,28 @@ Widget _colourfulBackground() {
 
 /// An alert as it shows in the app: over the screen, behind the scrim.
 Widget _alertOver(Widget alert) {
-  return Builder(
-    builder: (context) => Stack(
-      fit: StackFit.expand,
-      children: [
-        _colourfulBackground(),
-        ColoredBox(color: context.brix.colors.scrim),
-        alert,
-      ],
+  return _FullBleed(
+    child: Builder(
+      builder: (context) => Stack(
+        fit: StackFit.expand,
+        children: [
+          _colourfulBackground(),
+          ColoredBox(color: context.brix.colors.scrim),
+          alert,
+        ],
+      ),
     ),
   );
+}
+
+/// A screen that also fills the status bar area (alerts dim all of it).
+class _FullBleed extends StatelessWidget {
+  const _FullBleed({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => child;
 }
 
 /// Pumps [screens] side by side on a [width] × [height] page, painted at
@@ -192,53 +163,7 @@ Future<void> _shoot(
   String name,
   List<Widget> screens, {
   double height = 640,
-}) async {
-  const scale = 2.0;
-  final width = 72 + screens.length * 340 + (screens.length - 1) * 32.0;
-  tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = Size(width * scale, height * scale);
-  addTearDown(tester.view.reset);
-  // Tests draw shadows without blur by default; screenshots want them real.
-  debugDisableShadows = false;
-  try {
-    await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: RepaintBoundary(
-          key: const Key('shot'),
-          child: FittedBox(
-            child: SizedBox(
-              width: width,
-              height: height,
-              child: Material(
-                color: _pageColor,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(36, 36, 36, 0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (var i = 0; i < screens.length; i++) ...[
-                        if (i > 0) const SizedBox(width: 32),
-                        screens[i],
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.pump(const Duration(milliseconds: 300));
-    await expectLater(
-      find.byKey(const Key('shot')),
-      matchesGoldenFile('$_out/$name.png'),
-    );
-  } finally {
-    debugDisableShadows = true;
-  }
-}
+}) => shootRow(tester, '$_out/$name.png', screens);
 
 void main() {
   setUpAll(_loadFonts);
@@ -246,7 +171,7 @@ void main() {
   testWidgets('light and dark', (tester) async {
     await _shoot(tester, 'light_dark', [
       _screen(_light, 'Light', _loginForm()),
-      _screen(_dark, 'Dark – same code', _loginForm()),
+      _screen(_dark, 'Dark, same code', _loginForm()),
     ]);
   });
 
@@ -275,7 +200,7 @@ void main() {
     );
     await _shoot(tester, 'buttons', [
       _screen(_light, 'Buttons', buttons()),
-      _screen(_dark, 'Buttons – dark', buttons()),
+      _screen(_dark, 'Buttons, dark', buttons()),
     ]);
   });
 
@@ -313,7 +238,7 @@ void main() {
     );
     await _shoot(tester, 'text_fields', [
       _screen(_light, 'Text fields', fields()),
-      _screen(_dark, 'Text fields – dark', fields()),
+      _screen(_dark, 'Text fields, dark', fields()),
     ]);
   });
 
@@ -365,7 +290,7 @@ void main() {
       ),
       _screen(
         _light,
-        'BrixAlert.show – returns a value',
+        'BrixAlert.show, returns a value',
         _alertOver(
           alert(
             title: 'Delete this photo?',
@@ -418,7 +343,7 @@ void main() {
       _screen(_light, 'BrixToast.success', toastOver('Profile saved')),
       _screen(
         _dark,
-        'With a title – dark',
+        'With a title, dark',
         toastOver('We sent a code to ada@brix.dev', title: 'Check your email'),
       ),
     ]);
@@ -508,7 +433,7 @@ void main() {
               : Text(
                   button.label,
                   style: const TextStyle(
-                    fontFamily: 'Roboto',
+                    fontFamily: sfPro,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Colors.black,
@@ -579,7 +504,7 @@ void main() {
               child: Text(
                 field.label!.toUpperCase(),
                 style: const TextStyle(
-                  fontFamily: 'Roboto',
+                  fontFamily: sfPro,
                   fontSize: 11,
                   letterSpacing: 1.4,
                   fontWeight: FontWeight.w700,
@@ -593,7 +518,7 @@ void main() {
             obscureText: field.obscureText,
             validator: field.validator,
             onTapOutside: field.onTapOutside,
-            style: const TextStyle(fontFamily: 'Roboto', fontSize: 16),
+            style: const TextStyle(fontFamily: sfPro, fontSize: 16),
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0xFFEDE9FF),
@@ -686,7 +611,7 @@ void main() {
             Text(
               alert.title,
               style: const TextStyle(
-                fontFamily: 'Roboto',
+                fontFamily: sfPro,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -698,7 +623,7 @@ void main() {
                 child: Text(
                   alert.message!,
                   style: const TextStyle(
-                    fontFamily: 'Roboto',
+                    fontFamily: sfPro,
                     fontSize: 14,
                     color: Color(0xFFB8C1D9),
                   ),
@@ -714,7 +639,7 @@ void main() {
                     child: Text(
                       button.label.toUpperCase(),
                       style: TextStyle(
-                        fontFamily: 'Roboto',
+                        fontFamily: sfPro,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1,
                         color: button.isDestructive
@@ -752,7 +677,7 @@ void main() {
               child: Text(
                 toast.message,
                 style: const TextStyle(
-                  fontFamily: 'Roboto',
+                  fontFamily: sfPro,
                   fontSize: 15,
                   color: Colors.white,
                 ),
@@ -763,7 +688,7 @@ void main() {
               child: const Text(
                 'Undo',
                 style: TextStyle(
-                  fontFamily: 'Roboto',
+                  fontFamily: sfPro,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFFFFD43B),
                 ),

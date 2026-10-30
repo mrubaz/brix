@@ -1,7 +1,7 @@
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/material.dart';
 
-/// Three looks from the same widgets – only the theme changes.
+/// Three looks from the same widgets, only the theme changes.
 enum Brand {
   /// brix's own defaults.
   standard('Default'),

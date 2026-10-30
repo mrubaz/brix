@@ -54,7 +54,7 @@ class BrixColors {
   /// Screen background.
   final Color background;
 
-  /// Cards, fields, alerts and toasts – anything that sits on [background].
+  /// Cards, fields, alerts and toasts, anything that sits on [background].
   final Color surface;
 
   /// Main text.

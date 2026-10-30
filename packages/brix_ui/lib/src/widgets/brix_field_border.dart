@@ -6,6 +6,6 @@ enum BrixFieldBorder {
   /// A line under the text only (Material / iOS settings look).
   underline,
 
-  /// No edge – use with a fill colour.
+  /// No edge, use with a fill colour.
   none,
 }

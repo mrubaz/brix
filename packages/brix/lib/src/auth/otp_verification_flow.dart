@@ -45,7 +45,7 @@ class OtpVerificationFlow<TUser> extends AuthCodeEntryFlow<TUser> {
     startCooldown();
   }
 
-  /// Checks [code] (trimmed). A code of the wrong length is a warning – no
+  /// Checks [code] (trimmed). A code of the wrong length is a warning, no
   /// backend call. Ignored while a check is running (double tap, auto
   /// submit plus button).
   Future<void> verify(String code) async {

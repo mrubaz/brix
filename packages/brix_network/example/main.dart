@@ -18,7 +18,7 @@ class Todo {
 }
 
 Future<void> main() async {
-  // This API answers with the data itself, no {data: …} envelope.
+  // This API answers with the data itself, no {data: ...} envelope.
   final api = BrixApi(
     baseUrl: 'https://jsonplaceholder.typicode.com/',
     reader: ResponseReader.custom((response) => ApiReply(data: response.body)),

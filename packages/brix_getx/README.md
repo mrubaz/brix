@@ -1,6 +1,6 @@
 # brix_getx
 
-GetX controllers for [brix](https://pub.dev/packages/brix): the text fields, form key, loading state and dispose code of every auth and account screen – so a screen is only its layout.
+GetX controllers for [brix](https://pub.dev/packages/brix). Each one holds the text fields, form key, loading state and clean-up code of an auth or account screen, so your screen is only its layout.
 
 | Controller | Screen |
 |---|---|
@@ -14,15 +14,15 @@ GetX controllers for [brix](https://pub.dev/packages/brix): the text fields, for
 | `BrixDeleteAccountController` | delete account with a code |
 | `BrixSessionController` | splash (`start`) and logout |
 
-| Login | Live password rules | Email code |
-|---|---|---|
-| ![Login](doc/screenshots/login.png) | ![Signup with password rules](doc/screenshots/signup_password_rules.png) | ![Code boxes](doc/screenshots/code_boxes.png) |
+![Login, signup and email code screens](doc/screenshots/app_sign_in.png)
 
-Real screens of the [example app](example) – each one only a layout over its controller.
+![Home, profile and delete account screens](doc/screenshots/app_account.png)
+
+These screens come from the app that [brix_cli](https://github.com/mrubaz/brix/tree/main/packages/brix_cli) creates. Each one is only a layout on top of a brix_getx controller.
 
 Helpers: `OtpCodeBoxes` (one box per digit), `PasswordRulesTracker` (live password checklist).
 
-All logic lives in [brix](https://pub.dev/packages/brix) – read its README first for the four classes you write (backend, storage, navigator, alerts).
+All logic lives in [brix](https://pub.dev/packages/brix), so read its README first for the four classes you write (backend, storage, navigator, alerts).
 
 ### How a screen works
 
@@ -234,7 +234,7 @@ Get.put(BrixDeleteAccountController(DeleteAccountFlow(
 )));
 ```
 
-Profile – add your fields:
+Profile, add your fields:
 
 ```dart
 class ProfileController extends BrixProfileController<User, ProfileBody> {
@@ -265,7 +265,7 @@ The view uses `formKey`, `isLoading`, `loadFailed` (with `load()` as retry), `is
 
 ## Example app
 
-[example/](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example) – login, signup with a code, forgot / reset password and logout on an in-memory demo backend. No server needed:
+[example/](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example): login, signup with a code, forgot / reset password and logout on an in-memory demo backend. No server needed:
 
 ```
 cd example

@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'brix_text_field_style.dart';
 
 /// Builds an app's own text field from what `BrixTextField` knows. brix
-/// keeps the logic – required check, password show / hide, Next / Done,
+/// keeps the logic, required check, password show / hide, Next / Done,
 /// closing the keyboard on a tap outside; pass the values below to your
 /// `TextFormField` and they work.
 typedef BrixTextFieldBuilder = Widget Function(
@@ -45,7 +45,7 @@ class BrixTextFieldData {
     required this.style,
   });
 
-  /// Always set – brix makes one when the app gave none.
+  /// Always set, brix makes one when the app gave none.
   final TextEditingController controller;
   final FocusNode focusNode;
 
@@ -92,7 +92,7 @@ class BrixTextFieldData {
   final bool readOnly;
   final Widget? prefixIcon;
 
-  /// The app's suffix icon (a password field gets none – draw your own
+  /// The app's suffix icon (a password field gets none, draw your own
   /// show / hide button with [toggleObscured]).
   final Widget? suffixIcon;
 

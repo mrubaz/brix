@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Development (local backend)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_development.dart"
+    },
+    {
+      "name": "Production (your API)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["--dart-define=API_URL=https://your.api/v1/"]
+    }
+  ]
+}

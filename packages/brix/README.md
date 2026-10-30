@@ -1,18 +1,20 @@
 # brix
 
-Ready-made app logic you would otherwise write again in every Flutter app: login, signup, email codes, password reset, profile, change password, delete account, app start and logout.
+The logic every Flutter app writes again and again, written once: login, signup, email codes, password reset, profile, change password, delete account, app start and logout.
 
-- **Any backend.** You write one small adapter for your API (REST, Firebase, Supabase, …).
-- **Any state library.** Pure Dart – no Flutter, no GetX / Bloc / Riverpod inside. A thin wrapper connects it to yours ([brix_getx](https://pub.dev/packages/brix_getx) for GetX).
-- **Your own UI.** brix has no screens; it tells your screens what to show and where to go. Want ready widgets? [brix_ui](https://pub.dev/packages/brix_ui).
-- **Safe defaults.** Passwords are never trimmed or logged, double taps are ignored, a failed logout on the server still logs out locally.
-- **Updates do not break your app.** New calls arrive with default bodies, new values work with a default `switch` case.
+brix works with any backend. You write one small class for your API, whether that is REST, Firebase or Supabase.
 
-Screens of the [demo app](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example), all running on brix:
+It works with any state library. brix is plain Dart, with no Flutter or state library inside, and a thin wrapper connects it to yours. For GetX that wrapper is ready: [brix_getx](https://pub.dev/packages/brix_getx).
 
-| Login | Live password rules | Email code |
-|---|---|---|
-| ![Login](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_getx/doc/screenshots/login.png) | ![Signup with password rules](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_getx/doc/screenshots/signup_password_rules.png) | ![Code boxes](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_getx/doc/screenshots/code_boxes.png) |
+It has no screens of its own. brix tells your screens what to show and where to go. If you want ready widgets, use [brix_ui](https://pub.dev/packages/brix_ui).
+
+The defaults are safe. Passwords are never trimmed or logged, a double tap does not send a request twice, and a failed logout on the server still logs you out on the device.
+
+Updates do not break your app. New calls come with default bodies, and new values work with a default `switch` case.
+
+Here is an app built on brix ([made with brix_cli](https://github.com/mrubaz/brix/tree/main/packages/brix_cli)):
+
+![Login, signup and email code screens](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_cli/doc/screenshots/app_sign_in.png)
 
 ## Install
 
@@ -38,9 +40,9 @@ You write four small classes once. Every flow uses them:
 | `AuthNavigator` | opens your screens (`toHome`, `toLogin` required) |
 | `AuthFeedback` | shows errors, warnings and success messages your way |
 
-A flow holds a small immutable state (`isSubmitting`, …) and tells you when it changes (`flow.changes`). Show a loader from it; call the flow's methods from your buttons.
+A flow holds a small immutable state (`isSubmitting`, ...) and tells you when it changes (`flow.changes`). Show a loader from it; call the flow's methods from your buttons.
 
-Every backend call returns a `Result`: `Success(data, message: …)` or `Failed(failure)`. A `Failure` says what kind of problem it was – `ValidationFailure`, `UnauthorizedFailure`, `ServerFailure`, `NetworkFailure`, `UnsupportedFailure`, `UnknownFailure` – and carries the backend's messages.
+Every backend call returns a `Result`: `Success(data, message: ...)` or `Failed(failure)`. A `Failure` says what kind of problem it was, `ValidationFailure`, `UnauthorizedFailure`, `ServerFailure`, `NetworkFailure`, `UnsupportedFailure`, `UnknownFailure`, and carries the backend's messages.
 
 ### What happens on a tap
 
@@ -177,7 +179,7 @@ class MyFeedback extends AuthFeedback {
 }
 ```
 
-Do not wait for a new screen to close inside a navigator method (e.g. do not return `Navigator.push`'s future) – the flow would stay busy.
+Do not wait for a new screen to close inside a navigator method (e.g. do not return `Navigator.push`'s future); the flow would stay busy.
 
 ## 3. Login
 
@@ -360,7 +362,7 @@ await delete.confirm('123456'); // deleted, everything cleared, login opened
 
 ## Reading JSON safely
 
-`Json` reads decoded JSON from any backend (REST, Firebase, Supabase, …) into your models without crashes:
+`Json` reads decoded JSON from any backend (REST, Firebase, Supabase, ...) into your models without crashes:
 
 ```dart
 factory User.fromJson(Json json) => User(
@@ -375,7 +377,7 @@ factory User.fromJson(Json json) => User(
 final user = User.fromJson(Json(jsonDecode(body)));
 ```
 
-A missing key or a wrong type gives the fallback (`''`, `0`, `false`, empty list) or `null` for the `…OrNull` readers – never an exception. See them while developing:
+A missing key or a wrong type gives the fallback (`''`, `0`, `false`, empty list) or `null` for the `...OrNull` readers, never an exception. See them while developing:
 
 ```dart
 Json.onProblem = (path, problem) => debugPrint('JSON $path: $problem');
@@ -418,7 +420,7 @@ One box per message, so three info lines in a row still read as three. Colours: 
 
 Every flow has `state` (now) and `changes` (a stream of new states). Connect it to whatever your app uses, and `dispose()` it when the screen closes.
 
-**GetX** – ready-made controllers in [brix_getx](https://pub.dev/packages/brix_getx).
+**GetX**: ready-made controllers in [brix_getx](https://pub.dev/packages/brix_getx).
 
 **Riverpod**
 
@@ -514,11 +516,11 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 ```
 
-The same works for every flow (signup, code, reset, profile, …) – only the state type changes.
+The same works for every flow (signup, code, reset, profile, ...), only the state type changes.
 
 ## Texts
 
-Backend messages always come first. When the backend sends none, brix has a plain English text, so you need no own text for the basics – and you can always show your own:
+Backend messages always come first. When the backend sends none, brix has a plain English text, so you need no own text for the basics, and you can always show your own:
 
 ```dart
 @override
@@ -534,9 +536,9 @@ void warning(AuthWarning warning) => showWarning(switch (warning) {
 });
 ```
 
-Password checklist: `for (final rule in policy.rules) Text(rule.labelFor(policy))` → "At least 8 characters", "One capital letter (A-Z)", … and `policy.unmetRules(password)` for the ticks.
+Password checklist: `for (final rule in policy.rules) Text(rule.labelFor(policy))` shows "At least 8 characters", "One capital letter (A-Z)", ... and `policy.unmetRules(password)` for the ticks.
 
-Form errors per field arrive in `failure.fieldErrors` – show them under the field:
+Form errors per field arrive in `failure.fieldErrors`, show them under the field:
 
 ```dart
 TextFormField(decoration: InputDecoration(errorText: failure?.fieldError('email')))
@@ -573,7 +575,7 @@ expect(navigator.visits, isEmpty);
 
 ## Example
 
-[example/main.dart](https://github.com/mrubaz/brix/blob/main/packages/brix/example/main.dart) – a login in plain Dart (`dart run example/main.dart`). A full Flutter app: [brix_getx example](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example).
+[example/main.dart](https://github.com/mrubaz/brix/blob/main/packages/brix/example/main.dart): a login in plain Dart (`dart run example/main.dart`). A full Flutter app: [brix_getx example](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example).
 
 ## License
 

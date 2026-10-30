@@ -19,7 +19,7 @@ abstract class AuthSessionStore<TUser> {
   Future<AuthSession<TUser>?> readSession();
 
   /// Removes the session and the pending identifier. Keeps the remembered
-  /// credentials – "remember me" must survive a logout.
+  /// credentials, "remember me" must survive a logout.
   Future<void> clearSession();
 
   /// The identifier waiting for its signup code, so the code screen still

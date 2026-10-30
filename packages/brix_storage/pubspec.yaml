@@ -1,5 +1,5 @@
 name: brix_storage
-description: Safe local storage for Flutter apps – values and secrets with reinstall and broken-keystore handling, plus a ready-made brix session store.
+description: "Safe local storage for Flutter apps: values and secrets with reinstall and broken-keystore handling, plus a ready-made brix session store."
 version: 1.0.0
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_storage
 issue_tracker: https://github.com/mrubaz/brix/issues

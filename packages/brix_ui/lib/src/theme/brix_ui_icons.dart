@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'brix_icon.dart';
 
 /// Every icon brix_ui shows on its own. Material icons by default; pass
-/// your own (`BrixIcon(CupertinoIcons.…)`, `BrixIcon.custom(svg)`).
+/// your own (`BrixIcon(CupertinoIcons....)`, `BrixIcon.custom(svg)`).
 class BrixUiIcons {
   const BrixUiIcons({
     this.warning = const BrixIcon(Icons.warning_amber_rounded),

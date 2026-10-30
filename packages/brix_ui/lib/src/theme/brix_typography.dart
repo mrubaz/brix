@@ -1,7 +1,7 @@
 import 'package:flutter/painting.dart';
 
 /// The text styles brix widgets use. Styles carry size, weight and font
-/// only – the colour comes from [BrixColors], so the same styles work in
+/// only, the colour comes from [BrixColors], so the same styles work in
 /// light and dark.
 ///
 /// Pass your own font with [fontFamily], or whole styles (e.g. from

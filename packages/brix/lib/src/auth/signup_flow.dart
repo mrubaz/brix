@@ -26,7 +26,7 @@ class SignupFlow<TSignup, TUser> extends AuthFormFlow<TUser> {
   final PasswordPolicy passwordPolicy;
 
   /// Registers with [request]. [identifier] (trimmed) is where a code goes;
-  /// [password] is only checked against the [passwordPolicy] here – put it
+  /// [password] is only checked against the [passwordPolicy] here, put it
   /// in [request] exactly as typed.
   Future<void> submit({
     required TSignup request,

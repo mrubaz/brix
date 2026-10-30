@@ -117,7 +117,7 @@ void main() {
   });
 }
 
-// The loader on the screen spins forever, so pumpAndSettle never ends –
+// The loader on the screen spins forever, so pumpAndSettle never ends -
 // pump long enough for routes, alerts and toasts to finish moving.
 Future<void> settle(WidgetTester tester) async {
   for (var i = 0; i < 10; i++) {

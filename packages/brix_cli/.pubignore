@@ -1,0 +1,14 @@
+# Only the template's own code is published; `flutter create` makes the
+# platform folders for each new app.
+templates/app/android/
+templates/app/ios/
+templates/app/web/
+templates/app/build/
+templates/app/.dart_tool/
+templates/app/.idea/
+templates/app/.metadata
+templates/app/.flutter-plugins-dependencies
+templates/app/pubspec.lock
+templates/app/pubspec_overrides.yaml
+build/
+templates/app/tool/

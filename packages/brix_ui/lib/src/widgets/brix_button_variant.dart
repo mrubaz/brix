@@ -17,7 +17,7 @@ class BrixButtonVariant {
   /// The quieter second action, outlined in `colors.primary`.
   static const outlined = BrixButtonVariant._('outlined');
 
-  /// Delete, log out – filled with `colors.danger`.
+  /// Delete, log out, filled with `colors.danger`.
   static const destructive = BrixButtonVariant._('destructive');
 
   final String name;
