@@ -1,3 +1,7 @@
+## Unreleased
+
+- Docs: README with screenshots of the demo app and the console (also on pub.dev); neutral examples ("My App", "items") in the `BrixLogger` docs.
+
 ## 1.3.1
 
 - `BrixLogger`: writes to the IDE console through `dart:developer`, one entry at a time, so colours show on iOS too (the iOS console printed the colour codes as text) and other logs cannot land inside a box. `output: print` still prints line by line, e.g. for `flutter run` in a terminal.

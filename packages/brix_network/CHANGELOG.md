@@ -1,3 +1,7 @@
+## Unreleased
+
+- Docs: README and pub.dev screenshot of the `PrettyNetworkLogger` console; neutral example paths ("items").
+
 ## 1.2.1
 
 - `PrettyNetworkLogger`: writes to the IDE console through `dart:developer`, one call at a time, so colours show on iOS too. `output: print` for a terminal.

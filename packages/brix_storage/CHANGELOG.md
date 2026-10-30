@@ -1,3 +1,7 @@
+## Unreleased
+
+- Docs: README and pub.dev image of what `BrixStorage` keeps where (values, secrets).
+
 ## 1.0.0
 
 First release.
