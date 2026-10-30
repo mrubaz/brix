@@ -1,6 +1,6 @@
 # Screenshots
 
-Renders the images of brix, brix_network and brix_storage from real output (macOS – uses the system's SF Mono font):
+Renders the images of brix, brix_network and brix_storage from real output. It runs on macOS only, because it uses the system's SF fonts:
 
 ```
 flutter test --update-goldens

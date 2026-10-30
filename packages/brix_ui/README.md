@@ -235,7 +235,7 @@ BrixTheme.light(
 // 2. One button.
 BrixButton(label: 'Skip', style: const BrixButtonStyle(height: 40), onPressed: skip)
 
-// 3. Your own widget – brix still blocks double taps, plays the haptic and
+// 3. Your own widget. brix still blocks double taps, plays the haptic and
 //    disables it while loading.
 BrixTheme.light(
   buttonBuilder: (context, button) => MyButton(
@@ -264,7 +264,7 @@ BrixTheme.light(
 // 2. One field.
 BrixTextField(label: 'Notes', maxLines: 4, style: const BrixTextFieldStyle(radius: 20))
 
-// 3. Your own widget – pass brix's values to your TextFormField and the
+// 3. Your own widget. Pass brix's values to your TextFormField and the
 //    required check, password show / hide and Next / Done keep working.
 BrixTheme.light(
   textFieldBuilder: (context, field) => TextFormField(
@@ -297,7 +297,7 @@ BrixTheme.light(
   ),
   toast: const BrixToastStyle(position: BrixToastPosition.bottom),
 
-  // Your own cards – brix still dims the screen, animates, returns the
+  // Your own cards. brix still dims the screen, animates, returns the
   // tapped value, runs the toast timer and handles swipes.
   dialogBuilder: (context, dialog) => MyDialogCard(
     title: dialog.title,

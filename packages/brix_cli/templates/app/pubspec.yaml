@@ -1,5 +1,5 @@
 name: brix_app
-description: A Flutter app made with brix – login, signup, email code, password reset and logout ready.
+description: "A Flutter app made with brix. Login, signup, email code, password reset, profile and logout are ready."
 publish_to: none
 version: 1.0.0+1
 
