@@ -1,3 +1,7 @@
+## Unreleased
+
+- Docs: README and pub.dev screenshots of the example app (login, live password rules, email code boxes).
+
 ## 1.0.2
 
 - README: flow diagrams showing what happens on a tap / in a call.
