@@ -1,20 +1,20 @@
 import 'package:flutter/widgets.dart';
 
 import '../theme/brix_icon.dart';
-import 'brix_alert_button.dart';
-import 'brix_alert_style.dart';
+import 'brix_dialog_button.dart';
+import 'brix_dialog_style.dart';
 
-/// Builds an app's own alert card. brix keeps the rest: the dimmed screen,
+/// Builds an app's own dialog card. brix keeps the rest: the dimmed screen,
 /// the animation, closing, returning the tapped value and replacing an
 /// open warning / error.
-typedef BrixAlertBuilder = Widget Function(
+typedef BrixDialogBuilder = Widget Function(
   BuildContext context,
-  BrixAlertData alert,
+  BrixDialogData dialog,
 );
 
-/// Everything a [BrixAlertBuilder] needs to draw an alert.
-class BrixAlertData {
-  const BrixAlertData({
+/// Everything a [BrixDialogBuilder] needs to draw a dialog.
+class BrixDialogData {
+  const BrixDialogData({
     required this.title,
     required this.message,
     required this.icon,
@@ -35,11 +35,11 @@ class BrixAlertData {
   /// The app's own widget under the message, if any.
   final Widget? content;
 
-  final List<BrixAlertButton<Object?>> buttons;
+  final List<BrixDialogButton<Object?>> buttons;
 
-  /// Call with the tapped button's `value`, closes the alert.
+  /// Call with the tapped button's `value`, closes the dialog.
   final ValueChanged<Object?> onPressed;
 
-  /// The theme's alert style with the alert's own on top.
-  final BrixAlertStyle style;
+  /// The theme's dialog style with the dialog's own on top.
+  final BrixDialogStyle style;
 }

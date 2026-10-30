@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/brix_theme_context.dart';
 
-/// The card behind alerts and toasts: solid `colors.surface` with a soft
+/// The card behind dialogs and toasts: solid `colors.surface` with a soft
 /// shadow, or frosted when the theme has `glass` on. Internal to brix_ui.
 class BrixPanel extends StatelessWidget {
   const BrixPanel({

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../theme/brix_theme_context.dart';
-import 'brix_field_border.dart';
+import 'brix_field_look.dart';
 import 'brix_text_field_data.dart';
 import 'brix_text_field_style.dart';
 
@@ -225,47 +225,9 @@ class _BrixTextFieldState extends State<BrixTextField> {
     }
 
     final colors = brix.colors;
-    final shape = brix.shape;
     final canType = widget.enabled && !widget.readOnly;
-    final edge = style.border ?? BrixFieldBorder.outline;
-    final width = style.borderWidth ?? shape.borderWidth;
-    final focusedWidth = style.focusedBorderWidth ?? width * 1.5;
-    final radius = BorderRadius.circular(style.radius ?? shape.radius);
-    final labelInside = style.labelInside ?? false;
-
-    InputBorder border(Color color, double width) => switch (edge) {
-      BrixFieldBorder.underline => UnderlineInputBorder(
-        borderSide: BorderSide(color: color, width: width),
-      ),
-      BrixFieldBorder.none => OutlineInputBorder(
-        borderRadius: radius,
-        borderSide: BorderSide.none,
-      ),
-      _ => OutlineInputBorder(
-        borderRadius: radius,
-        borderSide: BorderSide(color: color, width: width),
-      ),
-    };
-
-    final labelStyle = brix.typography.label
-        .copyWith(color: colors.text)
-        .merge(style.labelStyle);
-    final labelText = widget.label == null
-        ? null
-        : Text.rich(
-            TextSpan(
-              text: widget.label,
-              children: [
-                if (widget.isRequired && style.requiredMarker != '')
-                  TextSpan(
-                    text: style.requiredMarker ?? ' *',
-                    style: TextStyle(color: colors.danger)
-                        .merge(style.requiredMarkerStyle),
-                  ),
-              ],
-            ),
-            style: labelStyle,
-          );
+    final look = BrixFieldLook(brix, style);
+    final labelText = look.label(widget.label, isRequired: widget.isRequired);
 
     final passwordToggle = IconButton(
       tooltip: _obscured ? brix.texts.showPassword : brix.texts.hidePassword,
@@ -298,62 +260,19 @@ class _BrixTextFieldState extends State<BrixTextField> {
       maxLength: widget.maxLength,
       inputFormatters: widget.inputFormatters,
       cursorColor: colors.primary,
-      style: brix.typography.body
-          .copyWith(color: widget.enabled ? colors.text : colors.mutedText)
-          .merge(style.textStyle),
-      decoration: InputDecoration(
-        label: labelInside ? labelText : null,
-        floatingLabelStyle: labelInside
-            ? labelStyle.copyWith(color: colors.primary)
-            : null,
-        hintText: widget.hint,
-        hintStyle: brix.typography.body
-            .copyWith(color: colors.mutedText)
-            .merge(style.hintStyle),
+      style: look.textStyle(enabled: widget.enabled),
+      decoration: look.decoration(
+        canType: canType,
+        label: labelText,
+        hint: widget.hint,
         errorText: widget.errorText,
-        errorStyle: brix.typography.caption
-            .copyWith(color: colors.danger)
-            .merge(style.errorStyle),
-        errorMaxLines: style.errorMaxLines ?? 3,
         prefixIcon: widget.prefixIcon,
-        prefixIconColor: colors.mutedText,
         suffixIcon: widget.isPassword ? passwordToggle : widget.suffixIcon,
-        suffixIconColor: colors.mutedText,
-        filled: style.filled ?? edge != BrixFieldBorder.underline,
-        fillColor:
-            style.fillColor ?? (canType ? colors.surface : colors.background),
-        counterText: '',
-        isDense: true,
-        constraints: BoxConstraints(
-          minHeight: style.height ?? shape.fieldHeight,
-        ),
-        contentPadding: style.contentPadding ?? const EdgeInsets.all(14),
-        border: border(colors.border, width),
-        enabledBorder: border(colors.border, width),
-        disabledBorder: border(colors.border, width),
-        focusedBorder: canType
-            ? border(colors.primary, focusedWidth)
-            : border(colors.border, width),
-        errorBorder: border(colors.danger, width),
-        focusedErrorBorder: border(
-          colors.danger,
-          canType ? focusedWidth : width,
-        ),
       ),
     );
 
-    if (labelText == null || labelInside) return field;
-
     // The label is read with the field, not as separate text, so the
     // password button stays its own accessible button.
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ExcludeSemantics(child: labelText),
-        SizedBox(height: style.labelGap ?? 8),
-        Semantics(label: widget.label, child: field),
-      ],
-    );
+    return look.withLabel(field, labelText, widget.label);
   }
 }

@@ -24,7 +24,7 @@ class _BrixUiExampleAppState extends State<BrixUiExampleApp> {
     return MaterialApp(
       title: 'brix_ui',
       debugShowCheckedModeBanner: false,
-      // Lets alerts and toasts open without a BuildContext.
+      // Lets dialogs and toasts open without a BuildContext.
       navigatorKey: BrixUi.navigatorKey ??= GlobalKey<NavigatorState>(),
       theme: _brand.theme(Brightness.light).toThemeData(),
       darkTheme: _brand.theme(Brightness.dark).toThemeData(),

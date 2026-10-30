@@ -2,15 +2,15 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/painting.dart';
 
-import 'brix_alert_transition.dart';
+import 'brix_dialog_transition.dart';
 
-/// How `BrixAlert`s look. Every value is optional: unset values come from
+/// How `BrixDialog`s look. Every value is optional: unset values come from
 /// the theme and brix's defaults.
 ///
-/// Set it for the whole app in `BrixTheme(alert: ...)`, or for one alert
-/// with `BrixAlert.show(style: ...)`, the alert's own values win.
-class BrixAlertStyle {
-  const BrixAlertStyle({
+/// Set it for the whole app in `BrixTheme(dialog: ...)`, or for one dialog
+/// with `BrixDialog.show(style: ...)`, the dialog's own values win.
+class BrixDialogStyle {
+  const BrixDialogStyle({
     this.alignment,
     this.margin,
     this.transition,
@@ -30,7 +30,7 @@ class BrixAlertStyle {
   });
 
   /// Where the card sits on the screen (inside the safe area). Default:
-  /// centre; `Alignment.bottomCenter` with [BrixAlertTransition.slideUp]
+  /// centre; `Alignment.bottomCenter` with [BrixDialogTransition.slideUp]
   /// gives a sheet, `Alignment.topCenter` with `slideDown` a banner.
   final AlignmentGeometry? alignment;
 
@@ -38,8 +38,8 @@ class BrixAlertStyle {
   /// right.
   final EdgeInsetsGeometry? margin;
 
-  /// How it comes in and goes out. Default: [BrixAlertTransition.scale].
-  final BrixAlertTransition? transition;
+  /// How it comes in and goes out. Default: [BrixDialogTransition.scale].
+  final BrixDialogTransition? transition;
 
   /// Default: 220 ms.
   final Duration? transitionDuration;
@@ -83,10 +83,10 @@ class BrixAlertStyle {
   final double? buttonGap;
 
   /// This style with [other]'s set values on top.
-  BrixAlertStyle merge(BrixAlertStyle? other) {
+  BrixDialogStyle merge(BrixDialogStyle? other) {
     if (other == null) return this;
     TextStyle? text(TextStyle? a, TextStyle? b) => a == null ? b : a.merge(b);
-    return BrixAlertStyle(
+    return BrixDialogStyle(
       alignment: other.alignment ?? alignment,
       margin: other.margin ?? margin,
       transition: other.transition ?? transition,
@@ -107,11 +107,11 @@ class BrixAlertStyle {
   }
 
   /// Blends from this to [other] while the theme animates.
-  BrixAlertStyle lerp(BrixAlertStyle other, double t) {
+  BrixDialogStyle lerp(BrixDialogStyle other, double t) {
     T pick<T>(T a, T b) => t < 0.5 ? a : b;
     double? number(double? a, double? b) =>
         a == null || b == null ? pick(a, b) : lerpDouble(a, b, t);
-    return BrixAlertStyle(
+    return BrixDialogStyle(
       alignment: AlignmentGeometry.lerp(alignment, other.alignment, t),
       margin: EdgeInsetsGeometry.lerp(margin, other.margin, t),
       transition: pick(transition, other.transition),
@@ -133,7 +133,7 @@ class BrixAlertStyle {
 
   @override
   bool operator ==(Object other) =>
-      other is BrixAlertStyle &&
+      other is BrixDialogStyle &&
       other.alignment == alignment &&
       other.margin == margin &&
       other.transition == transition &&

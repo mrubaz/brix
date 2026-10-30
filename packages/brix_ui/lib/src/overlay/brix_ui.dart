@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-/// App-wide setup for alerts and toasts shown without a `BuildContext`
+/// App-wide setup for dialogs and toasts shown without a `BuildContext`
 /// (e.g. from a controller).
 ///
 /// ```dart
@@ -20,7 +20,7 @@ abstract final class BrixUi {
     if (overlay == null) {
       throw StateError(
         'brix_ui: pass a context, or set BrixUi.navigatorKey to the '
-        "MaterialApp's navigatorKey (GetX: Get.key) before showing an alert "
+        "MaterialApp's navigatorKey (GetX: Get.key) before showing a dialog "
         'or a toast.',
       );
     }
@@ -34,7 +34,7 @@ abstract final class BrixUi {
     if (found == null) {
       throw StateError(
         'brix_ui: pass a context, or set BrixUi.navigatorKey to the '
-        "MaterialApp's navigatorKey (GetX: Get.key) before showing an alert.",
+        "MaterialApp's navigatorKey (GetX: Get.key) before showing a dialog.",
       );
     }
     return found;

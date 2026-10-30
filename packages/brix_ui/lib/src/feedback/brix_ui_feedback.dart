@@ -1,10 +1,10 @@
 import 'package:brix/auth.dart';
 
-import '../widgets/brix_alert.dart';
+import '../widgets/brix_dialog.dart';
 import '../widgets/brix_toast.dart';
 
-/// A ready brix [AuthFeedback]: failures as the error alert, warnings as
-/// the warning alert, success messages as a toast. Needs
+/// A ready brix [AuthFeedback]: failures as the error dialog, warnings as
+/// the warning dialog, success messages as a toast. Needs
 /// `BrixUi.navigatorKey`.
 ///
 /// ```dart
@@ -14,12 +14,12 @@ class BrixUiFeedback extends AuthFeedback {
   const BrixUiFeedback();
 
   /// The backend's messages; without any, brix's text for the failure type
-  /// (e.g. no connection), so the alert is never empty.
+  /// (e.g. no connection), so the dialog is never empty.
   @override
-  void failure(Failure failure) => BrixAlert.error(failure.displayMessage);
+  void failure(Failure failure) => BrixDialog.error(failure.displayMessage);
 
   @override
-  void warning(AuthWarning warning) => BrixAlert.warning(warning.message);
+  void warning(AuthWarning warning) => BrixDialog.warning(warning.message);
 
   /// Nothing is shown when the backend sent no message.
   @override

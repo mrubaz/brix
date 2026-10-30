@@ -1,4 +1,12 @@
-## 1.0.0 (not released yet)
+## 1.1.0
+
+- `BrixAlert` is now `BrixDialog`, the name Flutter developers look for. `BrixAlertButton`, `BrixAlertStyle`, `BrixAlertData`, `BrixAlertTransition` and the theme's `alert` / `alertBuilder` follow (`BrixDialogButton`, `BrixDialogStyle`, `BrixDialogData`, `BrixDialogTransition`, `dialog`, `dialogBuilder`). Please use 1.1.0 instead of 1.0.0.
+- New `BrixSheet`: a bottom sheet with a grabber, an optional title and any content. It opens as tall as its content or at half or full height, closes when dragged down or tapped outside, and returns a value. `BrixSheetStyle` and `sheetBuilder` change its look.
+- New `BrixSelect<T>`: a typed dropdown that matches the text fields. A few options open in a menu, many in a sheet, with a tick on the chosen one. Works in a `Form` with a required check. `BrixSelectStyle` and `selectBuilder` change its look.
+- `BrixUiTexts.selectHint`, `BrixUiIcons.selectChevron` and `BrixUiIcons.selected` for the new select.
+- New screenshots on an iPhone, made from the real widgets.
+
+## 1.0.0
 
 First release.
 

@@ -5,37 +5,37 @@ import '../overlay/brix_ui.dart';
 import '../theme/brix_icon.dart';
 import '../theme/brix_theme.dart';
 import '../theme/brix_theme_context.dart';
-import 'brix_alert_button.dart';
-import 'brix_alert_data.dart';
-import 'brix_alert_style.dart';
-import 'brix_alert_transition.dart';
+import 'brix_dialog_button.dart';
+import 'brix_dialog_data.dart';
+import 'brix_dialog_style.dart';
+import 'brix_dialog_transition.dart';
 import 'brix_button.dart';
 import 'brix_panel.dart';
 
-/// A centred alert card on a dimmed screen (`colors.scrim`), so it reads on
+/// A centred dialog card on a dimmed screen (`colors.scrim`), so it reads on
 /// any background: optional icon, title, message, own content and buttons.
 ///
-/// - [BrixAlert.show], opens it as a dialog route and returns the tapped
+/// - [BrixDialog.show], opens it as a dialog route and returns the tapped
 ///   button's value (confirm, pick one of a few choices).
-/// - [BrixAlert.warning] / [BrixAlert.error], an OK alert shown above
+/// - [BrixDialog.warning] / [BrixDialog.error], an OK dialog shown above
 ///   everything (an overlay, not a route): navigating right after it
-///   changes the screen underneath and the alert stays on top. A new one
+///   changes the screen underneath and the dialog stays on top. A new one
 ///   replaces the open one.
 ///
 /// ```dart
-/// final delete = await BrixAlert.show<bool>(
+/// final delete = await BrixDialog.show<bool>(
 ///   title: 'Delete this photo?',
 ///   message: 'This cannot be undone.',
 ///   buttons: const [
-///     BrixAlertButton(label: 'Cancel', value: false),
-///     BrixAlertButton.destructive(label: 'Delete', value: true),
+///     BrixDialogButton(label: 'Cancel', value: false),
+///     BrixDialogButton.destructive(label: 'Delete', value: true),
 ///   ],
 /// );
 ///
-/// BrixAlert.error('No internet connection.');
+/// BrixDialog.error('No internet connection.');
 /// ```
-class BrixAlert extends StatelessWidget {
-  const BrixAlert({
+class BrixDialog extends StatelessWidget {
+  const BrixDialog({
     super.key,
     required this.title,
     this.message,
@@ -62,24 +62,24 @@ class BrixAlert extends StatelessWidget {
   /// Own widget under the message (e.g. a text field).
   final Widget? content;
 
-  final List<BrixAlertButton<Object?>> buttons;
+  final List<BrixDialogButton<Object?>> buttons;
 
   /// Called with the tapped button's value.
   final ValueChanged<Object?> onPressed;
 
-  /// This alert's look, on top of `BrixTheme.alert`.
-  final BrixAlertStyle? style;
+  /// This dialog's look, on top of `BrixTheme.dialog`.
+  final BrixDialogStyle? style;
 
-  /// Draws this alert's card instead of brix (wins over
-  /// `BrixTheme.alertBuilder`).
-  final BrixAlertBuilder? builder;
+  /// Draws this dialog's card instead of brix (wins over
+  /// `BrixTheme.dialogBuilder`).
+  final BrixDialogBuilder? builder;
 
   static const _defaultTransitionDuration = Duration(milliseconds: 220);
 
   static OverlayEntry? _entry;
-  static GlobalKey<_OverlayAlertState>? _entryKey;
+  static GlobalKey<_OverlayDialogState>? _entryKey;
 
-  /// Opens the alert as a dialog and returns the tapped button's value
+  /// Opens the dialog as a dialog and returns the tapped button's value
   /// (`null` when closed by tapping outside with [dismissible]). Without
   /// [buttons] it shows one OK button.
   static Future<T?> show<T>({
@@ -89,34 +89,34 @@ class BrixAlert extends StatelessWidget {
     BrixIcon? icon,
     Color? accent,
     Widget? content,
-    List<BrixAlertButton<T>>? buttons,
+    List<BrixDialogButton<T>>? buttons,
     bool dismissible = false,
-    BrixAlertStyle? style,
-    BrixAlertBuilder? builder,
+    BrixDialogStyle? style,
+    BrixDialogBuilder? builder,
   }) {
     final host = BrixUi.contextOf(context);
     final brix = BrixTheme.of(host);
-    final look = brix.alert.merge(style);
+    final look = brix.dialog.merge(style);
     return showGeneralDialog<T>(
       context: host,
       barrierDismissible: dismissible,
       barrierLabel: MaterialLocalizations.of(host).modalBarrierDismissLabel,
       barrierColor: look.scrimColor ?? brix.colors.scrim,
       transitionDuration: look.transitionDuration ?? _defaultTransitionDuration,
-      pageBuilder: (dialogContext, _, _) => BrixAlert(
+      pageBuilder: (dialogContext, _, _) => BrixDialog(
         title: title,
         message: message,
         icon: icon,
         accent: accent,
         content: content,
-        buttons: buttons ?? [BrixAlertButton<T>.primary(label: brix.texts.ok)],
+        buttons: buttons ?? [BrixDialogButton<T>.primary(label: brix.texts.ok)],
         onPressed: (value) => Navigator.of(dialogContext).pop(value as T?),
         style: style,
         builder: builder,
       ),
-      transitionBuilder: (_, animation, _, child) => _AlertTransition(
+      transitionBuilder: (_, animation, _, child) => _DialogTransition(
         animation: animation,
-        type: look.transition ?? BrixAlertTransition.scale,
+        type: look.transition ?? BrixDialogTransition.scale,
         child: child,
       ),
     );
@@ -126,12 +126,12 @@ class BrixAlert extends StatelessWidget {
   static void warning(String message, {String? title, BuildContext? context}) {
     _showOverlay(
       context,
-      (brix) => BrixAlert(
+      (brix) => BrixDialog(
         title: title ?? brix.texts.warningTitle,
         message: message,
         icon: brix.icons.warning,
         accent: brix.colors.warning,
-        buttons: [BrixAlertButton.primary(label: brix.texts.ok)],
+        buttons: [BrixDialogButton.primary(label: brix.texts.ok)],
         onPressed: (_) => dismiss(),
       ),
     );
@@ -142,18 +142,18 @@ class BrixAlert extends StatelessWidget {
   static void error(String message, {String? title, BuildContext? context}) {
     _showOverlay(
       context,
-      (brix) => BrixAlert(
+      (brix) => BrixDialog(
         title: title ?? brix.texts.errorTitle,
         message: message,
         icon: brix.icons.error,
         accent: brix.colors.danger,
-        buttons: [BrixAlertButton.primary(label: brix.texts.ok)],
+        buttons: [BrixDialogButton.primary(label: brix.texts.ok)],
         onPressed: (_) => dismiss(),
       ),
     );
   }
 
-  /// Closes the open [warning] / [error] alert, if any.
+  /// Closes the open [warning] / [error] dialog, if any.
   static void dismiss() {
     final state = _entryKey?.currentState;
     if (state != null) {
@@ -165,17 +165,17 @@ class BrixAlert extends StatelessWidget {
 
   static void _showOverlay(
     BuildContext? context,
-    BrixAlert Function(BrixTheme brix) build,
+    BrixDialog Function(BrixTheme brix) build,
   ) {
     final overlay = BrixUi.overlayOf(context);
     _removeEntry();
     HapticFeedback.mediumImpact();
-    final key = GlobalKey<_OverlayAlertState>();
+    final key = GlobalKey<_OverlayDialogState>();
     late final OverlayEntry entry;
     entry = OverlayEntry(
-      builder: (context) => _OverlayAlert(
+      builder: (context) => _OverlayDialog(
         key: key,
-        // Only this alert's entry, a newer one may have replaced it.
+        // Only this dialog's entry, a newer one may have replaced it.
         onClosed: () {
           if (_entry == entry) _removeEntry();
         },
@@ -198,14 +198,14 @@ class BrixAlert extends StatelessWidget {
     final brix = context.brix;
     final colors = brix.colors;
     final tint = accent ?? colors.primary;
-    final style = brix.alert.merge(this.style);
-    final builder = this.builder ?? brix.alertBuilder;
+    final style = brix.dialog.merge(this.style);
+    final builder = this.builder ?? brix.dialogBuilder;
 
     final Widget card;
     if (builder != null) {
       card = builder(
         context,
-        BrixAlertData(
+        BrixDialogData(
           title: title,
           message: message,
           icon: icon,
@@ -296,8 +296,8 @@ class BrixAlert extends StatelessWidget {
   }
 
   /// Two buttons side by side; one or three+ stacked (iOS style).
-  Widget _buttons(BrixAlertStyle style) {
-    Widget button(BrixAlertButton<Object?> b) {
+  Widget _buttons(BrixDialogStyle style) {
+    Widget button(BrixDialogButton<Object?> b) {
       void tap() => onPressed(b.value);
       if (b.isDestructive) {
         return BrixButton.destructive(label: b.label, onPressed: tap);
@@ -327,16 +327,16 @@ class BrixAlert extends StatelessWidget {
   }
 }
 
-/// The alert's way in and out ([BrixAlertTransition]).
-class _AlertTransition extends StatelessWidget {
-  const _AlertTransition({
+/// The dialog's way in and out ([BrixDialogTransition]).
+class _DialogTransition extends StatelessWidget {
+  const _DialogTransition({
     required this.animation,
     required this.type,
     required this.child,
   });
 
   final Animation<double> animation;
-  final BrixAlertTransition type;
+  final BrixDialogTransition type;
   final Widget child;
 
   @override
@@ -355,9 +355,9 @@ class _AlertTransition extends StatelessWidget {
     return FadeTransition(
       opacity: curved,
       child: switch (type) {
-        BrixAlertTransition.fade => child,
-        BrixAlertTransition.slideUp => slide(0.3),
-        BrixAlertTransition.slideDown => slide(-0.3),
+        BrixDialogTransition.fade => child,
+        BrixDialogTransition.slideUp => slide(0.3),
+        BrixDialogTransition.slideDown => slide(-0.3),
         _ => ScaleTransition(
           scale: Tween<double>(begin: 0.92, end: 1).animate(curved),
           child: child,
@@ -367,25 +367,29 @@ class _AlertTransition extends StatelessWidget {
   }
 }
 
-/// A warning / error alert in the overlay: scrim that blocks the screen,
+/// A warning / error dialog in the overlay: scrim that blocks the screen,
 /// animated in and out.
-class _OverlayAlert extends StatefulWidget {
-  const _OverlayAlert({super.key, required this.onClosed, required this.child});
+class _OverlayDialog extends StatefulWidget {
+  const _OverlayDialog({
+    super.key,
+    required this.onClosed,
+    required this.child,
+  });
 
   final VoidCallback onClosed;
   final Widget child;
 
   @override
-  State<_OverlayAlert> createState() => _OverlayAlertState();
+  State<_OverlayDialog> createState() => _OverlayDialogState();
 }
 
-class _OverlayAlertState extends State<_OverlayAlert>
+class _OverlayDialogState extends State<_OverlayDialog>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration:
-        context.brix.alert.transitionDuration ??
-        BrixAlert._defaultTransitionDuration,
+        context.brix.dialog.transitionDuration ??
+        BrixDialog._defaultTransitionDuration,
   )..forward();
 
   bool _closing = false;
@@ -410,15 +414,16 @@ class _OverlayAlertState extends State<_OverlayAlert>
         Positioned.fill(
           child: FadeTransition(
             opacity: _controller,
-            // Blocks taps on the screen below; only OK closes the alert.
+            // Blocks taps on the screen below; only OK closes the dialog.
             child: ModalBarrier(
-              color: context.brix.alert.scrimColor ?? context.brix.colors.scrim,
+              color:
+                  context.brix.dialog.scrimColor ?? context.brix.colors.scrim,
             ),
           ),
         ),
-        _AlertTransition(
+        _DialogTransition(
           animation: _controller,
-          type: context.brix.alert.transition ?? BrixAlertTransition.scale,
+          type: context.brix.dialog.transition ?? BrixDialogTransition.scale,
           child: widget.child,
         ),
       ],

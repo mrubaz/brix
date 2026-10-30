@@ -33,9 +33,11 @@ Widget _screen(
     caption: caption,
     child: IPhone(
       dark: dark,
-      child: Theme(
-        data: iosTheme(theme.toThemeData()),
-        child: Builder(
+      // Each phone is its own app, so menus open inside it.
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: iosTheme(theme.toThemeData()),
+        home: Builder(
           builder: (context) => Material(
             color: context.brix.colors.background,
             child: Padding(
@@ -102,51 +104,120 @@ Widget _loginForm({String title = 'Welcome back'}) {
   );
 }
 
-/// Busy, colourful screen content, to show alerts read on any background.
-Widget _colourfulBackground() {
-  const colors = [
-    Color(0xFFFF9F43),
-    Color(0xFF54A0FF),
-    Color(0xFF1DD1A1),
-    Color(0xFFFF6B6B),
-    Color(0xFF5F27CD),
-    Color(0xFFFECA57),
+/// An ordinary inbox, the kind of screen a dialog or sheet opens over.
+Widget _inbox() {
+  const mails = [
+    (
+      'Grace',
+      '9:12',
+      'Build is green',
+      'The release build passed on all devices.',
+    ),
+    (
+      'Ada',
+      '8:47',
+      'Release notes',
+      'I added the notes for 1.0, can you check?',
+    ),
+    ('Alan', 'Yesterday', 'Lunch on Friday', 'The usual place at one?'),
+    (
+      'Linus',
+      'Yesterday',
+      'Review done',
+      'Two small comments, the rest looks good.',
+    ),
+    ('Margaret', 'Monday', 'Launch plan', 'Here is the plan for next week.'),
   ];
-  return GridView.count(
-    crossAxisCount: 2,
-    padding: const EdgeInsets.fromLTRB(16, 90, 16, 16),
-    mainAxisSpacing: 12,
-    crossAxisSpacing: 12,
-    physics: const NeverScrollableScrollPhysics(),
-    children: [
-      for (final color in colors)
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(18),
+  return Builder(
+    builder: (context) {
+      final brix = context.brix;
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(20, 90, 20, 0),
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          Text(
+            'Inbox',
+            style: brix.typography.title.copyWith(
+              fontSize: 34,
+              fontWeight: FontWeight.w700,
+              color: brix.colors.text,
+            ),
           ),
-        ),
-    ],
+          const SizedBox(height: 12),
+          for (final (from, time, subject, preview) in mails)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: brix.colors.border, width: 0.5),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          from,
+                          style: brix.typography.body.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: brix.colors.text,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        time,
+                        style: brix.typography.caption.copyWith(
+                          fontSize: 14,
+                          color: brix.colors.mutedText,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subject,
+                    style: brix.typography.body.copyWith(
+                      fontSize: 15,
+                      color: brix.colors.text,
+                    ),
+                  ),
+                  Text(
+                    preview,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: brix.typography.body.copyWith(
+                      fontSize: 15,
+                      color: brix.colors.mutedText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      );
+    },
   );
 }
 
-/// An alert as it shows in the app: over the screen, behind the scrim.
-Widget _alertOver(Widget alert) {
+/// A dialog as it shows in the app: over the screen, behind the scrim.
+Widget _alertOver(Widget dialog) {
   return _FullBleed(
     child: Builder(
       builder: (context) => Stack(
         fit: StackFit.expand,
         children: [
-          _colourfulBackground(),
+          _inbox(),
           ColoredBox(color: context.brix.colors.scrim),
-          alert,
+          dialog,
         ],
       ),
     ),
   );
 }
 
-/// A screen that also fills the status bar area (alerts dim all of it).
+/// A screen that also fills the status bar area (dialogs dim all of it).
 class _FullBleed extends StatelessWidget {
   const _FullBleed({required this.child});
 
@@ -163,7 +234,8 @@ Future<void> _shoot(
   String name,
   List<Widget> screens, {
   double height = 640,
-}) => shootRow(tester, '$_out/$name.png', screens);
+  Future<void> Function()? prepare,
+}) => shootRow(tester, '$_out/$name.png', screens, prepare: prepare);
 
 void main() {
   setUpAll(_loadFonts);
@@ -242,15 +314,15 @@ void main() {
     ]);
   });
 
-  testWidgets('alerts', (tester) async {
-    Widget alert({
+  testWidgets('dialogs', (tester) async {
+    Widget dialog({
       required String title,
       required String message,
       required BrixIcon icon,
       required Color Function(BrixColors) accent,
-      required List<BrixAlertButton<Object?>> buttons,
+      required List<BrixDialogButton<Object?>> buttons,
     }) => Builder(
-      builder: (context) => BrixAlert(
+      builder: (context) => BrixDialog(
         title: title,
         message: message,
         icon: icon,
@@ -260,46 +332,46 @@ void main() {
       ),
     );
 
-    await _shoot(tester, 'alerts', [
+    await _shoot(tester, 'dialogs', [
       _screen(
         _light,
-        'BrixAlert.warning',
+        'BrixDialog.warning',
         _alertOver(
-          alert(
+          dialog(
             title: 'Please check',
             message: 'Enter your email address.',
             icon: _light.icons.warning,
             accent: (c) => c.warning,
-            buttons: const [BrixAlertButton.primary(label: 'OK')],
+            buttons: const [BrixDialogButton.primary(label: 'OK')],
           ),
         ),
       ),
       _screen(
         _dark,
-        'BrixAlert.error',
+        'BrixDialog.error',
         _alertOver(
-          alert(
+          dialog(
             title: 'Something went wrong',
             message:
                 'No internet connection. Check your connection and try again.',
             icon: _dark.icons.error,
             accent: (c) => c.danger,
-            buttons: const [BrixAlertButton.primary(label: 'OK')],
+            buttons: const [BrixDialogButton.primary(label: 'OK')],
           ),
         ),
       ),
       _screen(
         _light,
-        'BrixAlert.show, returns a value',
+        'BrixDialog.show, returns a value',
         _alertOver(
-          alert(
+          dialog(
             title: 'Delete this photo?',
             message: 'This cannot be undone.',
             icon: const BrixIcon(Icons.delete_outline),
             accent: (c) => c.danger,
             buttons: const [
-              BrixAlertButton(label: 'Cancel', value: false),
-              BrixAlertButton.destructive(label: 'Delete', value: true),
+              BrixDialogButton(label: 'Cancel', value: false),
+              BrixDialogButton.destructive(label: 'Delete', value: true),
             ],
           ),
         ),
@@ -561,13 +633,13 @@ void main() {
     ], height: 540);
   });
 
-  testWidgets('custom alerts and toasts', (tester) async {
+  testWidgets('custom dialogs and toasts', (tester) async {
     const buttons = [
-      BrixAlertButton<Object?>(label: 'Cancel', value: false),
-      BrixAlertButton<Object?>.destructive(label: 'Delete', value: true),
+      BrixDialogButton<Object?>(label: 'Cancel', value: false),
+      BrixDialogButton<Object?>.destructive(label: 'Delete', value: true),
     ];
     Widget alertIn(BrixTheme theme) => Builder(
-      builder: (context) => BrixAlert(
+      builder: (context) => BrixDialog(
         title: 'Delete this photo?',
         message: 'This cannot be undone.',
         icon: const BrixIcon(Icons.delete_outline),
@@ -579,11 +651,7 @@ void main() {
 
     final styled = BrixTheme.light(
       typography: _type(),
-      alert: const BrixAlertStyle(
-        alignment: Alignment.bottomCenter,
-        margin: EdgeInsets.fromLTRB(12, 0, 12, 12),
-        transition: BrixAlertTransition.slideUp,
-        maxWidth: double.infinity,
+      dialog: const BrixDialogStyle(
         showIcon: false,
         textAlign: TextAlign.start,
         buttonsVertical: true,
@@ -593,15 +661,15 @@ void main() {
       button: const BrixButtonStyle(radius: 40),
     );
 
-    // An app's own alert card: brix keeps the dimmed screen, animation and
+    // An app's own dialog card: brix keeps the dimmed screen, animation and
     // the returned value.
-    Widget sheet(BuildContext context, BrixAlertData alert) {
+    Widget sheet(BuildContext context, BrixDialogData dialog) {
       return Container(
         width: 290,
         decoration: BoxDecoration(
           color: const Color(0xFF14213D),
           borderRadius: BorderRadius.circular(8),
-          border: Border(top: BorderSide(color: alert.accent, width: 5)),
+          border: Border(top: BorderSide(color: dialog.accent, width: 5)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
         child: Column(
@@ -609,7 +677,7 @@ void main() {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              alert.title,
+              dialog.title,
               style: const TextStyle(
                 fontFamily: sfPro,
                 fontSize: 18,
@@ -617,11 +685,11 @@ void main() {
                 color: Colors.white,
               ),
             ),
-            if (alert.message != null)
+            if (dialog.message != null)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
-                  alert.message!,
+                  dialog.message!,
                   style: const TextStyle(
                     fontFamily: sfPro,
                     fontSize: 14,
@@ -633,9 +701,9 @@ void main() {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                for (final button in alert.buttons)
+                for (final button in dialog.buttons)
                   TextButton(
-                    onPressed: () => alert.onPressed(button.value),
+                    onPressed: () => dialog.onPressed(button.value),
                     child: Text(
                       button.label.toUpperCase(),
                       style: TextStyle(
@@ -643,7 +711,7 @@ void main() {
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1,
                         color: button.isDestructive
-                            ? alert.accent
+                            ? dialog.accent
                             : const Color(0xFFB8C1D9),
                       ),
                     ),
@@ -658,7 +726,7 @@ void main() {
     final own = BrixTheme.light(
       typography: _type(),
       colors: const BrixColors.light(danger: Color(0xFFFF6B6B)),
-      alertBuilder: sheet,
+      dialogBuilder: sheet,
     );
 
     // An app's own toast at the bottom: a dark pill with an Undo action.
@@ -705,17 +773,17 @@ void main() {
       toastBuilder: pill,
     );
 
-    await _shoot(tester, 'alerts_toasts_custom', [
+    await _shoot(tester, 'dialogs_toasts_custom', [
       _screen(_light, 'Default', _alertOver(alertIn(_light)), height: 480),
       _screen(
         styled,
-        'BrixAlertStyle: bottom sheet',
+        'BrixDialogStyle: plain, stacked buttons',
         _alertOver(alertIn(styled)),
         height: 480,
       ),
       _screen(
         own,
-        'Your own card (alertBuilder)',
+        'Your own card (dialogBuilder)',
         _alertOver(alertIn(own)),
         height: 480,
       ),
@@ -803,5 +871,168 @@ void main() {
         height: 480,
       ),
     ], height: 600);
+  });
+
+  testWidgets('sheets', (tester) async {
+    Widget row(IconData icon, String label, {bool chosen = false}) => Builder(
+      builder: (context) {
+        final brix = context.brix;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 13),
+          child: Row(
+            children: [
+              Icon(icon, color: brix.colors.primary, size: 24),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  label,
+                  style: brix.typography.body.copyWith(
+                    fontSize: 17,
+                    color: brix.colors.text,
+                  ),
+                ),
+              ),
+              if (chosen) Icon(Icons.check_rounded, color: brix.colors.primary),
+            ],
+          ),
+        );
+      },
+    );
+
+    Widget over(Widget sheet) => _FullBleed(
+      child: Builder(
+        builder: (context) => Stack(
+          fit: StackFit.expand,
+          children: [
+            _inbox(),
+            ColoredBox(color: context.brix.colors.scrim),
+            Align(alignment: Alignment.bottomCenter, child: sheet),
+          ],
+        ),
+      ),
+    );
+
+    final moveTo = BrixSheet(
+      title: 'Move to',
+      onClose: ([_]) {},
+      child: Column(
+        children: [
+          row(Icons.inbox_rounded, 'Inbox', chosen: true),
+          row(Icons.archive_rounded, 'Archive'),
+          row(Icons.report_rounded, 'Junk'),
+          row(Icons.delete_rounded, 'Trash'),
+        ],
+      ),
+    );
+
+    final newFolder = BrixSheet(
+      title: 'New folder',
+      onClose: ([_]) {},
+      child: Column(
+        children: [
+          BrixTextField(
+            controller: TextEditingController(text: 'Receipts'),
+            label: 'Name',
+          ),
+          const SizedBox(height: 20),
+          BrixButton(label: 'Create', onPressed: () {}),
+        ],
+      ),
+    );
+
+    final language = BrixSheet(
+      title: 'Language',
+      height: BrixSheetHeight.half,
+      onClose: ([_]) {},
+      child: Column(
+        children: [
+          for (final (name, chosen) in const [
+            ('English', true),
+            ('Urdu', false),
+            ('Arabic', false),
+            ('French', false),
+            ('German', false),
+            ('Spanish', false),
+          ])
+            row(Icons.language_rounded, name, chosen: chosen),
+        ],
+      ),
+    );
+
+    await _shoot(tester, 'sheets', [
+      _screen(_light, 'A list of choices', over(moveTo)),
+      _screen(_light, 'A short form', over(newFolder)),
+      _screen(_dark, 'Half height, dark', over(language)),
+    ]);
+  });
+
+  testWidgets('select', (tester) async {
+    const countries = [
+      BrixOption(value: 'pk', label: 'Pakistan'),
+      BrixOption(value: 'gb', label: 'United Kingdom'),
+      BrixOption(value: 'ae', label: 'United Arab Emirates'),
+      BrixOption(value: 'us', label: 'United States'),
+    ];
+    const zones = [
+      BrixOption(value: 'kar', label: 'Karachi (GMT+5)'),
+      BrixOption(value: 'lon', label: 'London (GMT+0)'),
+      BrixOption(value: 'dub', label: 'Dubai (GMT+4)'),
+      BrixOption(value: 'ny', label: 'New York (GMT-5)'),
+      BrixOption(value: 'tok', label: 'Tokyo (GMT+9)'),
+      BrixOption(value: 'syd', label: 'Sydney (GMT+11)'),
+      BrixOption(value: 'ber', label: 'Berlin (GMT+1)'),
+      BrixOption(value: 'par', label: 'Paris (GMT+1)'),
+    ];
+
+    Widget form({Key? countryKey, Key? zoneKey, String? zone}) => Padding(
+      padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
+      child: Column(
+        children: [
+          BrixSelect<String>(
+            key: countryKey,
+            label: 'Country',
+            isRequired: true,
+            value: countryKey == null ? 'pk' : 'gb',
+            options: countries,
+            onChanged: (_) {},
+          ),
+          const SizedBox(height: 18),
+          BrixSelect<String>(
+            key: zoneKey,
+            label: 'Time zone',
+            value: zone,
+            options: zones,
+            onChanged: (_) {},
+          ),
+          const SizedBox(height: 18),
+          const BrixSelect<String>(
+            label: 'Language',
+            options: [BrixOption(value: 'en', label: 'English')],
+          ),
+        ],
+      ),
+    );
+
+    const menuKey = Key('menu');
+    const sheetKey = Key('sheet');
+    await _shoot(
+      tester,
+      'select',
+      [
+        _screen(_light, 'Filled in', form(zone: 'kar')),
+        _screen(_light, 'A menu for a few options', form(countryKey: menuKey)),
+        _screen(
+          _light,
+          'A sheet for many',
+          form(zoneKey: sheetKey, zone: 'lon'),
+        ),
+      ],
+      prepare: () async {
+        // The sheet first: an open menu takes the next tap to close itself.
+        await tester.tap(find.byKey(sheetKey));
+        await tester.pump(const Duration(milliseconds: 600));
+        await tester.tap(find.byKey(menuKey));
+      },
+    );
   });
 }

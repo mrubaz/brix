@@ -13,7 +13,7 @@ final _theme = BrixTheme.light(
 );
 
 /// An app with a navigator key and a screen with a counter button, to see
-/// whether taps reach the screen under an alert.
+/// whether taps reach the screen under a dialog.
 Future<void> _pumpApp(
   WidgetTester tester, {
   BrixTheme? theme,
@@ -38,20 +38,20 @@ Future<void> _pumpApp(
 
 void main() {
   tearDown(() {
-    BrixAlert.dismiss();
+    BrixDialog.dismiss();
     BrixToast.dismiss();
     BrixUi.navigatorKey = null;
   });
 
-  group('BrixAlert.show', () {
+  group('BrixDialog.show', () {
     testWidgets('returns the tapped button value', (tester) async {
       await _pumpApp(tester);
-      final result = BrixAlert.show<bool>(
+      final result = BrixDialog.show<bool>(
         title: 'Delete this photo?',
         message: 'This cannot be undone.',
         buttons: const [
-          BrixAlertButton(label: 'Cancel', value: false),
-          BrixAlertButton.destructive(label: 'Delete', value: true),
+          BrixDialogButton(label: 'Cancel', value: false),
+          BrixDialogButton.destructive(label: 'Delete', value: true),
         ],
       );
       await tester.pumpAndSettle();
@@ -66,7 +66,7 @@ void main() {
 
     testWidgets('no buttons given: one OK, returns null', (tester) async {
       await _pumpApp(tester);
-      final result = BrixAlert.show<String>(title: 'Done');
+      final result = BrixDialog.show<String>(title: 'Done');
       await tester.pumpAndSettle();
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
@@ -75,7 +75,7 @@ void main() {
 
     testWidgets('dims the screen with the theme scrim', (tester) async {
       await _pumpApp(tester);
-      BrixAlert.show<void>(title: 'Hi');
+      BrixDialog.show<void>(title: 'Hi');
       await tester.pumpAndSettle();
       final barriers = tester.widgetList<ModalBarrier>(
         find.byType(ModalBarrier),
@@ -85,7 +85,7 @@ void main() {
 
     testWidgets('tapping outside closes only when dismissible', (tester) async {
       await _pumpApp(tester);
-      BrixAlert.show<void>(title: 'Stay');
+      BrixDialog.show<void>(title: 'Stay');
       await tester.pumpAndSettle();
       await tester.tapAt(const Offset(5, 5));
       await tester.pumpAndSettle();
@@ -93,7 +93,7 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      final result = BrixAlert.show<int>(title: 'Go', dismissible: true);
+      final result = BrixDialog.show<int>(title: 'Go', dismissible: true);
       await tester.pumpAndSettle();
       await tester.tapAt(const Offset(5, 5));
       await tester.pumpAndSettle();
@@ -103,11 +103,11 @@ void main() {
 
     testWidgets('two buttons side by side, three stacked', (tester) async {
       await _pumpApp(tester);
-      BrixAlert.show<int>(
+      BrixDialog.show<int>(
         title: 'Pick',
         buttons: const [
-          BrixAlertButton(label: 'A', value: 1),
-          BrixAlertButton.primary(label: 'B', value: 2),
+          BrixDialogButton(label: 'A', value: 1),
+          BrixDialogButton.primary(label: 'B', value: 2),
         ],
       );
       await tester.pumpAndSettle();
@@ -118,12 +118,12 @@ void main() {
       await tester.tap(find.text('A'));
       await tester.pumpAndSettle();
 
-      BrixAlert.show<int>(
+      BrixDialog.show<int>(
         title: 'Pick',
         buttons: const [
-          BrixAlertButton(label: 'A', value: 1),
-          BrixAlertButton(label: 'B', value: 2),
-          BrixAlertButton(label: 'C', value: 3),
+          BrixDialogButton(label: 'A', value: 1),
+          BrixDialogButton(label: 'B', value: 2),
+          BrixDialogButton(label: 'C', value: 3),
         ],
       );
       await tester.pumpAndSettle();
@@ -135,7 +135,7 @@ void main() {
 
     testWidgets('own content is shown', (tester) async {
       await _pumpApp(tester);
-      BrixAlert.show<void>(title: 'Note', content: const Text('Extra'));
+      BrixDialog.show<void>(title: 'Note', content: const Text('Extra'));
       await tester.pumpAndSettle();
       expect(find.text('Extra'), findsOneWidget);
     });
@@ -152,14 +152,14 @@ void main() {
           ),
         ),
       );
-      BrixAlert.show<void>(context: screen, title: 'Hello');
+      BrixDialog.show<void>(context: screen, title: 'Hello');
       await tester.pumpAndSettle();
       expect(find.text('Hello'), findsOneWidget);
     });
 
     test('no context and no navigator key: clear error', () {
       expect(
-        () => BrixAlert.show<void>(title: 'x'),
+        () => BrixDialog.show<void>(title: 'x'),
         throwsA(
           isA<StateError>().having(
             (e) => e.message,
@@ -171,12 +171,12 @@ void main() {
     });
   });
 
-  group('BrixAlert.warning / error', () {
+  group('BrixDialog.warning / error', () {
     testWidgets('warning: default title, warning colour, OK closes', (
       tester,
     ) async {
       await _pumpApp(tester);
-      BrixAlert.warning('Enter your email.');
+      BrixDialog.warning('Enter your email.');
       await tester.pumpAndSettle();
 
       expect(find.text('Please check'), findsOneWidget);
@@ -195,7 +195,7 @@ void main() {
       tester,
     ) async {
       await _pumpApp(tester);
-      BrixAlert.error('Server down');
+      BrixDialog.error('Server down');
       await tester.pumpAndSettle();
       expect(find.text('Something went wrong'), findsOneWidget);
       final icon = tester.widget<Icon>(
@@ -203,16 +203,16 @@ void main() {
       );
       expect(icon.color, _theme.colors.danger);
 
-      BrixAlert.error('Try later', title: 'Oops');
+      BrixDialog.error('Try later', title: 'Oops');
       await tester.pumpAndSettle();
       expect(find.text('Oops'), findsOneWidget);
     });
 
-    testWidgets('a new alert replaces the open one', (tester) async {
+    testWidgets('a new dialog replaces the open one', (tester) async {
       await _pumpApp(tester);
-      BrixAlert.warning('First');
+      BrixDialog.warning('First');
       await tester.pumpAndSettle();
-      BrixAlert.error('Second');
+      BrixDialog.error('Second');
       await tester.pumpAndSettle();
       expect(find.text('First'), findsNothing);
       expect(find.text('Second'), findsOneWidget);
@@ -225,7 +225,7 @@ void main() {
     testWidgets('blocks taps on the screen below', (tester) async {
       var taps = 0;
       await _pumpApp(tester, onScreenTap: () => taps++);
-      BrixAlert.warning('Wait');
+      BrixDialog.warning('Wait');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Screen button'), warnIfMissed: false);
       expect(taps, 0);
@@ -233,7 +233,7 @@ void main() {
 
     testWidgets('stays on top while the screen below changes', (tester) async {
       await _pumpApp(tester);
-      BrixAlert.error('Saved failed');
+      BrixDialog.error('Saved failed');
       BrixUi.navigatorKey!.currentState!.push(
         MaterialPageRoute<void>(builder: (_) => const Text('Next screen')),
       );
@@ -244,7 +244,7 @@ void main() {
 
     testWidgets('long message scrolls instead of overflowing', (tester) async {
       await _pumpApp(tester);
-      BrixAlert.error(List.filled(80, 'A very long line of text.').join('\n'));
+      BrixDialog.error(List.filled(80, 'A very long line of text.').join('\n'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.text('OK'), findsOneWidget);
@@ -252,7 +252,7 @@ void main() {
 
     testWidgets('dark theme: card uses the dark surface', (tester) async {
       await _pumpApp(tester, theme: BrixTheme.dark());
-      BrixAlert.warning('Dark');
+      BrixDialog.warning('Dark');
       await tester.pumpAndSettle();
       final card = tester
           .widgetList<Container>(find.byType(Container))
@@ -267,14 +267,14 @@ void main() {
 
     testWidgets('glass theme: frosted card', (tester) async {
       await _pumpApp(tester, theme: BrixTheme.light(glass: true));
-      BrixAlert.warning('Glass');
+      BrixDialog.warning('Glass');
       await tester.pumpAndSettle();
       expect(find.byType(BackdropFilter), findsOneWidget);
     });
 
     testWidgets('solid by default: no blur', (tester) async {
       await _pumpApp(tester);
-      BrixAlert.warning('Solid');
+      BrixDialog.warning('Solid');
       await tester.pumpAndSettle();
       expect(find.byType(BackdropFilter), findsNothing);
     });

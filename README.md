@@ -16,7 +16,7 @@ It works with any backend. REST APIs (Node, Laravel, Django, FastAPI and so on),
 
 It works with any state library. The logic is plain Dart. Ready GetX controllers come in brix_getx, and Riverpod, Bloc, Provider or `setState` need only a few lines.
 
-Your app keeps its own look. brix_ui gives you buttons, fields, alerts and toasts that take your colours, font and shape, in light and dark. You can also skip it and use your own widgets.
+Your app keeps its own look. brix_ui gives you buttons, fields, dialogs and toasts that take your colours, font and shape, in light and dark. You can also skip it and use your own widgets.
 
 Updates are safe. New features come with defaults, so a new version does not ask you to change your code.
 
@@ -30,7 +30,7 @@ Take only what you need. Each one is its own package.
 | [brix_getx](packages/brix_getx) | A GetX controller for every brix screen, with the text fields, form key and loading state ready. |
 | [brix_network](packages/brix_network) | REST calls on Dio that return a `Result`, with readers for common API shapes, field errors, uploads and downloads. |
 | [brix_storage](packages/brix_storage) | Values and secrets (Keychain and Keystore) that survive reinstalls, plus a ready session store. |
-| [brix_ui](packages/brix_ui) | Buttons, text fields, a loader, alerts and toasts from one theme, light and dark. |
+| [brix_ui](packages/brix_ui) | Buttons, text fields, a select, dialogs, sheets, toasts and a loader from one theme, light and dark. |
 | [brix_cli](packages/brix_cli) | `brix create my_app` makes a new app with all of the above already wired. Not on pub.dev yet. |
 
 ```
@@ -52,10 +52,10 @@ flowchart LR
     F --> ST["brix_storage<br/>BrixSessionStore"]
     ST --> K[("Keychain / Keystore<br/>and preferences")]
     F --> NAV["Your navigation<br/>AuthNavigator"]
-    F --> FB["Alerts and toasts<br/>BrixUiFeedback"]
+    F --> FB["Dialogs and toasts<br/>BrixUiFeedback"]
 ```
 
-You write a few small classes once: one for your backend and one for navigation. Storage and alerts come ready from brix_storage and brix_ui. Every flow then uses them.
+You write a few small classes once: one for your backend and one for navigation. Storage and dialogs come ready from brix_storage and brix_ui. Every flow then uses them.
 
 ## A login with GetX and a REST API
 
@@ -96,7 +96,7 @@ final store = BrixSessionStore<User>(
   userFromJson: User.fromJson,
 );
 
-// 4. The screen's controller, with alerts and toasts from brix_ui.
+// 4. The screen's controller, with dialogs and toasts from brix_ui.
 Get.put(BrixLoginController<User>(LoginFlow(
   provider: MyAuth(),
   store: store,
@@ -129,7 +129,7 @@ MaterialApp(
 
 ![One kit in three brands](packages/brix_ui/doc/screenshots/your_brand.png)
 
-There is much more in the [brix_ui README](packages/brix_ui): buttons, fields, alerts, toasts and how to swap in your own widgets.
+There is much more in the [brix_ui README](packages/brix_ui): buttons, fields, dialogs, toasts and how to swap in your own widgets.
 
 ## A console you can read
 

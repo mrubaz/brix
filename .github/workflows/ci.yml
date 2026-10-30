@@ -130,6 +130,17 @@ jobs:
         run: |
           dart run bin/brix.dart create ci_app
           cd ci_app
+          # Test against the packages in this repo, so a change that is not
+          # on pub.dev yet is checked too.
+          cat > pubspec_overrides.yaml <<YAML
+          dependency_overrides:
+            brix: {path: ../../brix}
+            brix_getx: {path: ../../brix_getx}
+            brix_network: {path: ../../brix_network}
+            brix_storage: {path: ../../brix_storage}
+            brix_ui: {path: ../../brix_ui}
+          YAML
+          flutter pub get
           flutter analyze --fatal-infos
           flutter test
       - name: Release builds hold no local test backend

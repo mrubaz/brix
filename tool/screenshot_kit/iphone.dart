@@ -266,6 +266,7 @@ Future<void> shootRow(
   double gap = 56,
   double padding = 64,
   Size? size,
+  Future<void> Function()? prepare,
 }) async {
   final width =
       size?.width ??
@@ -309,6 +310,11 @@ Future<void> shootRow(
       ),
     );
     await tester.pump(const Duration(milliseconds: 400));
+    // E.g. tap something to open a menu before the picture is taken.
+    if (prepare != null) {
+      await prepare();
+      await tester.pump(const Duration(milliseconds: 600));
+    }
     await expectLater(find.byKey(const Key('shot')), matchesGoldenFile(path));
   } finally {
     debugDisableShadows = true;

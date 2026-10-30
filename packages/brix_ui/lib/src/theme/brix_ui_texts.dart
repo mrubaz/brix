@@ -12,15 +12,16 @@ class BrixUiTexts {
     this.showPassword = 'Show password',
     this.hidePassword = 'Hide password',
     this.requiredField = 'This field is required.',
+    this.selectHint = 'Choose',
   });
 
-  /// The button that closes an alert.
+  /// The button that closes a dialog.
   final String ok;
 
-  /// Title of `BrixAlert.warning` when none is given.
+  /// Title of `BrixDialog.warning` when none is given.
   final String warningTitle;
 
-  /// Title of `BrixAlert.error` when none is given.
+  /// Title of `BrixDialog.error` when none is given.
   final String errorTitle;
 
   /// Password field button, while the text is hidden.
@@ -32,6 +33,9 @@ class BrixUiTexts {
   /// Error of a required `BrixTextField` left empty.
   final String requiredField;
 
+  /// Shown in an empty `BrixSelect`.
+  final String selectHint;
+
   BrixUiTexts copyWith({
     String? ok,
     String? warningTitle,
@@ -39,6 +43,7 @@ class BrixUiTexts {
     String? showPassword,
     String? hidePassword,
     String? requiredField,
+    String? selectHint,
   }) {
     return BrixUiTexts(
       ok: ok ?? this.ok,
@@ -47,6 +52,7 @@ class BrixUiTexts {
       showPassword: showPassword ?? this.showPassword,
       hidePassword: hidePassword ?? this.hidePassword,
       requiredField: requiredField ?? this.requiredField,
+      selectHint: selectHint ?? this.selectHint,
     );
   }
 
@@ -58,7 +64,8 @@ class BrixUiTexts {
       other.errorTitle == errorTitle &&
       other.showPassword == showPassword &&
       other.hidePassword == hidePassword &&
-      other.requiredField == requiredField;
+      other.requiredField == requiredField &&
+      other.selectHint == selectHint;
 
   @override
   int get hashCode => Object.hash(
@@ -68,5 +75,6 @@ class BrixUiTexts {
     showPassword,
     hidePassword,
     requiredField,
+    selectHint,
   );
 }

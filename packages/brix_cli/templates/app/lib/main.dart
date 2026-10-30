@@ -36,7 +36,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Alerts and toasts open from view models without a BuildContext.
+    // Dialogs and toasts open from view models without a BuildContext.
     BrixUi.navigatorKey = Get.key;
     return GetMaterialApp(
       title: 'brix_app',

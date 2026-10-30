@@ -12,7 +12,7 @@ dependencies:
   brix_getx: ^1.0.2
   brix_network: ^1.2.1
   brix_storage: ^1.0.0
-  brix_ui: ^1.0.0
+  brix_ui: ^1.1.0
   flutter:
     sdk: flutter
   get: ^4.7.3

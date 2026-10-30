@@ -49,7 +49,7 @@ class BrixTypography {
     required this.caption,
   });
 
-  /// Alert titles and headings.
+  /// Dialog titles and headings.
   final TextStyle title;
 
   /// Field input and messages.

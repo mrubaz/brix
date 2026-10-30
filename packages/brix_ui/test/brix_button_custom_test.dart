@@ -358,10 +358,10 @@ void main() {
       expect(find.byKey(const Key('own')), findsNothing);
     });
 
-    testWidgets('alerts use the app\'s button builder too', (tester) async {
+    testWidgets('dialogs use the app\'s button builder too', (tester) async {
       BrixUi.navigatorKey = GlobalKey<NavigatorState>();
       addTearDown(() {
-        BrixAlert.dismiss();
+        BrixDialog.dismiss();
         BrixUi.navigatorKey = null;
       });
       await tester.pumpWidget(
@@ -371,7 +371,7 @@ void main() {
           home: const SizedBox(),
         ),
       );
-      BrixAlert.warning('Check');
+      BrixDialog.warning('Check');
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('own')), findsOneWidget);
       await tester.tap(find.text('OK'));

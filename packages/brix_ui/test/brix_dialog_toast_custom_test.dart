@@ -13,18 +13,18 @@ Future<void> _pumpApp(WidgetTester tester, BrixTheme theme) async {
   );
 }
 
-/// An app's own alert card: tapping a button sends its value to brix.
-Widget _ownAlert(BuildContext context, BrixAlertData alert) {
+/// An app's own dialog card: tapping a button sends its value to brix.
+Widget _ownAlert(BuildContext context, BrixDialogData dialog) {
   return Container(
-    key: const Key('own-alert'),
-    color: alert.accent,
+    key: const Key('own-dialog'),
+    color: dialog.accent,
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('my ${alert.title}'),
-        for (final button in alert.buttons)
+        Text('my ${dialog.title}'),
+        for (final button in dialog.buttons)
           TextButton(
-            onPressed: () => alert.onPressed(button.value),
+            onPressed: () => dialog.onPressed(button.value),
             child: Text(button.label),
           ),
       ],
@@ -45,20 +45,20 @@ Widget _ownToast(BuildContext context, BrixToastData toast) {
 
 void main() {
   tearDown(() {
-    BrixAlert.dismiss();
+    BrixDialog.dismiss();
     BrixToast.dismiss();
     BrixUi.navigatorKey = null;
   });
 
   group('styles: merge, lerp, theme', () {
-    test('alert style', () {
-      const a = BrixAlertStyle(maxWidth: 300, buttonsVertical: true);
-      final b = a.merge(const BrixAlertStyle(maxWidth: 400));
+    test('dialog style', () {
+      const a = BrixDialogStyle(maxWidth: 300, buttonsVertical: true);
+      final b = a.merge(const BrixDialogStyle(maxWidth: 400));
       expect(b.maxWidth, 400);
       expect(b.buttonsVertical, isTrue);
       expect(a.lerp(b, 0.5).maxWidth, 350);
-      final theme = BrixTheme.light().copyWith(alert: a);
-      expect(theme.alert, a);
+      final theme = BrixTheme.light().copyWith(dialog: a);
+      expect(theme.dialog, a);
       expect(theme == BrixTheme.light(), isFalse);
     });
 
@@ -75,14 +75,14 @@ void main() {
     });
   });
 
-  group('alert style', () {
+  group('dialog style', () {
     testWidgets('width, icon size, text alignment, title style', (
       tester,
     ) async {
       await _pumpApp(
         tester,
         BrixTheme.light(
-          alert: const BrixAlertStyle(
+          dialog: const BrixDialogStyle(
             maxWidth: 280,
             iconSize: 40,
             iconCircleSize: 70,
@@ -91,7 +91,7 @@ void main() {
           ),
         ),
       );
-      BrixAlert.warning('Check this');
+      BrixDialog.warning('Check this');
       await tester.pumpAndSettle();
 
       expect(
@@ -119,9 +119,9 @@ void main() {
     testWidgets('icon can be hidden', (tester) async {
       await _pumpApp(
         tester,
-        BrixTheme.light(alert: const BrixAlertStyle(showIcon: false)),
+        BrixTheme.light(dialog: const BrixDialogStyle(showIcon: false)),
       );
-      BrixAlert.error('Failed');
+      BrixDialog.error('Failed');
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.error_outline_rounded), findsNothing);
       expect(find.text('Failed'), findsOneWidget);
@@ -131,14 +131,14 @@ void main() {
       await _pumpApp(
         tester,
         BrixTheme.light(
-          alert: const BrixAlertStyle(buttonsVertical: true, buttonGap: 20),
+          dialog: const BrixDialogStyle(buttonsVertical: true, buttonGap: 20),
         ),
       );
-      BrixAlert.show<int>(
+      BrixDialog.show<int>(
         title: 'Pick',
         buttons: const [
-          BrixAlertButton(label: 'A', value: 1),
-          BrixAlertButton(label: 'B', value: 2),
+          BrixDialogButton(label: 'A', value: 1),
+          BrixDialogButton(label: 'B', value: 2),
         ],
       );
       await tester.pumpAndSettle();
@@ -152,31 +152,31 @@ void main() {
     testWidgets('show(style:) wins over the theme', (tester) async {
       await _pumpApp(
         tester,
-        BrixTheme.light(alert: const BrixAlertStyle(showIcon: false)),
+        BrixTheme.light(dialog: const BrixDialogStyle(showIcon: false)),
       );
-      BrixAlert.show<void>(
+      BrixDialog.show<void>(
         title: 'Hi',
         icon: const BrixIcon(Icons.star),
-        style: const BrixAlertStyle(showIcon: true),
+        style: const BrixDialogStyle(showIcon: true),
       );
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.star), findsOneWidget);
     });
   });
 
-  group('alert placement', () {
+  group('dialog placement', () {
     testWidgets('bottom alignment with a margin (sheet look)', (tester) async {
       await _pumpApp(
         tester,
         BrixTheme.light(
-          alert: const BrixAlertStyle(
+          dialog: const BrixDialogStyle(
             alignment: Alignment.bottomCenter,
             margin: EdgeInsets.fromLTRB(12, 0, 12, 30),
-            transition: BrixAlertTransition.slideUp,
+            transition: BrixDialogTransition.slideUp,
           ),
         ),
       );
-      BrixAlert.warning('Low');
+      BrixDialog.warning('Low');
       await tester.pumpAndSettle();
       final screen = tester.getSize(find.byType(Scaffold));
       final ok = tester.getRect(find.widgetWithText(BrixButton, 'OK'));
@@ -189,13 +189,13 @@ void main() {
       await _pumpApp(
         tester,
         BrixTheme.light(
-          alert: const BrixAlertStyle(
+          dialog: const BrixDialogStyle(
             alignment: Alignment.topCenter,
-            transition: BrixAlertTransition.slideDown,
+            transition: BrixDialogTransition.slideDown,
           ),
         ),
       );
-      BrixAlert.error('Top');
+      BrixDialog.error('Top');
       await tester.pumpAndSettle();
       expect(
         tester.getTopLeft(find.text('Something went wrong')).dy,
@@ -205,7 +205,7 @@ void main() {
 
     testWidgets('centre by default', (tester) async {
       await _pumpApp(tester, BrixTheme.light());
-      BrixAlert.warning('Mid');
+      BrixDialog.warning('Mid');
       await tester.pumpAndSettle();
       final screen = tester.getSize(find.byType(Scaffold));
       final message = tester.getCenter(find.text('Mid'));
@@ -216,13 +216,13 @@ void main() {
       await _pumpApp(
         tester,
         BrixTheme.light(
-          alert: const BrixAlertStyle(
-            transition: BrixAlertTransition.fade,
+          dialog: const BrixDialogStyle(
+            transition: BrixDialogTransition.fade,
             transitionDuration: Duration(milliseconds: 600),
           ),
         ),
       );
-      final result = BrixAlert.show<int>(title: 'Slow');
+      final result = BrixDialog.show<int>(title: 'Slow');
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
       final fade = tester.widget<FadeTransition>(
@@ -240,66 +240,68 @@ void main() {
       expect(await result, isNull);
     });
 
-    testWidgets('show(style:) moves one alert', (tester) async {
+    testWidgets('show(style:) moves one dialog', (tester) async {
       await _pumpApp(tester, BrixTheme.light());
-      BrixAlert.show<void>(
+      BrixDialog.show<void>(
         title: 'Here',
-        style: const BrixAlertStyle(alignment: Alignment.topCenter),
+        style: const BrixDialogStyle(alignment: Alignment.topCenter),
       );
       await tester.pumpAndSettle();
       expect(tester.getTopLeft(find.text('Here')).dy, lessThan(150));
     });
   });
 
-  group('alert builder', () {
+  group('dialog builder', () {
     testWidgets('own card; the tapped value still comes back', (tester) async {
-      await _pumpApp(tester, BrixTheme.light(alertBuilder: _ownAlert));
-      final result = BrixAlert.show<bool>(
+      await _pumpApp(tester, BrixTheme.light(dialogBuilder: _ownAlert));
+      final result = BrixDialog.show<bool>(
         title: 'Delete?',
         buttons: const [
-          BrixAlertButton(label: 'No', value: false),
-          BrixAlertButton.destructive(label: 'Yes', value: true),
+          BrixDialogButton(label: 'No', value: false),
+          BrixDialogButton.destructive(label: 'Yes', value: true),
         ],
       );
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('own-alert')), findsOneWidget);
+      expect(find.byKey(const Key('own-dialog')), findsOneWidget);
       expect(find.text('my Delete?'), findsOneWidget);
 
       await tester.tap(find.text('Yes'));
       await tester.pumpAndSettle();
       expect(await result, isTrue);
-      expect(find.byKey(const Key('own-alert')), findsNothing);
+      expect(find.byKey(const Key('own-dialog')), findsNothing);
     });
 
     testWidgets('warning in an own card: accent and OK close it', (
       tester,
     ) async {
-      await _pumpApp(tester, BrixTheme.light(alertBuilder: _ownAlert));
-      BrixAlert.warning('Check');
+      await _pumpApp(tester, BrixTheme.light(dialogBuilder: _ownAlert));
+      BrixDialog.warning('Check');
       await tester.pumpAndSettle();
-      final card = tester.widget<Container>(find.byKey(const Key('own-alert')));
+      final card = tester.widget<Container>(
+        find.byKey(const Key('own-dialog')),
+      );
       expect(card.color, const BrixColors.light().warning);
       expect(find.text('my Please check'), findsOneWidget);
 
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('own-alert')), findsNothing);
+      expect(find.byKey(const Key('own-dialog')), findsNothing);
     });
 
     testWidgets('show(builder:) wins over the theme builder', (tester) async {
-      await _pumpApp(tester, BrixTheme.light(alertBuilder: _ownAlert));
-      BrixAlert.show<void>(
+      await _pumpApp(tester, BrixTheme.light(dialogBuilder: _ownAlert));
+      BrixDialog.show<void>(
         title: 'Hi',
-        builder: (context, alert) => const Text('one-off'),
+        builder: (context, dialog) => const Text('one-off'),
       );
       await tester.pumpAndSettle();
       expect(find.text('one-off'), findsOneWidget);
-      expect(find.byKey(const Key('own-alert')), findsNothing);
+      expect(find.byKey(const Key('own-dialog')), findsNothing);
     });
 
     testWidgets('own card still on the dimmed screen', (tester) async {
-      await _pumpApp(tester, BrixTheme.light(alertBuilder: _ownAlert));
-      BrixAlert.error('x');
+      await _pumpApp(tester, BrixTheme.light(dialogBuilder: _ownAlert));
+      BrixDialog.error('x');
       await tester.pumpAndSettle();
       expect(
         tester

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/brix_alert_data.dart';
-import '../widgets/brix_alert_style.dart';
+import '../widgets/brix_dialog_data.dart';
+import '../widgets/brix_dialog_style.dart';
 import '../widgets/brix_button_data.dart';
 import '../widgets/brix_button_style.dart';
 import '../widgets/brix_loader_data.dart';
 import '../widgets/brix_loader_style.dart';
+import '../widgets/brix_select_data.dart';
+import '../widgets/brix_select_style.dart';
+import '../widgets/brix_sheet_data.dart';
+import '../widgets/brix_sheet_style.dart';
 import '../widgets/brix_text_field_data.dart';
 import '../widgets/brix_text_field_style.dart';
 import '../widgets/brix_toast_data.dart';
@@ -41,12 +45,16 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
     this.buttonBuilder,
     this.textField = const BrixTextFieldStyle(),
     this.textFieldBuilder,
-    this.alert = const BrixAlertStyle(),
-    this.alertBuilder,
+    this.dialog = const BrixDialogStyle(),
+    this.dialogBuilder,
     this.toast = const BrixToastStyle(),
     this.toastBuilder,
     this.loader = const BrixLoaderStyle(),
     this.loaderBuilder,
+    this.sheet = const BrixSheetStyle(),
+    this.sheetBuilder,
+    this.select = const BrixSelectStyle(),
+    this.selectBuilder,
   }) : brightness = Brightness.light,
        colors = colors ?? const BrixColors.light(),
        typography = typography ?? BrixTypography();
@@ -62,12 +70,16 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
     this.buttonBuilder,
     this.textField = const BrixTextFieldStyle(),
     this.textFieldBuilder,
-    this.alert = const BrixAlertStyle(),
-    this.alertBuilder,
+    this.dialog = const BrixDialogStyle(),
+    this.dialogBuilder,
     this.toast = const BrixToastStyle(),
     this.toastBuilder,
     this.loader = const BrixLoaderStyle(),
     this.loaderBuilder,
+    this.sheet = const BrixSheetStyle(),
+    this.sheetBuilder,
+    this.select = const BrixSelectStyle(),
+    this.selectBuilder,
   }) : brightness = Brightness.dark,
        colors = colors ?? const BrixColors.dark(),
        typography = typography ?? BrixTypography();
@@ -84,12 +96,16 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
     required this.buttonBuilder,
     required this.textField,
     required this.textFieldBuilder,
-    required this.alert,
-    required this.alertBuilder,
+    required this.dialog,
+    required this.dialogBuilder,
     required this.toast,
     required this.toastBuilder,
     required this.loader,
     required this.loaderBuilder,
+    required this.sheet,
+    required this.sheetBuilder,
+    required this.select,
+    required this.selectBuilder,
   });
 
   /// Whether this is the light or the dark theme.
@@ -99,14 +115,14 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
   final BrixTypography typography;
   final BrixShape shape;
 
-  /// Frosted (blurred, see-through) alerts and toasts instead of solid
+  /// Frosted (blurred, see-through) dialogs and toasts instead of solid
   /// cards. Off by default: a solid card reads on any screen colour.
   final bool glass;
 
-  /// Texts brix_ui shows on its own (OK, default alert titles...).
+  /// Texts brix_ui shows on its own (OK, default dialog titles...).
   final BrixUiTexts texts;
 
-  /// Icons brix_ui shows on its own (alerts, toast, password button).
+  /// Icons brix_ui shows on its own (dialogs, toast, password button).
   final BrixUiIcons icons;
 
   /// How every `BrixButton` looks; a button's own `style` goes on top.
@@ -123,12 +139,12 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
   /// logic. A field's own `builder` wins.
   final BrixTextFieldBuilder? textFieldBuilder;
 
-  /// How every `BrixAlert` looks; `BrixAlert.show(style: ...)` goes on top.
-  final BrixAlertStyle alert;
+  /// How every `BrixDialog` looks; `BrixDialog.show(style: ...)` goes on top.
+  final BrixDialogStyle dialog;
 
-  /// Draws every alert card with the app's own widget; brix keeps the
+  /// Draws every dialog card with the app's own widget; brix keeps the
   /// dimmed screen, animation and returned value.
-  final BrixAlertBuilder? alertBuilder;
+  final BrixDialogBuilder? dialogBuilder;
 
   /// How every `BrixToast` looks: position, duration, size, text.
   final BrixToastStyle toast;
@@ -143,6 +159,21 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
   /// Draws every spinner (also inside loading buttons) with the app's own
   /// widget.
   final BrixLoaderBuilder? loaderBuilder;
+
+  /// How every `BrixSheet` looks; `BrixSheet.show(style: ...)` goes on top.
+  final BrixSheetStyle sheet;
+
+  /// Draws every sheet panel with the app's own widget; brix keeps the
+  /// sliding, dragging and returned value.
+  final BrixSheetBuilder? sheetBuilder;
+
+  /// How the menus and sheets of every `BrixSelect` look. The field itself
+  /// follows [textField].
+  final BrixSelectStyle select;
+
+  /// Draws every `BrixSelect` field with the app's own widget; brix keeps
+  /// opening the options, the required check and the chosen value.
+  final BrixSelectBuilder<Object?>? selectBuilder;
 
   /// The theme set in the app, or, without one, the brix defaults for the
   /// app's current brightness, so widgets work with no setup.
@@ -191,12 +222,16 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
     BrixButtonBuilder? buttonBuilder,
     BrixTextFieldStyle? textField,
     BrixTextFieldBuilder? textFieldBuilder,
-    BrixAlertStyle? alert,
-    BrixAlertBuilder? alertBuilder,
+    BrixDialogStyle? dialog,
+    BrixDialogBuilder? dialogBuilder,
     BrixToastStyle? toast,
     BrixToastBuilder? toastBuilder,
     BrixLoaderStyle? loader,
     BrixLoaderBuilder? loaderBuilder,
+    BrixSheetStyle? sheet,
+    BrixSheetBuilder? sheetBuilder,
+    BrixSelectStyle? select,
+    BrixSelectBuilder<Object?>? selectBuilder,
   }) {
     return BrixTheme._(
       brightness: brightness,
@@ -210,12 +245,16 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
       buttonBuilder: buttonBuilder ?? this.buttonBuilder,
       textField: textField ?? this.textField,
       textFieldBuilder: textFieldBuilder ?? this.textFieldBuilder,
-      alert: alert ?? this.alert,
-      alertBuilder: alertBuilder ?? this.alertBuilder,
+      dialog: dialog ?? this.dialog,
+      dialogBuilder: dialogBuilder ?? this.dialogBuilder,
       toast: toast ?? this.toast,
       toastBuilder: toastBuilder ?? this.toastBuilder,
       loader: loader ?? this.loader,
       loaderBuilder: loaderBuilder ?? this.loaderBuilder,
+      sheet: sheet ?? this.sheet,
+      sheetBuilder: sheetBuilder ?? this.sheetBuilder,
+      select: select ?? this.select,
+      selectBuilder: selectBuilder ?? this.selectBuilder,
     );
   }
 
@@ -234,12 +273,16 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
       buttonBuilder: t < 0.5 ? buttonBuilder : other.buttonBuilder,
       textField: textField.lerp(other.textField, t),
       textFieldBuilder: t < 0.5 ? textFieldBuilder : other.textFieldBuilder,
-      alert: alert.lerp(other.alert, t),
-      alertBuilder: t < 0.5 ? alertBuilder : other.alertBuilder,
+      dialog: dialog.lerp(other.dialog, t),
+      dialogBuilder: t < 0.5 ? dialogBuilder : other.dialogBuilder,
       toast: toast.lerp(other.toast, t),
       toastBuilder: t < 0.5 ? toastBuilder : other.toastBuilder,
       loader: loader.lerp(other.loader, t),
       loaderBuilder: t < 0.5 ? loaderBuilder : other.loaderBuilder,
+      sheet: sheet.lerp(other.sheet, t),
+      sheetBuilder: t < 0.5 ? sheetBuilder : other.sheetBuilder,
+      select: select.lerp(other.select, t),
+      selectBuilder: t < 0.5 ? selectBuilder : other.selectBuilder,
     );
   }
 
@@ -257,12 +300,16 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
       other.buttonBuilder == buttonBuilder &&
       other.textField == textField &&
       other.textFieldBuilder == textFieldBuilder &&
-      other.alert == alert &&
-      other.alertBuilder == alertBuilder &&
+      other.dialog == dialog &&
+      other.dialogBuilder == dialogBuilder &&
       other.toast == toast &&
       other.toastBuilder == toastBuilder &&
       other.loader == loader &&
-      other.loaderBuilder == loaderBuilder;
+      other.loaderBuilder == loaderBuilder &&
+      other.sheet == sheet &&
+      other.sheetBuilder == sheetBuilder &&
+      other.select == select &&
+      other.selectBuilder == selectBuilder;
 
   @override
   int get hashCode => Object.hashAll([
@@ -277,11 +324,15 @@ class BrixTheme extends ThemeExtension<BrixTheme> {
     buttonBuilder,
     textField,
     textFieldBuilder,
-    alert,
-    alertBuilder,
+    dialog,
+    dialogBuilder,
     toast,
     toastBuilder,
     loader,
     loaderBuilder,
+    sheet,
+    sheetBuilder,
+    select,
+    selectBuilder,
   ]);
 }

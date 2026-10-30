@@ -12,7 +12,7 @@ class BrixShape {
     this.borderWidth = 1,
   });
 
-  /// Corner radius of buttons, fields, alerts and toasts.
+  /// Corner radius of buttons, fields, dialogs and toasts.
   final double radius;
 
   /// Height of a button.

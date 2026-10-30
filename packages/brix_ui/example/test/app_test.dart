@@ -3,11 +3,11 @@ import 'package:brix_ui_example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Like a user: sign in, alerts, dark mode, every brand.
+/// Like a user: sign in, dialogs, dark mode, every brand.
 void main() {
   setUp(() => BrixUi.navigatorKey = null);
   tearDown(() {
-    BrixAlert.dismiss();
+    BrixDialog.dismiss();
     BrixToast.dismiss();
   });
 
@@ -82,7 +82,7 @@ void main() {
     expect(find.byType(BrixTextField), findsNWidgets(2));
   });
 
-  testWidgets('Forest: underline fields, bottom sheet alert', (tester) async {
+  testWidgets('Forest: underline fields, bottom sheet dialog', (tester) async {
     await pumpApp(tester);
     await tester.tap(find.text('Forest'));
     await settle(tester);
@@ -118,7 +118,7 @@ void main() {
 }
 
 // The loader on the screen spins forever, so pumpAndSettle never ends -
-// pump long enough for routes, alerts and toasts to finish moving.
+// pump long enough for routes, dialogs and toasts to finish moving.
 Future<void> settle(WidgetTester tester) async {
   for (var i = 0; i < 10; i++) {
     await tester.pump(const Duration(milliseconds: 100));

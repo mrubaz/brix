@@ -7,7 +7,7 @@ enum Brand {
   standard('Default'),
 
   /// Own colours, round corners, capital buttons with a gradient, fields
-  /// with an underline and the label inside, alerts as a bottom sheet,
+  /// with an underline and the label inside, dialogs as a bottom sheet,
   /// toasts at the bottom.
   forest('Forest'),
 
@@ -42,9 +42,9 @@ BrixTheme _forest(bool dark) {
     labelInside: true,
     contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
   );
-  const alert = BrixAlertStyle(
+  const dialog = BrixDialogStyle(
     alignment: Alignment.bottomCenter,
-    transition: BrixAlertTransition.slideUp,
+    transition: BrixDialogTransition.slideUp,
     margin: EdgeInsets.all(12),
     maxWidth: double.infinity,
     textAlign: TextAlign.start,
@@ -64,7 +64,7 @@ BrixTheme _forest(bool dark) {
           shape: shape,
           button: button,
           textField: textField,
-          alert: alert,
+          dialog: dialog,
           toast: toast,
         )
       : BrixTheme.light(
@@ -77,7 +77,7 @@ BrixTheme _forest(bool dark) {
           shape: shape,
           button: button,
           textField: textField,
-          alert: alert,
+          dialog: dialog,
           toast: toast,
         );
 }

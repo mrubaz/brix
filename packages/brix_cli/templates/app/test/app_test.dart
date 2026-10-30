@@ -31,7 +31,7 @@ void main() {
     );
   });
   tearDown(() {
-    BrixAlert.dismiss();
+    BrixDialog.dismiss();
     BrixToast.dismiss();
     Get.reset();
     dir.deleteSync(recursive: true);
@@ -158,7 +158,7 @@ Future<void> tap(WidgetTester tester, Finder finder) async {
   await settle(tester);
 }
 
-// Local calls take 600 ms; alerts, toasts and routes need time too.
+// Local calls take 600 ms; dialogs, toasts and routes need time too.
 Future<void> settle(WidgetTester tester) async {
   for (var i = 0; i < 12; i++) {
     await tester.pump(const Duration(milliseconds: 200));
