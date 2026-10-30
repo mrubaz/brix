@@ -8,7 +8,7 @@
 [![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-Buttons, text fields, a loader, dialogs and toasts that look like your app. They take every colour, font and size from one theme, so switching to dark mode changes nothing in your screens.
+Buttons, text fields, a select, dialogs, sheets, toasts and a loader that look like your app. They take every colour, font and size from one theme, so switching to dark mode changes nothing in your screens.
 
 ![One kit in three brands](doc/screenshots/your_brand.png)
 
