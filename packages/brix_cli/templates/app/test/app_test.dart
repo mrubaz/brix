@@ -1,11 +1,9 @@
 import 'dart:io';
 
-import 'package:brix_app/config/dependencies.dart';
-import 'package:brix_app/data/repositories/account_repository_local.dart';
-import 'package:brix_app/data/repositories/auth_repository_local.dart';
-import 'package:brix_app/data/services/local_accounts_service.dart';
+import 'package:brix_app/dev/local_accounts_service.dart';
+import 'package:brix_app/dev/local_backend.dart';
+import 'package:brix_app/dev/local_box.dart';
 import 'package:brix_app/main.dart';
-import 'package:brix_app/main_development.dart';
 import 'package:brix_storage/brix_storage.dart';
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +17,11 @@ void main() {
   setUp(() {
     Get.testMode = true;
     dir = Directory.systemTemp.createTempSync('app_test');
-    final accounts = LocalAccountsService(File('${dir.path}/backend.json'));
-    Dependencies.init(
-      apiUrl: '',
-      storage: BrixStorage(values: MemoryStore(), secrets: MemoryStore()),
-      backend: (api, session) => (
-        auth: AuthRepositoryLocal(accounts),
-        account: AccountRepositoryLocal(accounts, session),
+    startWithLocalBackend(
+      accounts: LocalAccountsService(
+        LocalBox(File('${dir.path}/backend.json')),
       ),
-      devTools: LocalDevTools(accounts),
+      storage: BrixStorage(values: MemoryStore(), secrets: MemoryStore()),
     );
   });
   tearDown(() {
@@ -137,6 +131,12 @@ void main() {
     // Reset brings the demo account back, on this device only.
     await tap(tester, find.text('Reset local backend'));
     await logIn(tester, 'demo@brix.dev', 'Demo@1234');
+    expect(find.text('Hello Demo'), findsOneWidget);
+  });
+
+  testWidgets('skip login opens home as the test user', (tester) async {
+    await start(tester);
+    await tap(tester, find.text('Skip login'));
     expect(find.text('Hello Demo'), findsOneWidget);
   });
 }

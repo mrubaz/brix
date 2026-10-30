@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import 'app_id.dart';
 import 'app_name.dart';
 import 'process_runner.dart';
 import 'template.dart';
@@ -21,10 +22,15 @@ class CreateCommand {
   final String workingDirectory;
 
   /// Creates the app; returns the exit code (0 on success).
-  Future<int> run(String name) async {
+  Future<int> run(String name, {String org = 'com.example'}) async {
     final problem = AppName.problem(name);
     if (problem != null) {
       out('Cannot use "$name" as the app name. $problem');
+      return 64;
+    }
+    final orgProblem = AppId.orgProblem(org);
+    if (orgProblem != null) {
+      out('Cannot use "$org" for --org. $orgProblem');
       return 64;
     }
     final target = Directory(p.join(workingDirectory, name));
@@ -37,7 +43,7 @@ class CreateCommand {
     final created = await runner.run('flutter', [
       'create',
       '--org',
-      'com.example',
+      org,
       '--project-name',
       name,
       name,
@@ -61,13 +67,14 @@ class CreateCommand {
     }
 
     out('');
-    out('Done. Try it on a local test backend (this device only):');
+    out('Done. Run it:');
     out('  cd $name');
-    out('  flutter run -t lib/main_development.dart');
-    out('  Login: demo@brix.dev / Demo@1234, every code 123456');
+    out('  flutter run');
     out('');
-    out('On your API (release builds start here):');
-    out('  flutter run --dart-define=API_URL=https://your.api/v1/');
+    out('Until you add your API, debug runs use a test backend on the device.');
+    out('  Login: demo@brix.dev / Demo@1234, every code 123456');
+    out('Your API goes in lib/config/app_config.dart.');
+    out('App id: $org.$name (change it any time with "brix id").');
     return 0;
   }
 

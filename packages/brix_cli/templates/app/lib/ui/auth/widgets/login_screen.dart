@@ -1,6 +1,7 @@
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
 import '../../../routing/routes.dart';
@@ -61,17 +62,18 @@ class LoginScreen extends GetView<LoginViewModel> {
           ),
         ),
         TextButton(
-          onPressed: () => Get.toNamed(Routes.forgotPassword),
+          onPressed: () => context.go(Routes.forgotPassword),
           child: const Text('Forgot password?'),
         ),
         TextButton(
-          onPressed: () => Get.toNamed(Routes.signup),
+          onPressed: () => context.go(Routes.signup),
           child: const Text('No account? Sign up'),
         ),
-        // Only while developing (main_development.dart); never in a release.
+        // Debug builds on the local test backend only; never in a release.
         if (Dependencies.devTools case final dev?) ...[
           const SizedBox(height: 16),
           Text(dev.loginHint, textAlign: TextAlign.center),
+          TextButton(onPressed: dev.skipLogin, child: const Text('Skip login')),
           TextButton(
             onPressed: () async {
               await dev.resetLocalBackend();

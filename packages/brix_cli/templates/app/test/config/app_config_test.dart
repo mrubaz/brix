@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('no API: the app does not start and says how to fix it', () {
     final problem = AppConfig.problem(url: '', release: false);
-    expect(problem, contains('API_URL'));
-    expect(problem, contains('main_development.dart'));
+    expect(problem, contains('app_config.dart'));
+    expect(problem, contains('test backend'));
   });
 
   test('a release build needs https', () {

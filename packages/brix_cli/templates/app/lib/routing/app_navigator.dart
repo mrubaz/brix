@@ -1,68 +1,50 @@
 import 'package:brix/auth.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../ui/auth/view_models/login_viewmodel.dart';
+
 import 'routes.dart';
 
-/// Opens the screens the flows ask for, on GetX named routes.
+/// Opens the screens the brix flows ask for, on go_router.
 ///
-/// Route futures are started, never awaited, they complete only when the
-/// new screen closes and would keep the flow busy.
+/// Routes are started and not awaited: a pushed route completes only when
+/// its screen closes, which would keep the flow busy.
 class AppNavigator extends AuthNavigator {
+  AppNavigator(this._router);
+
+  final GoRouter _router;
+
   @override
-  Future<void> toHome() async {
-    Get.offAllNamed(Routes.home);
-  }
+  Future<void> toHome() async => _router.go(Routes.home);
 
   /// [identifier] fills the login form (after a reset or a verified signup).
   @override
   Future<void> toLogin({String? identifier}) async {
-    final reused = _backToOrOpen(Routes.login, arguments: identifier);
-    if (reused && identifier != null) {
+    _router.go(Routes.login, extra: identifier);
+    // A login screen already open under this one is kept, so fill it here.
+    if (identifier != null && Get.isRegistered<LoginViewModel>()) {
       await Get.find<LoginViewModel>().prefillIdentifier(identifier);
     }
   }
 
-  /// After a password change.
   @override
-  Future<void> back() async => Get.back<void>();
-
-  @override
-  Future<void> toSignup() async {
-    _backToOrOpen(Routes.signup);
-  }
+  Future<void> toSignup() async => _router.go(Routes.signup);
 
   @override
   Future<void> toOtp({
     required String identifier,
     required OtpPurpose purpose,
-  }) async {
-    Get.toNamed(Routes.otp);
-  }
+  }) async => _router.go(Routes.otp);
 
   @override
-  Future<void> toForgotPassword() async {
-    _backToOrOpen(Routes.forgotPassword);
-  }
+  Future<void> toForgotPassword() async => _router.go(Routes.forgotPassword);
 
   @override
-  Future<void> toResetPassword({required String identifier}) async {
-    Get.toNamed(Routes.resetPassword, arguments: identifier);
-  }
+  Future<void> toResetPassword({required String identifier}) async =>
+      _router.go(Routes.resetPassword, extra: identifier);
 
-  /// Goes back to [route] when it is already open under this screen,
-  /// otherwise opens it alone. A second copy of an open route would make
-  /// GetX delete the new screen's controller.
-  bool _backToOrOpen(String route, {Object? arguments}) {
-    var found = false;
-    Get.until((current) {
-      if (current.settings.name == route) {
-        found = true;
-        return true;
-      }
-      return current.isFirst;
-    });
-    if (!found) Get.offAllNamed(route, arguments: arguments);
-    return found;
-  }
+  /// After a password change.
+  @override
+  Future<void> back() async => _router.pop();
 }

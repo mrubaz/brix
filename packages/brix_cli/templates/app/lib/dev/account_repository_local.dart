@@ -1,8 +1,8 @@
 import 'package:brix/account.dart';
 
-import '../../domain/models/profile_update.dart';
-import '../../domain/models/user.dart';
-import '../services/local_accounts_service.dart';
+import '../domain/models/profile_update.dart';
+import '../domain/models/user.dart';
+import 'local_accounts_service.dart';
 
 /// Profile, password and account deletion on the device's local backend.
 /// Only `main_development.dart` uses it.

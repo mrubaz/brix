@@ -7,11 +7,10 @@
 import 'dart:io';
 
 import 'package:brix_app/config/dependencies.dart';
-import 'package:brix_app/data/repositories/account_repository_local.dart';
-import 'package:brix_app/data/repositories/auth_repository_local.dart';
-import 'package:brix_app/data/services/local_accounts_service.dart';
+import 'package:brix_app/dev/local_accounts_service.dart';
+import 'package:brix_app/dev/local_backend.dart';
+import 'package:brix_app/dev/local_box.dart';
 import 'package:brix_app/domain/models/user.dart';
-import 'package:brix_app/main_development.dart';
 import 'package:brix_app/ui/account/view_models/profile_viewmodel.dart';
 import 'package:brix_app/ui/account/widgets/delete_account_screen.dart';
 import 'package:brix_app/ui/account/widgets/profile_screen.dart';
@@ -56,19 +55,16 @@ void main() {
   setUp(() async {
     Get.testMode = true;
     dir = Directory.systemTemp.createTempSync('shots');
-    final accounts = LocalAccountsService(File('${dir.path}/backend.json'));
+    final accounts = LocalAccountsService(
+      LocalBox(File('${dir.path}/backend.json')),
+    );
     await accounts.put(
       'ada@brix.dev',
       const LocalAccount(name: 'Ada', password: 'Strong@123', verified: true),
     );
-    Dependencies.init(
-      apiUrl: '',
+    startWithLocalBackend(
+      accounts: accounts,
       storage: BrixStorage(values: MemoryStore(), secrets: MemoryStore()),
-      backend: (api, session) => (
-        auth: AuthRepositoryLocal(accounts),
-        account: AccountRepositoryLocal(accounts, session),
-      ),
-      devTools: LocalDevTools(accounts),
     );
     // Screenshots show the screens, not the toasts about them.
     Get.replace<AuthFeedback>(const _Quiet());

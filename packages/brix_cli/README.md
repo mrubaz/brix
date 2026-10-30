@@ -22,62 +22,62 @@ Make a new Flutter app that already works: login, signup with an email code, for
    dart pub global activate brix_cli
    ```
 
-2. Make an app. Use lowercase letters, digits and underscores for the name:
+2. Make an app. Use lowercase letters, digits and underscores for the name, and your company's reverse domain for `--org`:
 
    ```
-   brix create my_app
+   brix create my_app --org com.mycompany
    ```
 
    ![brix create in the terminal](doc/screenshots/terminal.png)
 
-3. Run it on the local test backend. You need no server for this:
+3. Run it:
 
    ```
    cd my_app
-   flutter run -t lib/main_development.dart
+   flutter run
    ```
 
-   Log in with `demo@brix.dev` and `Demo@1234`. Every code is `123456`.
+   Or press F5 in VS Code. Until you add your API, debug runs use a test backend on the device: log in with `demo@brix.dev` and `Demo@1234`, every code is `123456`, or tap "Skip login".
 
-4. Point it at your API when you are ready:
-
-   ```
-   flutter run --dart-define=API_URL=https://your.api/v1/
-   ```
-
-   The endpoints live in `lib/data/repositories/auth_repository_remote.dart` and `account_repository_remote.dart`. Change the paths and fields there to match your backend.
-
-The app id starts as `com.example.my_app`. Change it before you publish.
+4. Add your API address in `lib/config/app_config.dart`, then match the endpoints in `lib/data/repositories/`. Separate staging and production addresses go in `env/staging.json` and `env/production.json`.
 
 ## What is inside
 
-The folders follow the [Flutter architecture guide](https://docs.flutter.dev/app-architecture/case-study), with views and view models for each feature.
+The folders follow the [Flutter architecture guide](https://docs.flutter.dev/app-architecture/case-study): routing on go_router, views and view models for each feature, repositories for your API.
 
 ![The folders of a new app](doc/screenshots/folders.png)
 
-Each screen is a short layout. The logic behind it (forms, loading, double taps, the session, error messages) comes from the brix packages, so it gets better when you run `flutter pub upgrade`, and none of it has to be copied into your app.
+Each screen is a short layout. The logic behind it (forms, loading, double taps, the session, error messages) comes from the brix packages, so it gets better when you run `flutter pub upgrade`, and none of it is copied into your app.
 
-## The local test backend
+## The test backend
 
-`main_development.dart` runs the app against a small backend that lives on the device. It saves its accounts in a file, so the app behaves like it would with a real server: sign up, verify, log in, change your name or password, delete the account.
+Debug builds without an API run on a small backend that lives on the device, in `lib/dev`. It saves its accounts, so the app behaves as it would with a real server: sign up, verify, log in, change your name or password, delete the account.
 
-Every device keeps its own copy. If two people test with the demo account and one of them changes the password or deletes the account, the other device is not affected. "Reset local backend" on the login screen starts that device over.
+Every device keeps its own copy. If two people test with the demo account and one changes the password or deletes the account, the other device is not affected. "Reset local backend" starts that device over, and "Skip login" jumps to the home screen.
+
+When you bring your own login, delete `lib/dev` and the two lines marked `local test backend` in `lib/main.dart`. Nothing else uses them.
 
 ## Safe for release
 
-The local backend can never end up in your store app:
+The test backend can never end up in your store app:
 
-- Release builds start from `lib/main.dart`, which does not import the local backend. Its accounts, code and reset button are not in the release app at all.
-- `main_development.dart` stops right away if someone builds a release from it.
-- Without `API_URL` the app shows a short setup message instead of a login screen, and a release build only accepts an `https` address.
-- On every change, our CI makes a new app, builds it for release and checks that no test account is inside.
+- It runs only behind `kDebugMode`, so the compiler leaves it out of release builds, together with its accounts, codes and buttons.
+- A release build without an API shows a short setup message instead of a login screen, and only accepts an `https` address.
+- On every change, our CI makes a new app, builds it for release on Android and the web and checks that no test account or test button is inside.
 
-If you no longer want the local backend, delete `lib/main_development.dart`, the two `*_local.dart` repositories, `lib/data/services/local_accounts_service.dart` and `test/app_test.dart`. Nothing else uses them.
+## Changing the app id
+
+Picked `com.example` at the start? Change the id on Android, iOS, macOS and Linux with one command, run inside the app:
+
+```
+brix id com.mycompany.my_app
+```
 
 ## Commands
 
 ```
-brix create <app_name>   Make a new app
+brix create <app_name> [--org com.mycompany]   Make a new app
+brix id <com.mycompany.app>                    Change the app id everywhere
 brix --version
 brix --help
 ```
