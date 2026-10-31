@@ -1,12 +1,14 @@
 # brix_getx
 
-[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
+[![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
+[![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
 [![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
 [![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
 [![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
-[![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
-[![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
+[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
+
+> Part of the [brix](https://github.com/mrubaz/brix) family. Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) sets this package up for you. Adding it to an app you already have? It brings the core, [brix](https://pub.dev/packages/brix), with it.
 
 GetX controllers for [brix](https://pub.dev/packages/brix). Each one holds the text fields, form key, loading state and clean-up code of an auth or account screen, so your screen is only its layout.
 
@@ -54,6 +56,180 @@ One import gives you the controllers and all of brix:
 ```dart
 import 'package:brix_getx/brix_getx.dart';
 ```
+
+## Add brix to an app you already have
+
+This is the GetX and REST setup that [brix_cli](https://pub.dev/packages/brix_cli) uses in every new app; each piece is taken from that app. Starting from scratch? `brix create my_app` gives you all of this already.
+
+**1. Add the packages**
+
+```
+flutter pub add brix_getx brix_network brix_storage brix_ui
+```
+
+**2. Describe your user** (add the fields your API sends)
+
+```dart
+class User {
+  const User({required this.id, required this.name, required this.email});
+
+  factory User.fromJson(Json json) => User(
+    id: json.string('id'),
+    name: json.string('name'),
+    email: json.string('email'),
+  );
+
+  final String id;
+  final String name;
+  final String email;
+
+  Map<String, Object?> toJson() => {'id': id, 'name': name, 'email': email};
+}
+```
+
+**3. Write the class that knows your API** (change the paths and fields to match yours)
+
+```dart
+class AuthRepository extends AuthProvider<SignupRequest, User> {
+  AuthRepository(this._api);
+
+  final BrixApi _api;
+
+  @override
+  AuthCapabilities get capabilities =>
+      const AuthCapabilities(otpAfterSignup: true, resetMode: ResetMode.otp);
+
+  @override
+  Future<Result<AuthSession<User>>> login({
+    required String identifier,
+    required String password,
+  }) => _api.post(
+    'auth/login',
+    body: {'email': identifier, 'password': password},
+    parse: (data) => AuthSession(
+      accessToken: data.string('token'),
+      user: User.fromJson(data.child('user')),
+    ),
+  );
+
+  @override
+  Future<Result<void>> logout() => _api.post('auth/logout');
+
+  // register, verifyOtp, resendOtp, forgotPassword and resetPassword
+  // look the same: one call each.
+}
+```
+
+**4. Say where screens go**
+
+```dart
+// Start the route and return; do not wait for the new screen to close.
+class AppNavigator extends AuthNavigator {
+  @override
+  Future<void> toHome() async {
+    Get.offAllNamed('/home');
+  }
+
+  @override
+  Future<void> toLogin({String? identifier}) async {
+    Get.offAllNamed('/login', arguments: identifier);
+  }
+}
+```
+
+**5. Set everything up once** (for example in `main`)
+
+```dart
+final session = BrixSessionStore<User>(
+  storage: BrixStorage(), // tokens go to the Keychain / Keystore
+  userToJson: (user) => user.toJson(),
+  userFromJson: (json) => User.fromJson(Json(json)),
+);
+
+late final SessionFlow<User> sessionFlow;
+
+final api = BrixApi(
+  baseUrl: 'https://your.api/v1/',
+  token: () async => (await session.readSession())?.accessToken,
+  logger: PrettyNetworkLogger(),
+  onUnauthorized: () => sessionFlow.logout(), // once, for many 401s
+);
+
+final auth = AuthRepository(api);
+final navigator = AppNavigator();
+const feedback = BrixUiFeedback(); // errors as dialogs, success as toasts
+
+sessionFlow = SessionFlow(
+  auth: auth,
+  store: session,
+  navigator: navigator,
+  feedback: feedback,
+);
+
+BrixUi.navigatorKey = Get.key; // dialogs and toasts open from controllers
+```
+
+**6. Give the login screen its controller** (a GetX binding)
+
+```dart
+GetPage(
+  name: '/login',
+  page: () => const LoginScreen(),
+  binding: BindingsBuilder(
+    () => Get.put(
+      BrixLoginController<User>(
+        LoginFlow(
+          provider: auth,
+          store: session,
+          navigator: navigator,
+          feedback: feedback,
+        ),
+      ),
+    ),
+  ),
+)
+```
+
+**7. Build the screen**
+
+```dart
+class LoginScreen extends GetView<BrixLoginController<User>> {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: Form(
+      key: controller.formKey,
+      child: Column(
+        children: [
+          BrixTextField(
+            controller: controller.identifierController,
+            label: 'Email',
+            isRequired: true,
+          ),
+          BrixTextField(
+            controller: controller.passwordController,
+            label: 'Password',
+            isRequired: true,
+            isPassword: true,
+          ),
+          Obx(
+            () => BrixButton(
+              label: 'Log in',
+              isLoading: controller.isSubmitting.value,
+              onPressed: controller.login,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+```
+
+That is the whole login. Remember me, ignoring double taps, saving the session, showing errors and opening the home screen are handled. Signup, the email code, password reset, profile and delete account follow the same pattern; the sections below show each one.
+
+Using Firebase, Supabase or another state library? Add only `brix` and follow the [brix README](https://pub.dev/packages/brix).
 
 ## Bindings
 
@@ -288,13 +464,13 @@ MIT
 
 ## The brix packages
 
-brix_getx is one part of [brix](https://github.com/mrubaz/brix). Take only the packages you need.
+brix_getx is one part of [brix](https://github.com/mrubaz/brix). New app? Start with [brix_cli](https://pub.dev/packages/brix_cli). Existing app? Take only the packages you need; each brings the core with it.
 
 | Package | Version | What it does |
 |---|---|---|
-| [brix](https://pub.dev/packages/brix) | [![pub](https://img.shields.io/pub/v/brix?label=)](https://pub.dev/packages/brix) | The logic: auth, account, `Result`, `Json`, `BrixLogger` |
-| [brix_getx](https://pub.dev/packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | GetX controllers for every brix screen |
+| [brix_cli](https://pub.dev/packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app`: a new app on every package below. Start here |
+| [brix_ui](https://pub.dev/packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, fields, select, sheets, dialogs, toasts, light and dark |
+| [brix_getx](https://pub.dev/packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
 | [brix_network](https://pub.dev/packages/brix_network) | [![pub](https://img.shields.io/pub/v/brix_network?label=)](https://pub.dev/packages/brix_network) | REST calls that return a `Result` |
 | [brix_storage](https://pub.dev/packages/brix_storage) | [![pub](https://img.shields.io/pub/v/brix_storage?label=)](https://pub.dev/packages/brix_storage) | Values, secrets and a session store |
-| [brix_ui](https://pub.dev/packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, fields, select, dialogs, sheets, toasts |
-| [brix_cli](https://pub.dev/packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app`: a new app on all of them |
+| [brix](https://pub.dev/packages/brix) | [![pub](https://img.shields.io/pub/v/brix?label=)](https://pub.dev/packages/brix) | The core every package builds on: flows, `Result`, `Json`, `BrixLogger` |
