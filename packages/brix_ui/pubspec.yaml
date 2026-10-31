@@ -1,5 +1,5 @@
 name: brix_ui
-description: "Basic Flutter widgets that follow your theme: buttons, text fields, loader, dialogs and toasts, with light and dark theme tokens."
+description: "Flutter widgets that follow your theme: buttons, text fields, select, sheets, dialogs, toasts and a loader, in light and dark. Part of the brix family."
 version: 1.1.0
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_ui
 issue_tracker: https://github.com/mrubaz/brix/issues
