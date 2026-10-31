@@ -4,7 +4,7 @@ import 'process_runner.dart';
 import 'template.dart';
 
 /// brix_cli's version, shown by `brix --version`.
-const brixCliVersion = '1.1.0';
+const brixCliVersion = '1.1.1';
 
 /// The `brix` command.
 class BrixCli {

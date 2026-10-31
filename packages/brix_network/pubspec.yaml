@@ -1,6 +1,6 @@
 name: brix_network
 description: "REST calls for brix on Dio: every call returns a Result, with retries, uploads, downloads, backend messages, field errors and one logout on 401."
-version: 1.2.1
+version: 1.2.2
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_network
 issue_tracker: https://github.com/mrubaz/brix/issues
 topics:

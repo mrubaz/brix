@@ -1,6 +1,6 @@
 name: brix_getx
 description: "GetX controllers for every brix account screen: login, signup, email code, reset, profile and delete account, with fields, form key and loading state."
-version: 1.0.2
+version: 1.0.3
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_getx
 issue_tracker: https://github.com/mrubaz/brix/issues
 topics:

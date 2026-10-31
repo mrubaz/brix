@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Docs: the README tells the brix family story (new app: start with brix_cli; existing app: add the packages you need, each brings the core), with sharper screenshots and a clearer pub.dev description.
+
 ## 1.1.0
 
 - `BrixAlert` is now `BrixDialog`, the name Flutter developers look for. `BrixAlertButton`, `BrixAlertStyle`, `BrixAlertData`, `BrixAlertTransition` and the theme's `alert` / `alertBuilder` follow (`BrixDialogButton`, `BrixDialogStyle`, `BrixDialogData`, `BrixDialogTransition`, `dialog`, `dialogBuilder`). Please use 1.1.0 instead of 1.0.0.

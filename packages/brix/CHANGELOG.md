@@ -1,5 +1,7 @@
-## Unreleased
+## 1.3.2
 
+- Docs: the README tells the brix family story (new app: start with brix_cli; existing app: add the packages you need, each brings the core), with sharper screenshots and a clearer pub.dev description.
+- Docs: the README says up front that this is the core, and when to add it on its own.
 - Docs: README with screenshots of the demo app and the console (also on pub.dev); neutral examples ("My App", "items") in the `BrixLogger` docs.
 
 ## 1.3.1

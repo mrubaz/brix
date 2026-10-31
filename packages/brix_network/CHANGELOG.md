@@ -1,5 +1,6 @@
-## Unreleased
+## 1.2.2
 
+- Docs: the README tells the brix family story (new app: start with brix_cli; existing app: add the packages you need, each brings the core), with sharper screenshots and a clearer pub.dev description.
 - Docs: README and pub.dev screenshot of the `PrettyNetworkLogger` console; neutral example paths ("items").
 
 ## 1.2.1
