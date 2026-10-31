@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Docs: the README tells the brix family story (new app: start with brix_cli; existing app: add the packages you need, each brings the core), with sharper screenshots and a clearer pub.dev description.
+
 ## 1.1.0
 
 - One entry point. `flutter run`, F5 and Run Without Debugging just work: debug builds without an API use the local test backend, release builds never contain it (CI checks the release builds on every change).

@@ -1,6 +1,6 @@
 name: brix_ui
 description: "Flutter widgets that follow your theme: buttons, text fields, select, sheets, dialogs, toasts and a loader, in light and dark. Part of the brix family."
-version: 1.1.0
+version: 1.1.1
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix_ui
 issue_tracker: https://github.com/mrubaz/brix/issues
 topics:

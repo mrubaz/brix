@@ -1,6 +1,6 @@
 name: brix
 description: "The core of the brix Flutter family: login, signup, email code, reset, profile and account logic in pure Dart. Any backend, any state library."
-version: 1.3.1
+version: 1.3.2
 repository: https://github.com/mrubaz/brix/tree/main/packages/brix
 issue_tracker: https://github.com/mrubaz/brix/issues
 topics:

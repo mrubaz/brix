@@ -1,5 +1,7 @@
-## Unreleased
+## 1.0.3
 
+- Docs: the README tells the brix family story (new app: start with brix_cli; existing app: add the packages you need, each brings the core), with sharper screenshots and a clearer pub.dev description.
+- Docs: a step by step guide for adding brix to an app you already have, from your API class to the first screen.
 - Docs: README and pub.dev screenshots of the example app (login, live password rules, email code boxes).
 
 ## 1.0.2
