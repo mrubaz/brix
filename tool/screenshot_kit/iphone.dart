@@ -274,8 +274,10 @@ Future<void> shootRow(
           items.length * (IPhone.size.width + 24) +
           (items.length - 1) * gap;
   final height = size?.height ?? padding * 2 + IPhone.size.height + 24 + 52;
+  // SHOT_SCALE=4 renders sharper images, e.g. for 4K videos. Default 2.
+  final scale = double.tryParse(Platform.environment['SHOT_SCALE'] ?? '') ?? 2;
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = Size(width * 2, height * 2);
+  tester.view.physicalSize = Size(width * scale, height * scale);
   addTearDown(tester.view.reset);
   debugDisableShadows = false;
   try {
