@@ -1,0 +1,29 @@
+name: I am using brix
+description: Tell us what you built with brix. We love to hear it.
+labels: [showcase]
+body:
+  - type: markdown
+    attributes:
+      value: Welcome! Share as much or as little as you like.
+  - type: input
+    id: app
+    attributes:
+      label: Your app or project
+      description: A name or a link, if it is public.
+  - type: checkboxes
+    id: packages
+    attributes:
+      label: Packages you use
+      options:
+        - label: brix_cli
+        - label: brix_ui
+        - label: brix_getx
+        - label: brix_network
+        - label: brix_storage
+        - label: brix
+  - type: textarea
+    id: feedback
+    attributes:
+      label: What worked, and what was hard?
+    validations:
+      required: true

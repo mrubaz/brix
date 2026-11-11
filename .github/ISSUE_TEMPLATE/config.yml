@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/mrubaz/brix/discussions
+    about: Ask how to do something or share an idea in Discussions.
+  - name: brix website
+    url: https://rubazkhan.vercel.app/en/brix/
+    about: Guides, live numbers and the package picker.
