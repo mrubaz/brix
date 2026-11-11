@@ -1,0 +1,45 @@
+name: Bug report
+description: Something in a brix package does not work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report this. A small code sample helps a lot.
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - brix_cli
+        - brix_ui
+        - brix_getx
+        - brix_network
+        - brix_storage
+        - brix
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: "1.2.2"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps or code to reproduce
+      render: dart
+  - type: textarea
+    id: env
+    attributes:
+      label: flutter doctor -v
+      description: Platform (Android, iOS, web) and Flutter version.
+      render: shell
