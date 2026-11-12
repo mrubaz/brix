@@ -5,6 +5,10 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
+native_root="$root"
+if command -v cygpath >/dev/null 2>&1; then
+  native_root="$(cygpath -m "$root")"
+fi
 
 step() { echo; echo "── $*"; }
 
@@ -52,11 +56,11 @@ cd "$app_dir"
 dart run "$root/packages/brix_cli/bin/brix.dart" create check_app > /dev/null
 cat > check_app/pubspec_overrides.yaml <<YAML
 dependency_overrides:
-  brix: {path: $root/packages/brix}
-  brix_getx: {path: $root/packages/brix_getx}
-  brix_network: {path: $root/packages/brix_network}
-  brix_storage: {path: $root/packages/brix_storage}
-  brix_ui: {path: $root/packages/brix_ui}
+  brix: {path: $native_root/packages/brix}
+  brix_getx: {path: $native_root/packages/brix_getx}
+  brix_network: {path: $native_root/packages/brix_network}
+  brix_storage: {path: $native_root/packages/brix_storage}
+  brix_ui: {path: $native_root/packages/brix_ui}
 YAML
 check_app_dir="$app_dir/check_app"
 (cd "$check_app_dir" && flutter pub get > /dev/null && flutter analyze --fatal-infos && flutter test)
