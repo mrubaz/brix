@@ -4,6 +4,7 @@
 [![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
 [![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
 [![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
+[![brix_riverpod](https://img.shields.io/pub/v/brix_riverpod?label=brix_riverpod)](https://pub.dev/packages/brix_riverpod)
 [![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
 [![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
 [![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
@@ -14,7 +15,7 @@ brix is a family of Flutter packages that gives every app the same tested start:
 ![An app made with brix](packages/brix_cli/doc/screenshots/app_sign_in.png)
 
 - **Any backend.** REST (Node, Laravel, Django, FastAPI and so on), Firebase or Supabase. You write one small class that talks to yours.
-- **Any state library.** The logic is plain Dart. GetX controllers are ready; Riverpod, Bloc, Provider or `setState` need a few lines.
+- **Any state library.** The logic is plain Dart. GetX controllers and Riverpod notifiers are ready; Bloc, Provider or `setState` need a few lines.
 - **Your look.** Widgets take your colours, font and shape, in light and dark. Or use your own widgets.
 - **Safe updates.** New features come with defaults, so a new version does not ask you to change your code.
 
@@ -43,9 +44,10 @@ Until you add your API, debug runs use a test backend on the device: log in with
 |---|---|
 | Ready widgets and a theme in your brand | [brix_ui](packages/brix_ui) |
 | Login, signup, codes, reset and account screens with GetX | [brix_getx](packages/brix_getx) |
+| The same screens with Riverpod | [brix_riverpod](packages/brix_riverpod) |
 | API calls that return a result instead of throwing | [brix_network](packages/brix_network) |
 | Tokens in the Keychain or Keystore, and settings | [brix_storage](packages/brix_storage) |
-| The account logic only, with Riverpod, Bloc, Firebase or your own setup | [brix](packages/brix) |
+| The account logic only, with Bloc, Provider, Firebase or your own setup | [brix](packages/brix) |
 
 ```
 flutter pub add brix_ui brix_getx brix_network brix_storage
@@ -61,6 +63,7 @@ flowchart TB
     CLI -. uses .-> UI & GETX & NET & STORE
     UI["brix_ui<br/>widgets and theme"] --> CORE
     GETX["brix_getx<br/>GetX controllers"] --> CORE
+    RIVER["brix_riverpod<br/>Riverpod notifiers"] --> CORE
     NET["brix_network<br/>API calls"] --> CORE
     STORE["brix_storage<br/>tokens and settings"] --> CORE
     CORE["brix<br/>the core: flows, Result, logger"]
@@ -71,6 +74,7 @@ flowchart TB
 | [brix_cli](packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app` makes a new app on every package below. `brix id` changes the app id later. |
 | [brix_ui](packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, text fields, select, sheets, dialogs, toasts and a loader that follow one theme, light and dark. |
 | [brix_getx](packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | A GetX controller for every account screen, so a screen is only its layout. |
+| [brix_riverpod](packages/brix_riverpod) | [![pub](https://img.shields.io/pub/v/brix_riverpod?label=)](https://pub.dev/packages/brix_riverpod) | A Riverpod 3 notifier for every account screen, with an immutable state to watch. |
 | [brix_network](packages/brix_network) | [![pub](https://img.shields.io/pub/v/brix_network?label=)](https://pub.dev/packages/brix_network) | REST calls on Dio that return a `Result`: retries, uploads, downloads, one logout for many 401s, a readable log. |
 | [brix_storage](packages/brix_storage) | [![pub](https://img.shields.io/pub/v/brix_storage?label=)](https://pub.dev/packages/brix_storage) | Values and secrets (Keychain and Keystore), safe after a reinstall, and a ready session store. |
 | [brix](packages/brix) | [![pub](https://img.shields.io/pub/v/brix?label=)](https://pub.dev/packages/brix) | The core every package builds on: login, signup, email code, reset, profile, delete account, app start and logout as plain Dart flows, plus `Result`, `Json` and `BrixLogger`. |
@@ -100,7 +104,7 @@ flowchart LR
     CLI["brix_cli<br/>brix create my_app"] -. makes .-> APP
     subgraph APP["Your app"]
         UI["Screens<br/>brix_ui widgets or your own"]
-        C["Controllers<br/>brix_getx, or Bloc / Riverpod / setState"]
+        C["Controllers<br/>brix_getx, brix_riverpod, or Bloc / setState"]
         A["Your backend class<br/>AuthProvider / AccountProvider"]
         NAV["Your navigation<br/>AuthNavigator"]
     end
@@ -125,6 +129,7 @@ You write a few small classes once: your user, the class for your API and your n
 | [brix_cli app template](packages/brix_cli/templates/app) | The app `brix create` makes: every screen, a local test backend and tests |
 | [brix_ui example](packages/brix_ui/example) | Every widget on one screen, light, dark and three brands |
 | [GetX demo](packages/brix_getx/example) | Login, signup with a code, password reset and logout on a demo backend |
+| [Riverpod demo](packages/brix_riverpod/example) | The same app on Riverpod notifiers |
 | [brix_network](packages/brix_network/example/main.dart) | Loading a list from a public API |
 | [brix_storage](packages/brix_storage/example/main.dart) | Saving a value and a secret |
 | [brix in plain Dart](packages/brix/example/main.dart) | A login without Flutter |

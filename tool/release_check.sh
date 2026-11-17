@@ -46,6 +46,8 @@ check_flutter brix_ui lib test example/lib example/test
 check_app packages/brix_ui/example
 check_flutter brix_getx lib test example/lib example/test
 check_app packages/brix_getx/example
+check_flutter brix_riverpod lib test example/lib example/test
+check_app packages/brix_riverpod/example
 check_dart brix_cli lib test bin templates/app/lib templates/app/test
 check_app packages/brix_cli/templates/app
 
