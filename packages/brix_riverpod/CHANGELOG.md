@@ -1,4 +1,4 @@
-## 1.0.0 (not released yet)
+## 1.0.0
 
 - `BrixAuthFormNotifier`: base Riverpod notifier for a brix form (form key, busy state, flow disposed with the provider).
 - `BrixLoginNotifier` and `BrixLoginState`: login with remember me, password visibility and prefill.
