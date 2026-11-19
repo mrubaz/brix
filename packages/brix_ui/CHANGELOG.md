@@ -1,3 +1,7 @@
+## 1.2.2
+
+- Docs: new README in the pub.dev format (short description, features, contents, what is not included yet, the brix family with brix_bloc and brix_riverpod); images by absolute URL.
+
 ## 1.2.1
 
 - Fix: a `BrixCard` with an `accentColor` no longer crashes when its content has a `LayoutBuilder` inside (network images, adaptive layouts). The strip is drawn without asking the content for intrinsic sizes and still runs the full height, on the leading edge in right-to-left too.
