@@ -3,6 +3,7 @@
 [![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
 [![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
 [![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
+[![brix_bloc](https://img.shields.io/pub/v/brix_bloc?label=brix_bloc)](https://pub.dev/packages/brix_bloc)
 [![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
 [![brix_riverpod](https://img.shields.io/pub/v/brix_riverpod?label=brix_riverpod)](https://pub.dev/packages/brix_riverpod)
 [![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
@@ -12,10 +13,10 @@
 
 brix is a family of Flutter packages that gives every app the same tested start: account screens, API calls, safe storage and a widget kit that takes your brand. You skip the weeks of setup and begin with the screens that make your app different.
 
-![An app made with brix](packages/brix_cli/doc/screenshots/app_sign_in.png)
+![An app made with brix: splash, login and signup](packages/brix_cli/doc/screenshots/app_1_start.png)
 
 - **Any backend.** REST (Node, Laravel, Django, FastAPI and so on), Firebase or Supabase. You write one small class that talks to yours.
-- **Any state library.** The logic is plain Dart. GetX controllers and Riverpod notifiers are ready; Bloc, Provider or `setState` need a few lines.
+- **Any state library.** The logic is plain Dart. Bloc cubits, Riverpod notifiers and GetX controllers are ready; Provider or `setState` need a few lines.
 - **Your look.** Widgets take your colours, font and shape, in light and dark. Or use your own widgets.
 - **Safe updates.** New features come with defaults, so a new version does not ask you to change your code.
 
@@ -29,25 +30,28 @@ One command makes a working app with every screen wired.
 
 ```
 dart pub global activate brix_cli
-brix create my_app --org com.mycompany
+brix create my_app --org com.mycompany   # asks: Bloc, Riverpod or GetX
 cd my_app
 flutter run
 ```
 
 Until you add your API, debug runs use a test backend on the device: log in with `demo@brix.dev` and `Demo@1234`, every code is `123456`, or tap "Skip login". Put your API address in `lib/config/app_config.dart` when you are ready; release builds never contain the test backend. More in the [brix_cli README](packages/brix_cli).
 
-![Home, profile and delete account](packages/brix_cli/doc/screenshots/app_account.png)
+AI agents and scripts pass the choice with `--state bloc|riverpod|getx`; brix never picks one itself.
+
+![Home, library and settings](packages/brix_cli/doc/screenshots/app_3_tabs.png)
 
 ### An app you already have: add what you need
 
 | You want | Add |
 |---|---|
 | Ready widgets and a theme in your brand | [brix_ui](packages/brix_ui) |
-| Login, signup, codes, reset and account screens with GetX | [brix_getx](packages/brix_getx) |
+| Login, signup, codes, reset and account screens with Bloc | [brix_bloc](packages/brix_bloc) |
 | The same screens with Riverpod | [brix_riverpod](packages/brix_riverpod) |
+| The same screens with GetX | [brix_getx](packages/brix_getx) |
 | API calls that return a result instead of throwing | [brix_network](packages/brix_network) |
 | Tokens in the Keychain or Keystore, and settings | [brix_storage](packages/brix_storage) |
-| The account logic only, with Bloc, Provider, Firebase or your own setup | [brix](packages/brix) |
+| The account logic only, with Provider, `setState`, Firebase or your own setup | [brix](packages/brix) |
 
 ```
 flutter pub add brix_ui brix_getx brix_network brix_storage
@@ -60,8 +64,9 @@ Every package brings the core, `brix`, with it, so you never add it twice. The [
 ```mermaid
 flowchart TB
     CLI["brix_cli<br/>makes a new app with all of it"]
-    CLI -. uses .-> UI & GETX & NET & STORE
+    CLI -. uses .-> UI & BLOC & RIVER & GETX & NET & STORE
     UI["brix_ui<br/>widgets and theme"] --> CORE
+    BLOC["brix_bloc<br/>Bloc cubits"] --> CORE
     GETX["brix_getx<br/>GetX controllers"] --> CORE
     RIVER["brix_riverpod<br/>Riverpod notifiers"] --> CORE
     NET["brix_network<br/>API calls"] --> CORE
@@ -73,6 +78,7 @@ flowchart TB
 |---|---|---|
 | [brix_cli](packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app` makes a new app on every package below. `brix id` changes the app id later. |
 | [brix_ui](packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, text fields, select, sheets, dialogs, toasts and a loader that follow one theme, light and dark. |
+| [brix_bloc](packages/brix_bloc) | [![pub](https://img.shields.io/pub/v/brix_bloc?label=)](https://pub.dev/packages/brix_bloc) | A Bloc Cubit for every account screen, with immutable states and no Flutter objects inside |
 | [brix_getx](packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | A GetX controller for every account screen, so a screen is only its layout. |
 | [brix_riverpod](packages/brix_riverpod) | [![pub](https://img.shields.io/pub/v/brix_riverpod?label=)](https://pub.dev/packages/brix_riverpod) | A Riverpod 3 notifier for every account screen, with an immutable state to watch. |
 | [brix_network](packages/brix_network) | [![pub](https://img.shields.io/pub/v/brix_network?label=)](https://pub.dev/packages/brix_network) | REST calls on Dio that return a `Result`: retries, uploads, downloads, one logout for many 401s, a readable log. |
@@ -91,6 +97,16 @@ flowchart TB
 
 ## Screenshots
 
+The app `brix create` makes, the same on Bloc, Riverpod and GetX:
+
+![Splash, login and signup](packages/brix_cli/doc/screenshots/app_1_start.png)
+![Email code, forgot password and reset password](packages/brix_cli/doc/screenshots/app_2_code_password.png)
+![Home, library and settings](packages/brix_cli/doc/screenshots/app_3_tabs.png)
+![Profile, change password and delete account](packages/brix_cli/doc/screenshots/app_4_account.png)
+![Appearance and about](packages/brix_cli/doc/screenshots/app_5_appearance_about.png)
+
+The widgets, the network log and storage:
+
 | | |
 |---|---|
 | ![One kit in three brands](packages/brix_ui/doc/screenshots/your_brand.png) | ![Select](packages/brix_ui/doc/screenshots/select.png) |
@@ -104,7 +120,7 @@ flowchart LR
     CLI["brix_cli<br/>brix create my_app"] -. makes .-> APP
     subgraph APP["Your app"]
         UI["Screens<br/>brix_ui widgets or your own"]
-        C["Controllers<br/>brix_getx, brix_riverpod, or Bloc / setState"]
+        C["View models<br/>brix_bloc, brix_riverpod, brix_getx, or your own"]
         A["Your backend class<br/>AuthProvider / AccountProvider"]
         NAV["Your navigation<br/>AuthNavigator"]
     end
@@ -128,8 +144,9 @@ You write a few small classes once: your user, the class for your API and your n
 |---|---|
 | [brix_cli app templates](packages/brix_cli/templates) | The app `brix create` makes, one per state library: every screen, a local test backend and tests |
 | [brix_ui example](packages/brix_ui/example) | Every widget on one screen, light, dark and three brands |
-| [GetX demo](packages/brix_getx/example) | Login, signup with a code, password reset and logout on a demo backend |
-| [Riverpod demo](packages/brix_riverpod/example) | The same app on Riverpod notifiers |
+| [Bloc example](packages/brix_bloc/example) | The app `brix create --state bloc` makes |
+| [Riverpod example](packages/brix_riverpod/example) | The same app on Riverpod notifiers |
+| [GetX example](packages/brix_getx/example) | The same app on GetX controllers |
 | [brix_network](packages/brix_network/example/main.dart) | Loading a list from a public API |
 | [brix_storage](packages/brix_storage/example/main.dart) | Saving a value and a secret |
 | [brix in plain Dart](packages/brix/example/main.dart) | A login without Flutter |
@@ -137,7 +154,7 @@ You write a few small classes once: your user, the class for your API and your n
 ## Quality
 
 - Every flow, controller, network piece and widget has tests.
-- On every push, CI checks formatting, analysis and the tests of every package and example. It also creates a fresh app with `brix create`, runs its tests and checks that its release build holds no test accounts.
+- On every push, CI checks formatting, analysis and the tests of every package and example. It also creates a fresh app with `brix create` for each state library, runs its tests and checks that its release build holds no test accounts.
 - brix runs in a live production app.
 - The screenshots are made from the real widgets on an iPhone frame, not drawn by hand.
 - MIT licensed.
@@ -161,7 +178,7 @@ cd brix/packages/brix && dart pub get && dart test
 
 Each package has its own `dart test` or `flutter test`. A `pubspec_overrides.yaml` in each package points it at the others in this repo, so they are built together.
 
-Before a release, run everything CI checks in one command: formatting, analysis and tests of every package, the example apps, the brix_cli template, a fresh app made with `brix create` and the public API check.
+Before a release, run everything CI checks in one command: formatting, analysis and tests of every package, the example apps, the three brix_cli templates, a fresh app made with `brix create` for each state library and the public API check.
 
 ```
 tool/release_check.sh

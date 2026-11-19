@@ -13,9 +13,6 @@ import 'package:brix_app/dev/local_box.dart';
 import 'package:brix_app/domain/models/user.dart';
 import 'package:brix_app/routing/app_router.dart';
 import 'package:brix_app/routing/routes.dart';
-import 'package:brix_app/ui/account/view_models/profile_viewmodel.dart';
-import 'package:brix_app/ui/account/widgets/delete_account_screen.dart';
-import 'package:brix_app/ui/account/widgets/profile_screen.dart';
 import 'package:brix_app/ui/auth/view_models/login_viewmodel.dart';
 import 'package:brix_app/ui/auth/view_models/signup_viewmodel.dart';
 import 'package:brix_app/ui/auth/widgets/forgot_password_screen.dart';
@@ -24,7 +21,6 @@ import 'package:brix_app/ui/auth/widgets/otp_screen.dart';
 import 'package:brix_app/ui/auth/widgets/reset_password_screen.dart';
 import 'package:brix_app/ui/auth/widgets/signup_screen.dart';
 import 'package:brix_app/ui/core/themes/theme.dart';
-import 'package:brix_app/ui/home/widgets/home_screen.dart';
 import 'package:brix_app/ui/splash/widgets/splash_screen.dart';
 import 'package:brix_getx/brix_getx.dart';
 import 'package:brix_storage/brix_storage.dart';
@@ -94,123 +90,6 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
-  testWidgets('sign in screens', (tester) async {
-    final login = Get.put(
-      LoginViewModel(
-        LoginFlow(
-          provider: Dependencies.auth,
-          store: Dependencies.session,
-          navigator: Dependencies.navigator,
-          feedback: Dependencies.feedback,
-        ),
-      ),
-    );
-    login.identifierController.text = 'ada@brix.dev';
-    login.passwordController.text = 'Strong@123';
-    login.rememberMe.value = true;
-
-    final signup = Get.put(
-      SignupViewModel(
-        SignupFlow(
-          provider: Dependencies.auth,
-          store: Dependencies.session,
-          navigator: Dependencies.navigator,
-          feedback: Dependencies.feedback,
-        ),
-      ),
-    );
-    signup.nameController.text = 'Ada Lovelace';
-    signup.identifierController.text = 'ada@brix.dev';
-    signup.passwordController.text = 'Strong12';
-
-    await Dependencies.session.savePendingIdentifier('ada@brix.dev');
-    final otp = Get.put(
-      BrixOtpController<User>(
-        OtpVerificationFlow(
-          provider: Dependencies.auth,
-          store: Dependencies.session,
-          navigator: Dependencies.navigator,
-          feedback: Dependencies.feedback,
-        ),
-      ),
-    );
-
-    await shootRow(tester, '$_out/app_sign_in.png', [
-      Captioned(
-        caption: 'Log in',
-        child: _phone(const LoginScreen(), canGoBack: false),
-      ),
-      Captioned(
-        caption: 'Sign up with live password rules',
-        child: _phone(const SignupScreen()),
-      ),
-      Captioned(caption: 'Email code', child: _phone(const OtpScreen())),
-    ]);
-    for (var i = 0; i < 3; i++) {
-      otp.boxes.controllers[i].text = '${i + 1}';
-    }
-    await tester.pump(const Duration(seconds: 1));
-    await shootRow(tester, '$_out/app_sign_in.png', [
-      Captioned(
-        caption: 'Log in',
-        child: _phone(const LoginScreen(), canGoBack: false),
-      ),
-      Captioned(
-        caption: 'Sign up with live password rules',
-        child: _phone(const SignupScreen()),
-      ),
-      Captioned(caption: 'Email code', child: _phone(const OtpScreen())),
-    ]);
-    await _closeAll(tester);
-  });
-
-  testWidgets('account screens', (tester) async {
-    await Dependencies.session.saveSession(
-      const AuthSession(
-        accessToken: 'local-token',
-        user: User(id: 'ada@brix.dev', name: 'Ada', email: 'ada@brix.dev'),
-      ),
-    );
-    Get.put(BrixSessionController<User>(Dependencies.sessionFlow()));
-    Get.put(
-      ProfileViewModel(
-        ProfileFlow(
-          account: Dependencies.account,
-          feedback: Dependencies.feedback,
-          store: Dependencies.session,
-        ),
-      ),
-    );
-    final delete = Get.put(
-      BrixDeleteAccountController(
-        DeleteAccountFlow(
-          account: Dependencies.account,
-          store: Dependencies.session,
-          navigator: Dependencies.navigator,
-          feedback: Dependencies.feedback,
-          identifier: 'ada@brix.dev',
-        ),
-      ),
-    );
-    unawaited(delete.requestDeletion());
-
-    await tester.pump(const Duration(seconds: 1));
-    await shootRow(tester, '$_out/app_account.png', [
-      Captioned(
-        caption: 'Home',
-        child: _phone(const HomeScreen(), canGoBack: false),
-      ),
-      Captioned(caption: 'Profile', child: _phone(const ProfileScreen())),
-      Captioned(
-        caption: 'Delete account with a code',
-        child: _phone(const DeleteAccountScreen()),
-      ),
-    ]);
-    await _closeAll(tester);
-  });
-
-  // Every screen in the order the app shows them, three per image:
-  // start, sign in and password, account, delete and setup.
   testWidgets('flow 1: splash, login, signup', (tester) async {
     Get.put(BrixSessionController<User>(Dependencies.sessionFlow()));
     final login = Get.put(

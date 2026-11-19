@@ -1,42 +1,55 @@
-# brix_getx
+GetX controllers for every account screen of a Flutter app: login, signup, email code (OTP), forgot and reset password, profile, change password, delete account, splash and logout. Each holds the text fields, form key, loading state and clean-up of its screen, so your screen is only its layout; the logic comes from [brix](https://pub.dev/packages/brix).
 
-[![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
-[![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
-[![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
-[![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
-[![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
-[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
+[![pub](https://img.shields.io/pub/v/brix_getx)](https://pub.dev/packages/brix_getx)
+[![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-> Part of the [brix](https://github.com/mrubaz/brix) family. Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) sets this package up for you. Adding it to an app you already have? It brings the core, [brix](https://pub.dev/packages/brix), with it.
+![Splash, login and signup](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_getx/doc/screenshots/app_1_start.png)
 
-GetX controllers for [brix](https://pub.dev/packages/brix). Each one holds the text fields, form key, loading state and clean-up code of an auth or account screen, so your screen is only its layout.
+![Email code, forgot password and reset password](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_getx/doc/screenshots/app_2_code_password.png)
+
+Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) makes these screens on GetX for you.
+
+## Contents
+
+- [Features](#features)
+- [Install](#install)
+- [Add brix to an app you already have](#add-brix-to-an-app-you-already-have)
+- [Bindings](#bindings)
+- [Login](#login)
+- [Signup](#signup)
+- [Code screen (after signup)](#code-screen-after-signup)
+- [Forgot and reset password](#forgot-and-reset-password)
+- [Splash and logout](#splash-and-logout)
+- [Account screens](#account-screens)
+- [Example app](#example-app)
+- [Not included yet](#not-included-yet)
+- [The brix family](#the-brix-family)
+
+## Features
+
+- One `GetxController` per screen, given its flow through a binding.
+- Text fields, form key and code boxes live in the controller and are disposed with the route.
+- Remember me, email pre-fill after signup or reset, show / hide password.
+- Live password checklist (`PasswordRulesTracker`) for signup, reset and change password.
+- Code screens with `OtpCodeBoxes` (paste, autofill, auto submit), resend countdown and a failed attempt counter.
+- Works with any backend: you write the adapters once in brix.
 
 | Controller | Screen |
 |---|---|
 | `BrixLoginController` | login, remember me, email pre-fill |
 | `BrixSignupController` | signup (you add your own fields and build the request) |
-| `BrixOtpController` | code after signup: boxes, paste / autofill, auto submit, resend countdown |
+| `BrixOtpController` | code after signup |
 | `BrixForgotPasswordController` | forgot password |
-| `BrixResetPasswordController` | reset password: code boxes + new password + checklist |
+| `BrixResetPasswordController` | code and new password |
 | `BrixChangePasswordController` | change password |
-| `BrixProfileController` | profile load / save / avatar (you add your fields) |
+| `BrixProfileController` | profile load, save and avatar (you add your fields) |
 | `BrixDeleteAccountController` | delete account with a code |
 | `BrixSessionController` | splash (`start`) and logout |
 
-![Login, signup and email code screens](doc/screenshots/app_sign_in.png)
-
-![Home, profile and delete account screens](doc/screenshots/app_account.png)
-
-These screens come from the app that [brix_cli](https://github.com/mrubaz/brix/tree/main/packages/brix_cli) creates. Each one is only a layout on top of a brix_getx controller.
-
-Helpers: `OtpCodeBoxes` (one box per digit), `PasswordRulesTracker` (live password checklist).
-
-All logic lives in [brix](https://pub.dev/packages/brix), so read its README first for the four classes you write (backend, storage, navigator, alerts).
-
 ### How a screen works
 
-```
+```text
  View (layout only)          Controller (brix_getx)             Flow (brix)
  ──────────────────          ──────────────────────             ───────────
  TextFormField ◀──────────── identifierController
@@ -47,7 +60,7 @@ All logic lives in [brix](https://pub.dev/packages/brix), so read its README fir
 
 ## Install
 
-```
+```bash
 flutter pub add brix_getx
 ```
 
@@ -59,11 +72,11 @@ import 'package:brix_getx/brix_getx.dart';
 
 ## Add brix to an app you already have
 
-This is the GetX and REST setup that [brix_cli](https://pub.dev/packages/brix_cli) uses in every new app; each piece is taken from that app. Starting from scratch? `brix create my_app` gives you all of this already.
+This is the GetX and REST setup that [brix_cli](https://pub.dev/packages/brix_cli) uses for a GetX app; each piece is taken from that app. Starting from scratch? `brix create my_app` gives you all of this already.
 
 **1. Add the packages**
 
-```
+```bash
 flutter pub add brix_getx brix_network brix_storage brix_ui
 ```
 
@@ -449,28 +462,34 @@ The view uses `formKey`, `isLoading`, `loadFailed` (with `load()` as retry), `is
 
 ## Example app
 
-[example/](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example): login, signup with a code, forgot / reset password and logout on an in-memory demo backend. No server needed:
+[`example/`](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example) is the app `brix create --state getx` makes: 14 screens on a test backend on the device, no server needed. Log in with `demo@brix.dev` / `Demo@1234`; every code is `123456`.
 
-```
-cd example
-flutter run
+```bash
+cd example && flutter run
 ```
 
-Demo account `demo@brix.dev` / `Demo@1234`, every code `123456`.
+## Not included yet
+
+- Social login (Google, Apple, Facebook) and phone login.
+- GetX routing is not required: the example app uses go_router, and the controllers work with either.
+
+## The brix family
+
+| Package | What it does |
+|---|---|
+| [brix_cli](https://pub.dev/packages/brix_cli) | Start here: `brix create` makes the whole app on Bloc, Riverpod or GetX |
+| [brix_ui](https://pub.dev/packages/brix_ui) | Widgets and theme, light and dark |
+| [brix_bloc](https://pub.dev/packages/brix_bloc) | Cubits for every account screen |
+| [brix_riverpod](https://pub.dev/packages/brix_riverpod) | Riverpod notifiers for every account screen |
+| [brix_getx](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
+| [brix_network](https://pub.dev/packages/brix_network) | API calls that return a result, never throw |
+| [brix_storage](https://pub.dev/packages/brix_storage) | Tokens, settings and offline copies, kept safe |
+| [brix](https://pub.dev/packages/brix) | The core: login, signup and account flows in pure Dart |
+
+## Help
+
+Questions, bugs and ideas: [GitHub issues](https://github.com/mrubaz/brix/issues).
 
 ## License
 
 MIT
-
-## The brix packages
-
-brix_getx is one part of [brix](https://github.com/mrubaz/brix). New app? Start with [brix_cli](https://pub.dev/packages/brix_cli). Existing app? Take only the packages you need; each brings the core with it.
-
-| Package | Version | What it does |
-|---|---|---|
-| [brix_cli](https://pub.dev/packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app`: a new app on every package below. Start here |
-| [brix_ui](https://pub.dev/packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, fields, select, sheets, dialogs, toasts, light and dark |
-| [brix_getx](https://pub.dev/packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
-| [brix_network](https://pub.dev/packages/brix_network) | [![pub](https://img.shields.io/pub/v/brix_network?label=)](https://pub.dev/packages/brix_network) | REST calls that return a `Result` |
-| [brix_storage](https://pub.dev/packages/brix_storage) | [![pub](https://img.shields.io/pub/v/brix_storage?label=)](https://pub.dev/packages/brix_storage) | Values, secrets and a session store |
-| [brix](https://pub.dev/packages/brix) | [![pub](https://img.shields.io/pub/v/brix?label=)](https://pub.dev/packages/brix) | The core every package builds on: flows, `Result`, `Json`, `BrixLogger` |

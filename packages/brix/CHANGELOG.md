@@ -1,6 +1,7 @@
 ## 1.3.3
 
 - Fix: a code screen closed while a resend was on its way no longer shows the "code sent" message or starts a resend countdown that never stops.
+- Docs: new README in the pub.dev format, with a contents list and brix_bloc and brix_riverpod in "With your state library".
 
 ## 1.3.2
 

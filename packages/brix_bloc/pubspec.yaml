@@ -26,3 +26,9 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+
+screenshots:
+  - description: "Splash, login and signup on brix_bloc cubits."
+    path: doc/screenshots/app_1_start.png
+  - description: "Email code, forgot password and reset password on brix_bloc cubits."
+    path: doc/screenshots/app_2_code_password.png

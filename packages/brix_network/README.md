@@ -1,34 +1,26 @@
-# brix_network
-
-[![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
-[![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
-[![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
-[![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
-[![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
-[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
-
-> Part of the [brix](https://github.com/mrubaz/brix) family. Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) sets this package up for you. Adding it to an app you already have? It brings the core, [brix](https://pub.dev/packages/brix), with it.
-
 REST calls without the boilerplate. Every call returns a `Result`: either your data as a model, or a `Failure` with the backend's messages and field errors. There are no exceptions to catch and no global error list.
 
-It uses Dio by default, and you can plug in any other client (`http`, `chopper` or a fake in tests).
+[![pub](https://img.shields.io/pub/v/brix_network)](https://pub.dev/packages/brix_network)
+[![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-It reads common API shapes out of the box: `{success, message, data, errors}` style APIs (Node, NestJS, Laravel and most custom ones), FastAPI and Django REST. For anything else you write your own small reader.
+![PrettyNetworkLogger in the debug console](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_network/doc/screenshots/network_log.png)
 
-It is careful. Only safe requests are retried (GET, PUT and DELETE), many 401 answers at once log out only once, and passwords, tokens and API keys never reach the log.
+Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) sets brix_network up for you.
 
-It handles files too. `download` gives you a PDF, image or spreadsheet as bytes, with its type and file name.
+## Features
 
-In debug builds every call is printed in a readable box; in release builds nothing is printed.
-
-![PrettyNetworkLogger in the debug console](doc/screenshots/network_log.png)
+- It uses Dio by default, and you can plug in any other client (`http`, `chopper` or a fake in tests).
+- It reads common API shapes out of the box: `{success, message, data, errors}` style APIs (Node, NestJS, Laravel and most custom ones), FastAPI and Django REST. For anything else you write your own small reader.
+- It is careful. Only safe requests are retried (GET, PUT and DELETE), many 401 answers at once log out only once, and passwords, tokens and API keys never reach the log.
+- It handles files too. `download` gives you a PDF, image or spreadsheet as bytes, with its type and file name.
+- In debug builds every call is printed in a readable box; in release builds nothing is printed.
 
 Using Firebase or Supabase? You do not need this package. Use their SDKs together with [brix](https://pub.dev/packages/brix).
 
 ### What happens in a call
 
-```
+```text
  api.get('users', parse: User.fromJson)
    │
    ├─ URL = baseUrl + path + query, headers + Bearer token
@@ -36,14 +28,14 @@ Using Firebase or Supabase? You do not need this package. Use their SDKs togethe
    │     └─ no connection / timeout ─────────────────────▶ Failed(NetworkFailure)
    ├─ ResponseReader.read  ─▶ data, message, messages, fieldErrors
    ├─ 2xx and success != false ─▶ parse(Json) ───────────▶ Success(User, message)
-   └─ otherwise ─▶ statusMapper ─▶ Failed(Validation / Unauthorized / Server …)
+   └─ otherwise ─▶ statusMapper ─▶ Failed(Validation / Unauthorized / Server and so on)
                         └─ 401 ─▶ onUnauthorized (once for many calls)
    every call ─▶ NetworkLogger (secrets hidden)
 ```
 
 ## Install
 
-```
+```bash
 dart pub add brix_network
 ```
 
@@ -56,7 +48,7 @@ import 'package:brix_network/brix_network.dart'; // also brings Result, Failure,
 ```dart
 final api = BrixApi(
   baseUrl: 'https://api.example.com/v1/',
-  token: () => secureStorage.read(key: 'token'),   // sent as "Authorization: Bearer …"
+  token: () => secureStorage.read(key: 'token'),   // sent as "Authorization: Bearer and so on"
   onUnauthorized: () => sessionFlow.logout(),       // once, however many calls get a 401
   logoutOn401: (path) => path != 'auth/login',      // a wrong password is no logout
   logger: PrettyNetworkLogger(),
@@ -140,7 +132,7 @@ Change it with `statusMapper: (status, reply) => ...` (call `StandardStatus.map`
 
 ```dart
 BrixApi(baseUrl: url, reader: const ResponseReader.envelope());   // default
-BrixApi(baseUrl: url, reader: const ResponseReader.fastApi());    // {detail: …}
+BrixApi(baseUrl: url, reader: const ResponseReader.fastApi());    // {detail: and so on}
 BrixApi(baseUrl: url, reader: const ResponseReader.djangoRest()); // {field: [...], non_field_errors}
 
 // Other keys or nested errors:
@@ -169,7 +161,7 @@ Every call gets its own box. It is green when the call worked, yellow for a 4xx 
 final cancel = RequestCancel();
 api.get('reports', cancel: cancel);
 // screen closed:
-cancel.cancel(); // → Failed(CancelledFailure())
+cancel.cancel(); //: Failed(CancelledFailure())
 ```
 
 ## Another HTTP client
@@ -200,19 +192,28 @@ class FakeClient extends NetworkClient {
 }
 ```
 
+## Not included yet
+
+- Token refresh: today a 401 ends the session once (`onUnauthorized`).
+- GraphQL and WebSockets: use their own packages next to brix_network.
+
+## The brix family
+
+| Package | What it does |
+|---|---|
+| [brix_cli](https://pub.dev/packages/brix_cli) | Start here: `brix create` makes the whole app on Bloc, Riverpod or GetX |
+| [brix_ui](https://pub.dev/packages/brix_ui) | Widgets and theme, light and dark |
+| [brix_bloc](https://pub.dev/packages/brix_bloc) | Cubits for every account screen |
+| [brix_riverpod](https://pub.dev/packages/brix_riverpod) | Riverpod notifiers for every account screen |
+| [brix_getx](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
+| [brix_network](https://pub.dev/packages/brix_network) | API calls that return a result, never throw |
+| [brix_storage](https://pub.dev/packages/brix_storage) | Tokens, settings and offline copies, kept safe |
+| [brix](https://pub.dev/packages/brix) | The core: login, signup and account flows in pure Dart |
+
+## Help
+
+Questions, bugs and ideas: [GitHub issues](https://github.com/mrubaz/brix/issues).
+
 ## License
 
 MIT
-
-## The brix packages
-
-brix_network is one part of [brix](https://github.com/mrubaz/brix). New app? Start with [brix_cli](https://pub.dev/packages/brix_cli). Existing app? Take only the packages you need; each brings the core with it.
-
-| Package | Version | What it does |
-|---|---|---|
-| [brix_cli](https://pub.dev/packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app`: a new app on every package below. Start here |
-| [brix_ui](https://pub.dev/packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, fields, select, sheets, dialogs, toasts, light and dark |
-| [brix_getx](https://pub.dev/packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
-| [brix_network](https://pub.dev/packages/brix_network) | [![pub](https://img.shields.io/pub/v/brix_network?label=)](https://pub.dev/packages/brix_network) | REST calls that return a `Result` |
-| [brix_storage](https://pub.dev/packages/brix_storage) | [![pub](https://img.shields.io/pub/v/brix_storage?label=)](https://pub.dev/packages/brix_storage) | Values, secrets and a session store |
-| [brix](https://pub.dev/packages/brix) | [![pub](https://img.shields.io/pub/v/brix?label=)](https://pub.dev/packages/brix) | The core every package builds on: flows, `Result`, `Json`, `BrixLogger` |

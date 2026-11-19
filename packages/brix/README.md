@@ -1,34 +1,48 @@
-# brix
+The account logic every Flutter app writes again and again, written once in pure Dart: login, signup, email code (OTP) verification, forgot and reset password, profile, change password, delete account, app start and logout. Works with any backend (REST, Firebase, Supabase) and any state library.
 
-[![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
-[![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
-[![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
-[![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
-[![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
-[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
+[![pub](https://img.shields.io/pub/v/brix)](https://pub.dev/packages/brix)
+[![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-> **This is the core of the [brix](https://github.com/mrubaz/brix) family.** You rarely add it yourself: brix_ui, brix_getx, brix_network and brix_storage bring it with them, and [brix_cli](https://pub.dev/packages/brix_cli) sets everything up in a new app. Add `brix` on its own when you use Riverpod, Bloc, Firebase or your own setup and want only the account logic. It has no screens, network or storage of its own.
+![An app built on brix: splash, login and signup](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_cli/doc/screenshots/app_1_start.png)
 
-The logic every Flutter app writes again and again, written once: login, signup, email codes, password reset, profile, change password, delete account, app start and logout.
+This is the core of the brix family. You rarely add it yourself: [brix_cli](https://pub.dev/packages/brix_cli) sets up a whole app, and brix_ui, brix_bloc, brix_riverpod, brix_getx, brix_network and brix_storage bring it with them. Add `brix` on its own for another state library or your own screens.
 
-brix works with any backend. You write one small class for your API, whether that is REST, Firebase or Supabase.
+## Contents
 
-It works with any state library. brix is plain Dart, with no Flutter or state library inside, and a thin wrapper connects it to yours. For GetX that wrapper is ready: [brix_getx](https://pub.dev/packages/brix_getx).
+- [Features](#features)
+- [Install](#install)
+- [How it works](#how-it-works)
+- [1. The backend: `AuthProvider`](#1-the-backend-authprovider)
+- [2. Storage, screens and alerts](#2-storage-screens-and-alerts)
+- [3. Login](#3-login)
+- [4. Signup and the email code](#4-signup-and-the-email-code)
+- [5. Forgot and reset password](#5-forgot-and-reset-password)
+- [6. App start and logout](#6-app-start-and-logout)
+- [7. Account: profile, change password, delete](#7-account-profile-change-password-delete)
+- [Reading JSON safely](#reading-json-safely)
+- [Logging](#logging)
+- [With your state library](#with-your-state-library)
+- [Texts](#texts)
+- [Updates never break your app](#updates-never-break-your-app)
+- [Testing](#testing)
+- [Example](#example)
+- [Not included yet](#not-included-yet)
+- [The brix family](#the-brix-family)
 
-It has no screens of its own. brix tells your screens what to show and where to go. If you want ready widgets, use [brix_ui](https://pub.dev/packages/brix_ui).
+## Features
 
-The defaults are safe. Passwords are never trimmed or logged, a double tap does not send a request twice, and a failed logout on the server still logs you out on the device.
-
-Updates do not break your app. New calls come with default bodies, and new values work with a default `switch` case.
-
-Here is an app built on brix ([made with brix_cli](https://github.com/mrubaz/brix/tree/main/packages/brix_cli)):
-
-![Login, signup and email code screens](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_cli/doc/screenshots/app_sign_in.png)
+- Flows for every account screen: they validate, guard double taps, call your backend and say which screen comes next.
+- Any backend: you write one small class for your API.
+- Any state library: plain Dart with an immutable `state` and a `changes` stream; no Flutter inside.
+- No screens of its own: your screens show the state. Ready widgets are in [brix_ui](https://pub.dev/packages/brix_ui).
+- Safe defaults: passwords are never trimmed or logged, a double tap never sends twice, a failed logout on the server still logs you out on the device.
+- `Result` and typed `Failure`s instead of exceptions, `Json` that never throws, and `BrixLogger`.
+- Updates never break your app: new calls come with default bodies.
 
 ## Install
 
-```
+```bash
 dart pub add brix
 ```
 
@@ -56,7 +70,7 @@ Every backend call returns a `Result`: `Success(data, message: ...)` or `Failed(
 
 ### What happens on a tap
 
-```
+```text
  Your screen               brix flow                  your classes
  ───────────               ─────────                  ────────────
  [Log in] ──submit()────▶  LoginFlow ──login()──────▶ AuthProvider ──▶ backend
@@ -70,7 +84,7 @@ Every backend call returns a `Result`: `Success(data, message: ...)` or `Failed(
 
 ### The journeys
 
-```
+```text
  Signup ──▶ code after signup? ── yes ──▶ Code screen ──verify──▶ Login (email filled) ──▶ Home
                                └─ no ───▶ Login (email filled)
 
@@ -109,7 +123,7 @@ class MyAuthProvider extends AuthProvider<SignupBody, User> {
   }) async {
     final response = await api.post('auth/login', {
       'email': identifier,
-      'password': password, // brix never changes a password – send it as is
+      'password': password, // brix never changes a password: send it as is
     });
     if (response.statusCode == 401) {
       return Failed(ValidationFailure(messages: [response.message]));
@@ -126,7 +140,7 @@ class MyAuthProvider extends AuthProvider<SignupBody, User> {
     return const Success(null);
   }
 
-  // Optional – override only what your backend has:
+  // Optional: override only what your backend has:
   // register, verifyOtp, resendOtp, forgotPassword, resetPassword.
 
   /// Errors your API client throws (no connection, timeouts).
@@ -228,14 +242,14 @@ final signup = SignupFlow<SignupBody, User>(
   passwordPolicy: const PasswordPolicy(), // 8+, capital, small, number, special
 );
 
-// Your own checks (terms accepted, …) run before this.
+// Your own checks (such as accepted terms) run before this.
 await signup.submit(
   request: SignupBody(name: name, email: email, password: password),
   identifier: email,
   password: password,
 );
-// otpAfterSignup → email kept as "pending", code screen opened.
-// otherwise      → login opened with the email filled.
+// otpAfterSignup: email kept as "pending", code screen opened.
+// otherwise: login opened with the email filled.
 ```
 
 Code screen:
@@ -253,11 +267,11 @@ await otp.start(); // reads the pending email (also after an app restart)
 
 otp.state.maskedIdentifier; // "ad•••@mail.com"
 otp.state.resendIn;         // time left before "resend" works
-otp.state.failedAttempts;   // went up → clear your code boxes
+otp.state.failedAttempts;   // went up: clear your code boxes
 
-await otp.verify('123456'); // right → login with the email filled
+await otp.verify('123456'); // right: login with the email filled
 await otp.resend();
-await otp.changeIdentifier(); // wrong email → back to signup
+await otp.changeIdentifier(); // wrong email: back to signup
 ```
 
 ## 5. Forgot and reset password
@@ -269,8 +283,8 @@ final forgot = ForgotPasswordFlow(
   feedback: feedback,
 );
 await forgot.submit(identifier: email);
-// ResetMode.otp  → reset screen opened (code + new password)
-// ResetMode.link → message shown, login opened
+// ResetMode.otp : reset screen opened (code + new password)
+// ResetMode.link: message shown, login opened
 
 final reset = ResetPasswordFlow(
   provider: provider,
@@ -281,7 +295,7 @@ final reset = ResetPasswordFlow(
 );
 await reset.start();
 await reset.submit(code: '123456', newPassword: 'New@Pass1');
-// → login with the email filled
+//: login with the email filled
 ```
 
 ## 6. App start and logout
@@ -296,8 +310,8 @@ final session = SessionFlow<User>(
 );
 
 await session.start();
-// waiting signup code → code screen; saved session → home;
-// rejected session (401) → login; nothing saved → login.
+// waiting signup code: code screen; saved session: home;
+// rejected session (401): login; nothing saved: login.
 
 await session.logout(); // server logout, then always local logout
 ```
@@ -326,7 +340,7 @@ class MyAccountProvider extends AccountProvider<User, ProfileBody> {
   Future<Result<void>> changePassword({
     required String currentPassword,
     required String newPassword,
-  }) async { /* … */ }
+  }) async { /* and so on */ }
 
   @override
   Future<Result<void>> requestAccountDeletion({required String identifier}) async {
@@ -338,7 +352,7 @@ class MyAccountProvider extends AccountProvider<User, ProfileBody> {
     required String identifier,
     String? code,
     String? password,
-  }) async { /* … */ }
+  }) async { /* and so on */ }
 }
 ```
 
@@ -396,7 +410,7 @@ Json.onProblem = (path, problem) => debugPrint('JSON $path: $problem');
 
 ## Logging
 
-![BrixLogger in the debug console](doc/screenshots/console.png)
+![BrixLogger in the debug console](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix/doc/screenshots/console.png)
 
 ```dart
 final log = BrixLogger(name: 'My App');
@@ -408,16 +422,16 @@ log.warning('Cache is old');
 log.error('Saving failed', error: error, stackTrace: stackTrace);
 ```
 
-```
+```text
 ╭──────────────────────────────╮
-│  ▆▆▆▆▆▆▆   brix · My App     │
+│  ▆▆▆▆▆▆▆   brix, My App     │
 │  ▆▆▆ ▆▆▆   version: 1.2.0    │
 │            env: staging      │
 ╰──────────────────────────────╯
-╭─ ▰ SUCCESS · My App ─────────────────────────── 14:32:05.123
+╭─ ▰ SUCCESS, My App ─────────────────────────── 14:32:05.123
 │ Logged in
 ╰───────────────────────────────────────────────────────────────
-╭─ ▰ ERROR · My App ───────────────────────────── 14:32:07.210
+╭─ ▰ ERROR, My App ───────────────────────────── 14:32:07.210
 │ Saving failed
 │ ↳ Bad state: boom
 │   #0 SaveFlow.run (save_flow.dart:42)
@@ -430,48 +444,9 @@ One box per message, so three info lines in a row still read as three. Colours: 
 
 Every flow has `state` (now) and `changes` (a stream of new states). Connect it to whatever your app uses, and `dispose()` it when the screen closes.
 
-**GetX**: ready-made controllers in [brix_getx](https://pub.dev/packages/brix_getx).
+**GetX, Bloc and Riverpod**: ready-made for every screen in [brix_getx](https://pub.dev/packages/brix_getx), [brix_bloc](https://pub.dev/packages/brix_bloc) and [brix_riverpod](https://pub.dev/packages/brix_riverpod), and `brix create` builds a whole app on any of them.
 
-**Riverpod**
-
-```dart
-final loginFlowProvider = Provider.autoDispose<LoginFlow<User>>((ref) {
-  final flow = LoginFlow<User>(provider: api, store: store, navigator: nav, feedback: alerts);
-  ref.onDispose(flow.dispose);
-  return flow;
-});
-
-final loginStateProvider = StreamProvider.autoDispose<AuthFormState>(
-  (ref) => ref.watch(loginFlowProvider).changes,
-);
-
-// Widget
-final busy = ref.watch(loginStateProvider).value?.isSubmitting ?? false;
-onPressed: busy ? null : () => ref.read(loginFlowProvider).submit(identifier: email, password: password),
-```
-
-**Bloc**
-
-```dart
-class LoginCubit extends Cubit<AuthFormState> {
-  LoginCubit(this.flow) : super(flow.state) {
-    _subscription = flow.changes.listen(emit);
-  }
-
-  final LoginFlow<User> flow;
-  late final StreamSubscription<AuthFormState> _subscription;
-
-  Future<void> login(String email, String password) =>
-      flow.submit(identifier: email, password: password);
-
-  @override
-  Future<void> close() async {
-    await _subscription.cancel();
-    await flow.dispose();
-    return super.close();
-  }
-}
-```
+For anything else, listen to `changes` yourself:
 
 **Provider**
 
@@ -587,19 +562,29 @@ expect(navigator.visits, isEmpty);
 
 [example/main.dart](https://github.com/mrubaz/brix/blob/main/packages/brix/example/main.dart): a login in plain Dart (`dart run example/main.dart`). A full Flutter app: [brix_getx example](https://github.com/mrubaz/brix/tree/main/packages/brix_getx/example).
 
+## Not included yet
+
+- Social login (Google, Apple, Facebook) and phone login.
+- Token refresh: today a 401 ends the session.
+- Screens and widgets: see [brix_ui](https://pub.dev/packages/brix_ui).
+
+## The brix family
+
+| Package | What it does |
+|---|---|
+| [brix_cli](https://pub.dev/packages/brix_cli) | Start here: `brix create` makes the whole app on Bloc, Riverpod or GetX |
+| [brix_ui](https://pub.dev/packages/brix_ui) | Widgets and theme, light and dark |
+| [brix_bloc](https://pub.dev/packages/brix_bloc) | Cubits for every account screen |
+| [brix_riverpod](https://pub.dev/packages/brix_riverpod) | Riverpod notifiers for every account screen |
+| [brix_getx](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
+| [brix_network](https://pub.dev/packages/brix_network) | API calls that return a result, never throw |
+| [brix_storage](https://pub.dev/packages/brix_storage) | Tokens, settings and offline copies, kept safe |
+| [brix](https://pub.dev/packages/brix) | The core: login, signup and account flows in pure Dart |
+
+## Help
+
+Questions, bugs and ideas: [GitHub issues](https://github.com/mrubaz/brix/issues).
+
 ## License
 
 MIT
-
-## The brix packages
-
-brix is one part of [brix](https://github.com/mrubaz/brix). New app? Start with [brix_cli](https://pub.dev/packages/brix_cli). Existing app? Take only the packages you need; each brings the core with it.
-
-| Package | Version | What it does |
-|---|---|---|
-| [brix_cli](https://pub.dev/packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app`: a new app on every package below. Start here |
-| [brix_ui](https://pub.dev/packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, fields, select, sheets, dialogs, toasts, light and dark |
-| [brix_getx](https://pub.dev/packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
-| [brix_network](https://pub.dev/packages/brix_network) | [![pub](https://img.shields.io/pub/v/brix_network?label=)](https://pub.dev/packages/brix_network) | REST calls that return a `Result` |
-| [brix_storage](https://pub.dev/packages/brix_storage) | [![pub](https://img.shields.io/pub/v/brix_storage?label=)](https://pub.dev/packages/brix_storage) | Values, secrets and a session store |
-| [brix](https://pub.dev/packages/brix) | [![pub](https://img.shields.io/pub/v/brix?label=)](https://pub.dev/packages/brix) | The core every package builds on: flows, `Result`, `Json`, `BrixLogger` |

@@ -23,11 +23,17 @@ dev_dependencies:
   test: ^1.25.0
 
 screenshots:
-  - description: "Login, signup with live password rules and the email code in a new app."
-    path: doc/screenshots/app_sign_in.png
-  - description: "Home, profile and delete account in a new app."
-    path: doc/screenshots/app_account.png
-  - description: "brix create in the terminal."
+  - description: "Splash, login and signup in a new app."
+    path: doc/screenshots/app_1_start.png
+  - description: "Email code, forgot password and reset password in a new app."
+    path: doc/screenshots/app_2_code_password.png
+  - description: "Home with the setup steps, the widget library and settings."
+    path: doc/screenshots/app_3_tabs.png
+  - description: "Profile, change password and delete account."
+    path: doc/screenshots/app_4_account.png
+  - description: "Appearance and about."
+    path: doc/screenshots/app_5_appearance_about.png
+  - description: "brix create asks for the state library."
     path: doc/screenshots/terminal.png
   - description: "The folders of a new app."
     path: doc/screenshots/folders.png

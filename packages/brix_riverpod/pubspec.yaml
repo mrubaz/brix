@@ -27,7 +27,7 @@ dev_dependencies:
     sdk: flutter
 
 screenshots:
-  - description: "Login, signup with live password rules and the email code, each screen on a brix_riverpod notifier."
-    path: doc/screenshots/app_sign_in.png
-  - description: "Forgot password, code and new password, and home with logout on brix_riverpod notifiers."
-    path: doc/screenshots/app_reset.png
+  - description: "Splash, login and signup on brix_riverpod notifiers."
+    path: doc/screenshots/app_1_start.png
+  - description: "Email code, forgot password and reset password on brix_riverpod notifiers."
+    path: doc/screenshots/app_2_code_password.png

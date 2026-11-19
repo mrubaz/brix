@@ -1,43 +1,40 @@
-# brix_riverpod
+Riverpod 3 notifiers for every account screen of a Flutter app: login, signup, email code (OTP), forgot and reset password, profile, change password, delete account, splash and logout. Each holds an immutable state and the methods a screen calls; the logic comes from [brix](https://pub.dev/packages/brix).
 
-[![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
-[![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
-[![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
-[![brix_riverpod](https://img.shields.io/pub/v/brix_riverpod?label=brix_riverpod)](https://pub.dev/packages/brix_riverpod)
-[![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
-[![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
-[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
+[![pub](https://img.shields.io/pub/v/brix_riverpod)](https://pub.dev/packages/brix_riverpod)
+[![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-> Part of the [brix](https://github.com/mrubaz/brix) family. It brings the core, [brix](https://pub.dev/packages/brix), with it.
+![Splash, login and signup](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_riverpod/doc/screenshots/app_1_start.png)
 
-Riverpod 3 notifiers for [brix](https://pub.dev/packages/brix). Each one holds the text fields, form key, state and clean-up code of an auth or account screen, so your screen is only its layout.
+![Email code, forgot password and reset password](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_riverpod/doc/screenshots/app_2_code_password.png)
+
+Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) makes these screens on Riverpod for you.
+
+## Features
+
+- One `Notifier` per screen, used with `NotifierProvider.autoDispose`.
+- No Flutter objects inside, as the Riverpod docs recommend: your screen owns its text fields, form key and code boxes.
+- Immutable states with `copyWith` and `==` (Equatable), so `ref.watch` redraws only on a real change.
+- Remember me, email pre-fill after signup or reset, show / hide password.
+- Live password rules for signup, reset and change password.
+- Code screens with resend countdown, a failed attempt counter and `OtpCodeBoxes` (paste, autofill, auto submit).
+- Works with any backend: you write the adapters once in brix.
 
 | Notifier | State | Screen |
 |---|---|---|
 | `BrixLoginNotifier` | `BrixLoginState` | login, remember me, email pre-fill |
-| `BrixSignupNotifier` | `BrixSignupState` | signup (you add your own fields and build the request) |
-| `BrixOtpNotifier` | `CodeEntryState` | code after signup: boxes, paste / autofill, auto submit, resend countdown |
-| `BrixForgotPasswordNotifier` | `AuthFormState` | forgot password |
-| `BrixResetPasswordNotifier` | `BrixResetPasswordState` | reset password: code boxes, new password, unmet rules |
+| `BrixSignupNotifier` | `BrixSignupState` | signup (you add your own values and build the request) |
+| `BrixOtpNotifier` | `CodeEntryState` | code after signup |
+| `BrixForgotPasswordNotifier` | `BrixForgotPasswordState` | forgot password |
+| `BrixResetPasswordNotifier` | `BrixResetPasswordState` | code and new password |
 | `BrixChangePasswordNotifier` | `BrixChangePasswordState` | change password |
-| `BrixProfileNotifier` | `ProfileState` | profile load, save and avatar (you add your fields) |
+| `BrixProfileNotifier` | `ProfileState` | profile load, save and avatar |
 | `BrixDeleteAccountNotifier` | `CodeEntryState` | delete account with a code |
 | `BrixSessionNotifier` | `SessionState` | splash (`start`) and logout |
 
-Every state is immutable. Watch it for loaders, toggles and the password checklist; call methods on the notifier.
-
-![Login, signup and email code screens](doc/screenshots/app_sign_in.png)
-
-![Forgot password, reset and home screens](doc/screenshots/app_reset.png)
-
-These screens come from the [example app](example). Each one is only a layout on top of a brix_riverpod notifier.
-
-All logic lives in [brix](https://pub.dev/packages/brix), so read its README first for the four classes you write (backend, storage, navigator, alerts).
-
 ## Install
 
-```
+```bash
 flutter pub add brix_riverpod flutter_riverpod
 ```
 
@@ -47,17 +44,16 @@ One import gives you brix too:
 import 'package:brix_riverpod/brix_riverpod.dart';
 ```
 
-## How a notifier gets its flow
+The logic lives in [brix](https://pub.dev/packages/brix); read its README for the four classes you write once (backend, session store, navigator, alerts).
 
-A Riverpod notifier takes no constructor arguments, so you extend the brix notifier and return your flow from `createFlow`. Build the flow from your own providers:
+## Usage
+
+### Give each notifier its flow
+
+A notifier takes no constructor arguments, so extend the brix notifier and return the flow from `createFlow`:
 
 ```dart
-final backendProvider = Provider((ref) => MyAuthProvider());
-final sessionStoreProvider = Provider((ref) => MySessionStore());
-final navigatorProvider = Provider((ref) => MyNavigator());
-final feedbackProvider = Provider((ref) => MyFeedback());
-
-class LoginNotifier extends BrixLoginNotifier<User> {
+class LoginViewModel extends BrixLoginNotifier<User> {
   @override
   LoginFlow<User> createFlow() => LoginFlow(
     provider: ref.read(backendProvider),
@@ -68,38 +64,55 @@ class LoginNotifier extends BrixLoginNotifier<User> {
 }
 
 final loginProvider =
-    NotifierProvider.autoDispose<LoginNotifier, BrixLoginState>(
-      LoginNotifier.new,
+    NotifierProvider.autoDispose<LoginViewModel, BrixLoginState>(
+      LoginViewModel.new,
     );
 ```
 
-Use `autoDispose`: the notifier, its flow and its text fields are disposed when the screen closes.
+Wrap your app in `ProviderScope`. With `autoDispose`, the notifier and its flow are disposed when the screen closes.
 
-## Login
+### A screen
+
+The screen owns its fields, sends what is typed, checks its form, then calls the notifier:
 
 ```dart
-class LoginScreen extends ConsumerWidget {
-  const LoginScreen({super.key});
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _email = TextEditingController();
+  final _password = TextEditingController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Remembered details and a pre-filled email arrive in the state.
+    ref.listen(loginProvider, (_, state) {
+      if (_email.text != state.identifier) _email.text = state.identifier;
+      if (_password.text != state.password) _password.text = state.password;
+    });
     final state = ref.watch(loginProvider);
     final login = ref.read(loginProvider.notifier);
     return Form(
-      key: login.formKey,
+      key: _formKey,
       child: Column(
         children: [
-          TextFormField(controller: login.identifierController),
+          TextFormField(controller: _email, onChanged: login.identifierChanged),
           TextFormField(
-            controller: login.passwordController,
+            controller: _password,
+            onChanged: login.passwordChanged,
             obscureText: state.obscurePassword,
           ),
-          Checkbox(
-            value: state.rememberMe,
-            onChanged: (_) => login.toggleRememberMe(),
-          ),
           FilledButton(
-            onPressed: state.isSubmitting ? null : login.login,
+            onPressed: state.isSubmitting
+                ? null
+                : () {
+                    if (_formKey.currentState!.validate()) login.login();
+                  },
             child: const Text('Log in'),
           ),
         ],
@@ -109,72 +122,65 @@ class LoginScreen extends ConsumerWidget {
 }
 ```
 
-Saved "remember me" details fill the form on their own. `prefillIdentifier(email)` fills the email after a signup or a reset.
+`prefillIdentifier(email)` fills the email after a signup or a reset; the password is filled only for the remembered account.
 
-## Your own fields
+### Your own values
 
-Make extra text fields in `initFields` and dispose them in `disposeFields`, not as `final` fields. Riverpod can keep the same notifier across a rebuild; brix makes the fields again with the new flow.
+Keep extra values in your notifier and build your request:
 
 ```dart
-class SignupNotifier extends BrixSignupNotifier<SignupBody, User> {
-  late TextEditingController nameController;
+class SignupViewModel extends BrixSignupNotifier<SignupRequest, User> {
+  String _name = '';
 
   @override
-  SignupFlow<SignupBody, User> createFlow() => SignupFlow(/* ... */);
+  SignupFlow<SignupRequest, User> createFlow() => SignupFlow(/* ... */);
+
+  void nameChanged(String value) => _name = value;
 
   @override
-  void initFields() {
-    super.initFields();
-    nameController = TextEditingController();
-  }
-
-  @override
-  void disposeFields() {
-    nameController.dispose();
-    super.disposeFields();
-  }
-
-  @override
-  SignupBody buildRequest({
+  SignupRequest buildRequest({
     required String identifier,
     required String password,
-  }) => SignupBody(name: nameController.text.trim(), email: identifier, password: password);
+  }) => SignupRequest(name: _name.trim(), email: identifier, password: password);
 }
 ```
 
 Override `beforeSubmit` for your own checks, such as accepted terms.
 
-## Code screens
+### Code screens
 
-`BrixOtpNotifier`, `BrixResetPasswordNotifier` and `BrixDeleteAccountNotifier` have `boxes` (`OtpCodeBoxes`): one text field and focus node per digit, with typing, paste, autofill and delete handled. A rejected code clears them.
-
-- OTP starts its flow right after the build and submits on the last digit.
-- Reset moves focus to `newPasswordFocus` on the last digit. Opened without an email, it goes back to login.
-- Delete account never submits on its own. `requestDeletion` sends the code (`state.isRequesting` while it goes), `confirm` deletes.
-
-The reset screen needs the email the code was sent to. A family provider passes it:
+The screen owns an `OtpCodeBoxes` (one field and focus node per digit) and passes the code on:
 
 ```dart
-class ResetPasswordNotifier extends BrixResetPasswordNotifier {
-  ResetPasswordNotifier(this.identifier);
-  final String identifier;
+late final _boxes = OtpCodeBoxes(
+  length: ref.read(otpProvider.notifier).otpLength,
+  onCompleted: () => ref.read(otpProvider.notifier).verify(_boxes.code),
+);
 
-  @override
-  ResetPasswordFlow createFlow() => ResetPasswordFlow(
-    identifier: identifier,
-    /* ... */
-  );
-}
+// In build: a rejected code clears the boxes.
+ref.listen(otpProvider, (before, now) {
+  if (before != null && now.failedAttempts != before.failedAttempts) {
+    _boxes.clear();
+  }
+});
+```
 
+- OTP and reset start their flow right after the build. Reset opened without an email goes back to login.
+- Reset takes the code with the new password: `submit(_boxes.code)`.
+- Delete account never deletes on its own: `requestDeletion()` sends the code, `confirm(code)` deletes.
+
+Reset and delete account need the email the code went to; a family provider passes it:
+
+```dart
 final resetPasswordProvider = NotifierProvider.autoDispose
-    .family<ResetPasswordNotifier, BrixResetPasswordState, String>(
-      ResetPasswordNotifier.new,
+    .family<ResetPasswordViewModel, BrixResetPasswordState, String>(
+      ResetPasswordViewModel.new,
     );
 ```
 
-## Password checklist
+### Password checklist
 
-Signup, reset and change password keep the rules the typed password does not meet yet in their state:
+Signup, reset and change password keep the rules the typed password does not meet yet:
 
 ```dart
 for (final rule in notifier.passwordRules)
@@ -184,34 +190,41 @@ for (final rule in notifier.passwordRules)
   ),
 ```
 
-`state.passwordRulesMet` is true once every rule is met.
+### Profile, splash and logout
 
-## Splash and logout
-
-```dart
-// Splash: after the first frame.
-ref.read(sessionProvider.notifier).start();
-
-// Logout button.
-FilledButton(
-  onPressed: ref.watch(sessionProvider).isLoggingOut
-      ? null
-      : ref.read(sessionProvider.notifier).logout,
-  child: const Text('Log out'),
-);
-```
-
-## Profile
-
-`BrixProfileNotifier` starts as loading and loads right after the build. Fill your fields in `onUserLoaded`, return your body from `buildUpdate` and say whether anything changed in `canSave`. `uploadAvatar` keeps unsaved typing.
+- `BrixProfileNotifier` starts as loading and loads right after the build. Fill your fields the first time `state.user` arrives, then call `save(yourUpdate)`. `uploadAvatar` keeps unsaved typing.
+- Splash: `ref.read(sessionProvider.notifier).start()` after the first frame.
+- Logout: `ref.read(sessionProvider.notifier).logout()`, with `state.isLoggingOut` for the loader.
 
 ## Example app
 
-[`example/`](example) is a full app on a demo backend (no server): login, signup, code, forgot and reset password, logout. Demo account `demo@brix.dev` / `Demo@1234`, every code `123456`.
+[`example/`](https://github.com/mrubaz/brix/tree/main/packages/brix_riverpod/example) is the app `brix create --state riverpod` makes: 14 screens on a test backend on the device, no server needed. Log in with `demo@brix.dev` / `Demo@1234`; every code is `123456`.
 
-```
+```bash
 cd example && flutter run
 ```
+
+## Not included yet
+
+- Social login (Google, Apple, Facebook) and phone login.
+- Code generation (`@riverpod`): the notifiers are plain classes, so you can wrap them in generated providers yourself.
+
+## The brix family
+
+| Package | What it does |
+|---|---|
+| [brix_cli](https://pub.dev/packages/brix_cli) | Start here: `brix create` makes the whole app on Bloc, Riverpod or GetX |
+| [brix_ui](https://pub.dev/packages/brix_ui) | Widgets and theme, light and dark |
+| [brix_bloc](https://pub.dev/packages/brix_bloc) | Cubits for every account screen |
+| [brix_riverpod](https://pub.dev/packages/brix_riverpod) | Riverpod notifiers for every account screen |
+| [brix_getx](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
+| [brix_network](https://pub.dev/packages/brix_network) | API calls that return a result, never throw |
+| [brix_storage](https://pub.dev/packages/brix_storage) | Tokens, settings and offline copies, kept safe |
+| [brix](https://pub.dev/packages/brix) | The core: login, signup and account flows in pure Dart |
+
+## Help
+
+Questions, bugs and ideas: [GitHub issues](https://github.com/mrubaz/brix/issues).
 
 ## License
 

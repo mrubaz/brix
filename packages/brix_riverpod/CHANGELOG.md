@@ -10,6 +10,7 @@ Breaking: the notifiers follow the Riverpod docs and hold no Flutter objects (no
 - Example: `ProviderScope` instead of a global `ProviderContainer`; the login screen fills a prefilled email in `didUpdateWidget`.
 
 Migration: make each screen a `ConsumerStatefulWidget` with its own `GlobalKey<FormState>` and controllers, wire `onChanged` to the new methods, validate the form, then call `login()`, `signup()`, `submit()` and so on.
+- Docs: new README in the pub.dev format (short description first, features, usage, what is not included yet, the brix family with brix_bloc) and new screenshots.
 
 ## 1.0.0
 

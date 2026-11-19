@@ -108,7 +108,7 @@ void main() {
       tester,
       '$_out/terminal.png',
       Terminal(title: 'Terminal', lines: lines),
-      size: const Size(760, 430),
+      size: const Size(760, 540),
     );
   });
 
