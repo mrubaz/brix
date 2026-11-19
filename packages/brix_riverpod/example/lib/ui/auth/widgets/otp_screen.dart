@@ -1,3 +1,4 @@
+import 'package:brix_riverpod/brix_riverpod.dart';
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,14 +9,42 @@ import '../../core/widgets/code_boxes.dart';
 import '../../core/widgets/resend_row.dart';
 import '../view_models/otp_viewmodel.dart';
 
-/// The code sent after signup. Typing the last digit verifies it.
-class OtpScreen extends ConsumerWidget {
+/// The code sent after signup. Typing the last digit verifies it; a
+/// rejected code clears the boxes.
+class OtpScreen extends ConsumerStatefulWidget {
   const OtpScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<OtpScreen> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends ConsumerState<OtpScreen> {
+  OtpViewModel get _viewModel => ref.read(otpProvider.notifier);
+  late final _boxes = OtpCodeBoxes(
+    length: _viewModel.otpLength,
+    onCompleted: _verify,
+  );
+
+  void _verify() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    _viewModel.verify(_boxes.code);
+  }
+
+  @override
+  void dispose() {
+    _boxes.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // A rejected code clears the boxes.
+    ref.listen(otpProvider, (before, now) {
+      if (before != null && now.failedAttempts != before.failedAttempts) {
+        _boxes.clear();
+      }
+    });
     final state = ref.watch(otpProvider);
-    final otp = ref.read(otpProvider.notifier);
     return AuthPage(
       title: 'Check your email',
       subtitle:
@@ -23,21 +52,21 @@ class OtpScreen extends ConsumerWidget {
       children: [
         Text('Code sent to ${state.maskedIdentifier}'),
         TextButton(
-          onPressed: otp.changeIdentifier,
+          onPressed: _viewModel.changeIdentifier,
           child: const Text('Wrong email? Change it'),
         ),
         const SizedBox(height: 8),
-        CodeBoxes(boxes: otp.boxes),
+        CodeBoxes(boxes: _boxes),
         const SizedBox(height: 24),
         BrixButton(
           label: 'Verify',
           isLoading: state.isSubmitting,
-          onPressed: otp.verify,
+          onPressed: _verify,
         ),
         ResendRow(
           seconds: state.resendIn.inSeconds,
           busy: state.isResending,
-          onResend: otp.resend,
+          onResend: _viewModel.resend,
         ),
       ],
     );

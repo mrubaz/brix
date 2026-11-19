@@ -1,18 +1,18 @@
 import 'package:brix/auth.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'brix_auth_form_notifier.dart';
 import 'brix_login_state.dart';
 
-/// Riverpod notifier for a login screen, built on brix [LoginFlow].
-///
-/// Extend it, return the app's flow from [createFlow] and declare the
-/// provider:
+/// Riverpod notifier for a login screen, built on brix [LoginFlow]. It holds
+/// no Flutter objects: the screen owns its fields, sends what is typed
+/// ([identifierChanged], [passwordChanged]), checks its form, then calls
+/// [login].
 ///
 /// ```dart
-/// class LoginNotifier extends BrixLoginNotifier<AppUser> {
+/// class LoginNotifier extends BrixLoginNotifier<User> {
 ///   @override
-///   LoginFlow<AppUser> createFlow() => ref.read(authProvider).loginFlow();
+///   LoginFlow<User> createFlow() => LoginFlow(...);
 /// }
 ///
 /// final loginProvider =
@@ -21,76 +21,80 @@ import 'brix_login_state.dart';
 ///     );
 /// ```
 ///
-/// Bind `formKey`, [identifierController] and [passwordController] in the
-/// view, watch the state for the loader and toggles, and call [login].
-abstract class BrixLoginNotifier<TUser>
-    extends BrixAuthFormNotifier<LoginFlow<TUser>, BrixLoginState> {
-  late TextEditingController identifierController;
-  late TextEditingController passwordController;
+/// Saved "remember me" details arrive in the state on start; the screen puts
+/// them in its fields (for example with `ref.listen`).
+abstract class BrixLoginNotifier<TUser> extends Notifier<BrixLoginState> {
+  late LoginFlow<TUser> flow;
 
-  @override
-  void initFields() {
-    super.initFields();
-    identifierController = TextEditingController();
-    passwordController = TextEditingController();
-  }
+  /// Makes the flow, usually from the app's own providers. Called on every
+  /// build; the old flow is disposed first.
+  @protected
+  LoginFlow<TUser> createFlow();
 
   @override
   BrixLoginState build() {
-    final initial = super.build();
+    flow = createFlow();
+    final subscription = flow.changes.listen(
+      (form) => _set(state.copyWith(isSubmitting: form.isSubmitting)),
+    );
+    ref.onDispose(() {
+      subscription.cancel();
+      flow.dispose();
+    });
     _fillRemembered();
-    return initial;
+    return const BrixLoginState();
   }
 
-  @override
-  BrixLoginState initialState() => const BrixLoginState();
-
-  @override
-  BrixLoginState withSubmitting(BrixLoginState current, bool isSubmitting) =>
-      current.copyWith(isSubmitting: isSubmitting);
+  void _set(BrixLoginState next) {
+    if (ref.mounted) state = next;
+  }
 
   Future<void> _fillRemembered() async {
     final saved = await flow.loadRemembered();
     if (saved == null || !ref.mounted) return;
-    identifierController.text = saved.identifier;
-    passwordController.text = saved.password;
-    state = state.copyWith(rememberMe: true);
+    _set(
+      state.copyWith(
+        identifier: saved.identifier,
+        password: saved.password,
+        rememberMe: true,
+      ),
+    );
   }
+
+  void identifierChanged(String value) =>
+      _set(state.copyWith(identifier: value));
+
+  void passwordChanged(String value) => _set(state.copyWith(password: value));
+
+  void togglePasswordVisibility() =>
+      _set(state.copyWith(obscurePassword: !state.obscurePassword));
+
+  void toggleRememberMe() =>
+      _set(state.copyWith(rememberMe: !state.rememberMe));
 
   /// Fills the email, e.g. back from a reset or a verified signup. The
   /// password is filled only when "remember me" holds this account's.
   Future<void> prefillIdentifier(String identifier) async {
-    identifierController.text = identifier;
     final saved = await flow.loadRemembered();
     if (!ref.mounted) return;
     if (saved != null && saved.identifier == identifier) {
-      passwordController.text = saved.password;
-      state = state.copyWith(rememberMe: true);
+      _set(
+        state.copyWith(
+          identifier: identifier,
+          password: saved.password,
+          rememberMe: true,
+        ),
+      );
     } else {
-      passwordController.clear();
+      _set(state.copyWith(identifier: identifier, password: ''));
     }
   }
 
-  void togglePasswordVisibility() =>
-      state = state.copyWith(obscurePassword: !state.obscurePassword);
-
-  void toggleRememberMe() =>
-      state = state.copyWith(rememberMe: !state.rememberMe);
-
-  /// Validates the form, then logs in. Double taps are ignored by the flow.
-  Future<void> login() async {
-    if (!validateForm()) return;
-    await flow.submit(
-      identifier: identifierController.text,
-      password: passwordController.text,
-      rememberMe: state.rememberMe,
-    );
-  }
-
-  @override
-  void disposeFields() {
-    identifierController.dispose();
-    passwordController.dispose();
-    super.disposeFields();
-  }
+  /// Logs in with what is typed. Check the form first; double taps are
+  /// ignored by the flow.
+  Future<void> login() => flow.submit(
+    identifier: state.identifier,
+    password: state.password,
+    rememberMe: state.rememberMe,
+  );
 }

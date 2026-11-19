@@ -3,7 +3,6 @@ import 'package:brix_network/brix_network.dart';
 import 'package:brix_storage/brix_storage.dart';
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../domain/models/profile_update.dart';
@@ -21,7 +20,8 @@ typedef Backend = ({
 });
 
 /// Creates the app-wide services once. Screens get their view models from
-/// Riverpod providers (each next to its view model).
+/// Riverpod providers (each next to its view model) under the app's
+/// `ProviderScope`.
 abstract final class Dependencies {
   static late BrixStorage _storage;
   static late AuthSessionStore<User> _session;
@@ -30,7 +30,6 @@ abstract final class Dependencies {
   static late AuthFeedback _feedback;
   static late AuthProvider<SignupRequest, User> _auth;
   static late AccountProvider<User, ProfileUpdate> _account;
-  static late ProviderContainer _container;
   static DevTools? _devTools;
 
   /// [backend] builds the auth and account repositories. [storage] is
@@ -56,9 +55,6 @@ abstract final class Dependencies {
     BrixUi.navigatorKey = navigatorKey;
     _feedback = const BrixUiFeedback();
     _devTools = devTools;
-    // The app's providers live here, so the navigator can reach the login
-    // screen's view model (`main.dart` hands it to the widget tree).
-    _container = ProviderContainer();
 
     final api = BrixApi(
       baseUrl: apiUrl.isEmpty ? 'https://localhost/' : apiUrl,
@@ -82,7 +78,6 @@ abstract final class Dependencies {
   static GoRouter get router => _router;
   static AuthFeedback get feedback => _feedback;
   static BrixStorage get storage => _storage;
-  static ProviderContainer get container => _container;
 
   /// Only while developing; `null` in a release build.
   static DevTools? get devTools => _devTools;

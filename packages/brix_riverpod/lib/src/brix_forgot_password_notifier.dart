@@ -1,41 +1,37 @@
 import 'package:brix/auth.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'brix_auth_form_notifier.dart';
+import 'brix_forgot_password_state.dart';
 
 /// Riverpod notifier for a "forgot password" screen, built on brix
-/// [ForgotPasswordFlow]. Bind `formKey` and [identifierController], watch
-/// `isSubmitting` for the button and call [submit]. The state is the
-/// flow's own [AuthFormState].
-///
-/// Extend it and return the app's flow from [createFlow], like
-/// `BrixLoginNotifier`.
+/// [ForgotPasswordFlow]: send what is typed with [identifierChanged], check
+/// the form, then call [submit].
 abstract class BrixForgotPasswordNotifier
-    extends BrixAuthFormNotifier<ForgotPasswordFlow, AuthFormState> {
-  late TextEditingController identifierController;
+    extends Notifier<BrixForgotPasswordState> {
+  late ForgotPasswordFlow flow;
+
+  /// Makes the flow, usually from the app's own providers.
+  @protected
+  ForgotPasswordFlow createFlow();
 
   @override
-  void initFields() {
-    super.initFields();
-    identifierController = TextEditingController();
+  BrixForgotPasswordState build() {
+    flow = createFlow();
+    final subscription = flow.changes.listen((form) {
+      if (ref.mounted) state = state.copyWith(isSubmitting: form.isSubmitting);
+    });
+    ref.onDispose(() {
+      subscription.cancel();
+      flow.dispose();
+    });
+    return const BrixForgotPasswordState();
   }
 
-  @override
-  AuthFormState initialState() => const AuthFormState();
-
-  @override
-  AuthFormState withSubmitting(AuthFormState current, bool isSubmitting) =>
-      AuthFormState(isSubmitting: isSubmitting);
-
-  /// Validates the form, then asks for the reset code or link.
-  Future<void> submit() async {
-    if (!validateForm()) return;
-    await flow.submit(identifier: identifierController.text);
+  void identifierChanged(String value) {
+    if (ref.mounted) state = state.copyWith(identifier: value);
   }
 
-  @override
-  void disposeFields() {
-    identifierController.dispose();
-    super.disposeFields();
-  }
+  /// Asks for the reset code or link.
+  Future<void> submit() => flow.submit(identifier: state.identifier);
 }

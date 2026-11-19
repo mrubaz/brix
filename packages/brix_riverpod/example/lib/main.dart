@@ -20,7 +20,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (kDebugMode && AppConfig.apiUrl.isEmpty) {
     startWithLocalBackend(); // local test backend
-    runApp(const _Scope());
+    runApp(const ProviderScope(child: App()));
     return;
   }
   final problem = AppConfig.problem();
@@ -35,18 +35,7 @@ void main() {
       account: AccountRepositoryRemote(api),
     ),
   );
-  runApp(const _Scope());
-}
-
-/// The app with the providers from `Dependencies.container`.
-class _Scope extends StatelessWidget {
-  const _Scope();
-
-  @override
-  Widget build(BuildContext context) => UncontrolledProviderScope(
-    container: Dependencies.container,
-    child: const App(),
-  );
+  runApp(const ProviderScope(child: App()));
 }
 
 class App extends ConsumerWidget {

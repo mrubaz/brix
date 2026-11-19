@@ -1,48 +1,47 @@
 import 'package:brix/account.dart';
-import 'package:flutter/widgets.dart';
-
-import 'brix_code_entry_notifier.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Riverpod notifier for a delete account screen, built on brix
 /// [DeleteAccountFlow]. The state is the flow's own [CodeEntryState].
 ///
 /// Code mode: [requestDeletion] sends the code (show the boxes once
-/// `isCodeSent`, the first box gets focus), [confirm] deletes; no auto
-/// submit for a destructive action. Other modes: [deleteWithoutCode].
-///
-/// Extend it and return the app's flow from [createFlow], like
-/// `BrixLoginNotifier`.
-abstract class BrixDeleteAccountNotifier
-    extends BrixCodeEntryNotifier<DeleteAccountFlow, CodeEntryState> {
-  @override
-  CodeEntryState initialState(CodeEntryState code) => code;
+/// `isCodeSent`), [confirm] deletes with the code the screen's boxes hold;
+/// nothing deletes on its own. Other modes: [deleteWithoutCode].
+abstract class BrixDeleteAccountNotifier extends Notifier<CodeEntryState> {
+  late DeleteAccountFlow flow;
+
+  /// Makes the flow, usually from the app's own providers.
+  @protected
+  DeleteAccountFlow createFlow();
+
+  /// Digits in a code, for the boxes.
+  int get otpLength => flow.otpLength;
 
   @override
-  CodeEntryState withCodeEntry(CodeEntryState current, CodeEntryState code) {
-    if (!current.isCodeSent && code.isCodeSent) _focusFirstBox();
-    return code;
+  CodeEntryState build() {
+    flow = createFlow();
+    final subscription = flow.changes.listen((code) {
+      if (ref.mounted) state = code;
+    });
+    ref.onDispose(() {
+      subscription.cancel();
+      flow.dispose();
+    });
+    return flow.state;
   }
-
-  /// The boxes are built on the next frame.
-  void _focusFirstBox() => WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (ref.mounted) boxes.focusNodes.first.requestFocus();
-  });
-
-  @override
-  void Function()? get onCodeCompleted => null;
 
   /// Sends the first code (code mode).
   Future<void> requestDeletion() => flow.requestDeletion();
 
-  /// Deletes with the typed code.
-  Future<void> confirm() {
-    FocusManager.instance.primaryFocus?.unfocus();
-    return flow.confirm(boxes.code);
-  }
+  /// Deletes with [code].
+  Future<void> confirm(String code) => flow.confirm(code);
 
   /// Confirm / password mode.
   Future<void> deleteWithoutCode({String? password}) =>
       flow.deleteWithoutCode(password: password);
+
+  Future<void> resend() => flow.resend();
 }
 
 /// What a delete account screen shows while the first code is asked for.

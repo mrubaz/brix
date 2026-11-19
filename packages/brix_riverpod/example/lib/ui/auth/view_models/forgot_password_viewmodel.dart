@@ -14,6 +14,7 @@ class ForgotPasswordViewModel extends BrixForgotPasswordNotifier {
 }
 
 final forgotPasswordProvider =
-    NotifierProvider.autoDispose<ForgotPasswordViewModel, AuthFormState>(
-      ForgotPasswordViewModel.new,
-    );
+    NotifierProvider.autoDispose<
+      ForgotPasswordViewModel,
+      BrixForgotPasswordState
+    >(ForgotPasswordViewModel.new);

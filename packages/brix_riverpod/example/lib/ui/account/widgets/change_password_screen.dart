@@ -7,24 +7,39 @@ import '../../core/widgets/password_checklist.dart';
 import '../view_models/change_password_viewmodel.dart';
 
 /// Current password, new password with live rules, confirm.
-class ChangePasswordScreen extends ConsumerWidget {
+class ChangePasswordScreen extends ConsumerStatefulWidget {
   const ChangePasswordScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChangePasswordScreen> createState() =>
+      _ChangePasswordScreenState();
+}
+
+class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  ChangePasswordViewModel get _viewModel =>
+      ref.read(changePasswordProvider.notifier);
+
+  void _submit() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (_formKey.currentState?.validate() ?? false) _viewModel.submit();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(changePasswordProvider);
-    final change = ref.read(changePasswordProvider.notifier);
     return AuthPage(
       title: 'Change password',
       subtitle: 'Use one you do not use anywhere else.',
       children: [
         Form(
-          key: change.formKey,
+          key: _formKey,
           child: AutofillGroup(
             child: Column(
               children: [
                 BrixTextField(
-                  controller: change.currentPasswordController,
+                  onChanged: _viewModel.currentPasswordChanged,
                   label: 'Current password',
                   isRequired: true,
                   isPassword: true,
@@ -33,7 +48,7 @@ class ChangePasswordScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 BrixTextField(
-                  controller: change.newPasswordController,
+                  onChanged: _viewModel.newPasswordChanged,
                   label: 'New password',
                   isRequired: true,
                   isPassword: true,
@@ -41,20 +56,20 @@ class ChangePasswordScreen extends ConsumerWidget {
                   textInputAction: TextInputAction.next,
                 ),
                 PasswordChecklist(
-                  policy: change.flow.passwordPolicy,
+                  policy: _viewModel.flow.passwordPolicy,
                   unmet: state.unmetPasswordRules,
                 ),
                 const SizedBox(height: 16),
                 BrixTextField(
-                  controller: change.confirmPasswordController,
+                  onChanged: _viewModel.confirmPasswordChanged,
                   label: 'Confirm new password',
                   isRequired: true,
                   isPassword: true,
-                  validator: (value) =>
-                      value == change.newPasswordController.text
+                  validator: (_) =>
+                      ref.read(changePasswordProvider).passwordsMatch
                       ? null
                       : 'The passwords do not match.',
-                  onSubmitted: (_) => change.submit(),
+                  onSubmitted: (_) => _submit(),
                 ),
               ],
             ),
@@ -64,7 +79,7 @@ class ChangePasswordScreen extends ConsumerWidget {
         BrixButton(
           label: 'Change password',
           isLoading: state.isSubmitting,
-          onPressed: change.submit,
+          onPressed: _submit,
         ),
       ],
     );

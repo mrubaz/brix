@@ -1,9 +1,6 @@
 import 'package:brix/auth.dart';
 import 'package:go_router/go_router.dart';
 
-import '../config/dependencies.dart';
-import '../ui/auth/view_models/login_viewmodel.dart';
-
 import 'routes.dart';
 
 /// Opens the screens the brix flows ask for, on go_router.
@@ -19,17 +16,10 @@ class AppNavigator extends AuthNavigator {
   Future<void> toHome() async => _router.go(Routes.home);
 
   /// [identifier] fills the login form (after a reset or a verified signup).
+  /// A login screen already open gets it too (`LoginScreen.didUpdateWidget`).
   @override
-  Future<void> toLogin({String? identifier}) async {
-    _router.go(Routes.login, extra: identifier);
-    // A login screen already open under this one is kept, so fill it here.
-    final container = Dependencies.container;
-    if (identifier != null && container.read(loginProvider.exists)) {
-      await container
-          .read(loginProvider.notifier)
-          .prefillIdentifier(identifier);
-    }
-  }
+  Future<void> toLogin({String? identifier}) async =>
+      _router.go(Routes.login, extra: identifier);
 
   @override
   Future<void> toSignup() async => _router.go(Routes.signup);

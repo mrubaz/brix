@@ -8,7 +8,8 @@ import '../../../routing/routes.dart';
 import '../../core/widgets/auth_page.dart';
 import '../view_models/login_viewmodel.dart';
 
-/// Email, password, remember me. Only layout, the view model does the rest.
+/// Email, password, remember me. The screen owns its fields and sends what
+/// is typed to [LoginViewModel].
 ///
 /// [identifier] fills the email after a signup or a password reset.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -21,31 +22,64 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+
+  LoginViewModel get _viewModel => ref.read(loginProvider.notifier);
+
   @override
   void initState() {
     super.initState();
-    if (widget.identifier case final email?) {
+    _prefill(widget.identifier);
+  }
+
+  @override
+  void didUpdateWidget(LoginScreen old) {
+    super.didUpdateWidget(old);
+    if (widget.identifier != old.identifier) _prefill(widget.identifier);
+  }
+
+  void _prefill(String? email) {
+    if (email != null) {
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => ref.read(loginProvider.notifier).prefillIdentifier(email),
+        (_) => _viewModel.prefillIdentifier(email),
       );
     }
   }
 
   @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  void _login() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (_formKey.currentState?.validate() ?? false) _viewModel.login();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Remembered details and a prefilled email arrive through the state.
+    ref.listen(loginProvider, (_, state) {
+      if (_email.text != state.identifier) _email.text = state.identifier;
+      if (_password.text != state.password) _password.text = state.password;
+    });
     final state = ref.watch(loginProvider);
-    final login = ref.read(loginProvider.notifier);
     return AuthPage(
       title: 'Welcome back',
       subtitle: 'Log in to continue.',
       children: [
         Form(
-          key: login.formKey,
+          key: _formKey,
           child: AutofillGroup(
             child: Column(
               children: [
                 BrixTextField(
-                  controller: login.identifierController,
+                  controller: _email,
+                  onChanged: _viewModel.identifierChanged,
                   label: 'Email',
                   isRequired: true,
                   keyboardType: TextInputType.emailAddress,
@@ -54,12 +88,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 16),
                 BrixTextField(
-                  controller: login.passwordController,
+                  controller: _password,
+                  onChanged: _viewModel.passwordChanged,
                   label: 'Password',
                   isRequired: true,
                   isPassword: true,
                   autofillHints: const [AutofillHints.password],
-                  onSubmitted: (_) => login.login(),
+                  onSubmitted: (_) => _login(),
                 ),
               ],
             ),
@@ -70,7 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             Checkbox(
               value: state.rememberMe,
-              onChanged: (_) => login.toggleRememberMe(),
+              onChanged: (_) => _viewModel.toggleRememberMe(),
               visualDensity: VisualDensity.compact,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
@@ -79,7 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             Expanded(
               child: GestureDetector(
-                onTap: login.toggleRememberMe,
+                onTap: _viewModel.toggleRememberMe,
                 child: const Text(
                   'Remember me',
                   maxLines: 1,
@@ -103,7 +138,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         BrixButton(
           label: 'Log in',
           isLoading: state.isSubmitting,
-          onPressed: login.login,
+          onPressed: _login,
         ),
         TextButton(
           onPressed: () => context.go(Routes.signup),

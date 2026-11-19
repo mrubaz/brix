@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:brix_riverpod_example/config/dependencies.dart';
 import 'package:brix_riverpod_example/dev/local_accounts_service.dart';
 import 'package:brix_riverpod_example/dev/local_backend.dart';
 import 'package:brix_riverpod_example/dev/local_box.dart';
@@ -28,7 +27,6 @@ void main() {
   tearDown(() {
     BrixDialog.dismiss();
     BrixToast.dismiss();
-    Dependencies.container.dispose();
     dir.deleteSync(recursive: true);
   });
 
@@ -36,12 +34,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(430, 1200);
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: Dependencies.container,
-        child: const App(),
-      ),
-    );
+    await tester.pumpWidget(const ProviderScope(child: App()));
     await settle(tester);
   }
 
