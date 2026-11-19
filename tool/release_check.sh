@@ -5,6 +5,10 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
+native_root="$root"
+if command -v cygpath >/dev/null 2>&1; then
+  native_root="$(cygpath -m "$root")"
+fi
 
 step() { echo; echo "── $*"; }
 
@@ -59,11 +63,11 @@ for state in getx bloc riverpod; do
   dart run "$root/packages/brix_cli/bin/brix.dart" create "check_$state" --state "$state" > /dev/null
   cat > "check_$state/pubspec_overrides.yaml" <<YAML
 dependency_overrides:
-  brix: {path: $root/packages/brix}
-  brix_$state: {path: $root/packages/brix_$state}
-  brix_network: {path: $root/packages/brix_network}
-  brix_storage: {path: $root/packages/brix_storage}
-  brix_ui: {path: $root/packages/brix_ui}
+  brix: {path: $native_root/packages/brix}
+  brix_$state: {path: $native_root/packages/brix_$state}
+  brix_network: {path: $native_root/packages/brix_network}
+  brix_storage: {path: $native_root/packages/brix_storage}
+  brix_ui: {path: $native_root/packages/brix_ui}
 YAML
   (cd "$app_dir/check_$state" && flutter pub get > /dev/null && flutter analyze --fatal-infos && flutter test)
 done
