@@ -1,5 +1,6 @@
 import 'package:brix/testing.dart';
 import 'package:brix_bloc/brix_bloc.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -75,6 +76,25 @@ void main() {
       expect(provider.resendOtpCalls, ['rubaz@gmail.com|signup']);
       expect(navigator.visits, ['signup']);
       await cubit.close();
+    });
+
+    test('closing stops the resend countdown at once', () {
+      fakeAsync((async) {
+        final cubit = BrixOtpCubit(
+          OtpVerificationFlow(
+            provider: provider,
+            store: store,
+            navigator: navigator,
+            feedback: feedback,
+          ),
+        );
+        async.flushMicrotasks();
+        expect(async.periodicTimerCount, 1);
+
+        cubit.close();
+
+        expect(async.periodicTimerCount, 0);
+      });
     });
 
     test('closing disposes the flow', () async {

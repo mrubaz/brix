@@ -24,8 +24,10 @@ class BrixSessionCubit<TUser> extends Cubit<SessionState> {
 
   @override
   Future<void> close() async {
+    // The flow first and at once: it stops its timers before anything waits.
+    final disposing = flow.dispose();
     await _subscription.cancel();
-    await flow.dispose();
+    await disposing;
     return super.close();
   }
 }
