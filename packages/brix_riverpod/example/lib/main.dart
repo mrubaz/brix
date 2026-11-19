@@ -1,32 +1,66 @@
-import 'package:brix_ui/brix_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'app_keys.dart';
-import 'routes.dart';
-import 'theme/app_theme.dart';
+import 'config/app_config.dart';
+import 'config/dependencies.dart';
+import 'data/repositories/account_repository_remote.dart';
+import 'data/repositories/auth_repository_remote.dart';
+import 'dev/local_backend.dart'; // local test backend
+import 'ui/core/themes/theme.dart';
+import 'ui/settings/view_models/appearance_viewmodel.dart';
+import 'ui/setup/widgets/setup_error_screen.dart';
 
-/// brix + Riverpod demo with brix_ui screens: login, signup with a code,
-/// forgot / reset password, logout. No server needed, see
-/// `demo/demo_auth_provider.dart`.
+/// Runs on your API (`lib/config/app_config.dart`).
 ///
-/// Demo account: demo@brix.dev / Demo@1234. Every code: 123456.
-void main() => runApp(const ProviderScope(child: BrixExampleApp()));
+/// Without an API, debug builds run on a local test backend (`lib/dev`) so
+/// every screen works on day one. Release builds never contain it: the
+/// compiler drops code behind `kDebugMode`.
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kDebugMode && AppConfig.apiUrl.isEmpty) {
+    startWithLocalBackend(); // local test backend
+    runApp(const _Scope());
+    return;
+  }
+  final problem = AppConfig.problem();
+  if (problem != null) {
+    runApp(SetupErrorScreen(message: problem));
+    return;
+  }
+  Dependencies.init(
+    apiUrl: AppConfig.apiUrl,
+    backend: (api, session) => (
+      auth: AuthRepositoryRemote(api),
+      account: AccountRepositoryRemote(api),
+    ),
+  );
+  runApp(const _Scope());
+}
 
-class BrixExampleApp extends StatelessWidget {
-  const BrixExampleApp({super.key});
+/// The app with the providers from `Dependencies.container`.
+class _Scope extends StatelessWidget {
+  const _Scope();
 
   @override
-  Widget build(BuildContext context) {
-    BrixUi.navigatorKey = AppKeys.navigator;
-    return MaterialApp(
-      title: 'brix example',
+  Widget build(BuildContext context) => UncontrolledProviderScope(
+    container: Dependencies.container,
+    child: const App(),
+  );
+}
+
+class App extends ConsumerWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      title: 'brix_riverpod_example',
       debugShowCheckedModeBanner: false,
-      navigatorKey: AppKeys.navigator,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      initialRoute: Routes.splash,
-      onGenerateRoute: Routes.build,
+      themeMode: ref.watch(appearanceProvider),
+      routerConfig: Dependencies.router,
     );
   }
 }
