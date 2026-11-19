@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'config/app_config.dart';
 import 'config/dependencies.dart';
@@ -7,6 +8,7 @@ import 'data/repositories/account_repository_remote.dart';
 import 'data/repositories/auth_repository_remote.dart';
 import 'dev/local_backend.dart'; // local test backend
 import 'ui/core/themes/theme.dart';
+import 'ui/settings/view_models/appearance_viewmodel.dart';
 import 'ui/setup/widgets/setup_error_screen.dart';
 
 /// Runs on your API (`lib/config/app_config.dart`).
@@ -41,12 +43,16 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'brix_app',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      routerConfig: Dependencies.router,
+    final appearance = Get.find<AppearanceViewModel>();
+    return Obx(
+      () => MaterialApp.router(
+        title: 'brix_app',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: appearance.mode.value,
+        routerConfig: Dependencies.router,
+      ),
     );
   }
 }

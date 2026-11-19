@@ -44,26 +44,49 @@ class LoginScreen extends GetView<LoginViewModel> {
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        Obx(
-          () => SwitchListTile.adaptive(
-            value: controller.rememberMe.value,
-            onChanged: (_) => controller.toggleRememberMe(),
-            title: const Text('Remember me'),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-          ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Obx(
+              () => Checkbox(
+                value: controller.rememberMe.value,
+                onChanged: (_) => controller.toggleRememberMe(),
+                visualDensity: VisualDensity.compact,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: controller.toggleRememberMe,
+                child: const Text(
+                  'Remember me',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Flexible(
+              child: TextButton(
+                onPressed: () => context.go(Routes.forgotPassword),
+                child: const Text(
+                  'Forgot password?',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Obx(
           () => BrixButton(
             label: 'Log in',
             isLoading: controller.isSubmitting.value,
             onPressed: controller.login,
           ),
-        ),
-        TextButton(
-          onPressed: () => context.go(Routes.forgotPassword),
-          child: const Text('Forgot password?'),
         ),
         TextButton(
           onPressed: () => context.go(Routes.signup),

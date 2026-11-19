@@ -1,92 +1,93 @@
-import 'package:brix_getx/brix_getx.dart';
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
-import '../../../domain/models/user.dart';
-import '../../../routing/routes.dart';
-import '../../core/widgets/settings_group.dart';
-import '../../core/widgets/settings_row.dart';
+import '../../core/widgets/tab_page.dart';
 
 /// Your app starts here. Replace it with your first screen.
-class HomeScreen extends GetView<BrixSessionController<User>> {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  static const _steps = [
+    (
+      title: 'Connect your API',
+      text:
+          'Put its address in lib/config/app_config.dart. Until then the '
+          'app runs on a test backend on this device.',
+    ),
+    (
+      title: 'Make it your brand',
+      text:
+          'Colours, font and shapes live in lib/ui/core/themes/theme.dart. '
+          'Every screen follows.',
+    ),
+    (
+      title: 'Build your first screen',
+      text:
+          'Start in lib/ui/home/widgets/home_screen.dart. The Library tab '
+          'shows every widget you can use.',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     final brix = context.brix;
-    return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-          children: [
-            FutureBuilder(
-              future: Dependencies.session.readSession(),
-              builder: (context, snapshot) => Text(
-                'Hello ${snapshot.data?.user.name ?? ''}',
-                style: brix.typography.title.copyWith(
-                  fontSize: 34,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.4,
-                  color: brix.colors.text,
-                ),
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'You are logged in.',
-              style: brix.typography.body.copyWith(
-                fontSize: 17,
-                color: brix.colors.mutedText,
-              ),
-            ),
-            const SizedBox(height: 28),
-            SettingsGroup(
-              children: [
-                SettingsRow(
-                  icon: Icons.person_rounded,
-                  label: 'Profile',
-                  onTap: () => context.go(Routes.profile),
-                ),
-                SettingsRow(
-                  icon: Icons.lock_rounded,
-                  label: 'Change password',
-                  iconColor: const Color(0xFF8E8E93),
-                  onTap: () => context.go(Routes.changePassword),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            SettingsGroup(
-              children: [
-                SettingsRow(
-                  icon: Icons.delete_rounded,
-                  label: 'Delete account',
-                  destructive: true,
-                  onTap: () async {
-                    final session = await Dependencies.session.readSession();
-                    if (context.mounted) {
-                      context.go(
-                        Routes.deleteAccount,
-                        extra: session?.user.email,
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Obx(
-              () => BrixButton.outlined(
-                label: 'Log out',
-                isLoading: controller.isLoggingOut.value,
-                onPressed: controller.logout,
+    return FutureBuilder(
+      future: Dependencies.session.readSession(),
+      builder: (context, snapshot) => TabPage(
+        title: 'Welcome, ${snapshot.data?.user.name ?? ''}',
+        subtitle: 'Your app runs. Three steps make it yours.',
+        children: [
+          for (var i = 0; i < _steps.length; i++) ...[
+            if (i > 0) const SizedBox(height: 12),
+            BrixCard(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: brix.colors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${i + 1}',
+                      style: brix.typography.body.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: brix.colors.onPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _steps[i].title,
+                          style: brix.typography.body.copyWith(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                            color: brix.colors.text,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _steps[i].text,
+                          style: brix.typography.body.copyWith(
+                            color: brix.colors.mutedText,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }

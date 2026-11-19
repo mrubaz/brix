@@ -16,6 +16,11 @@ import '../ui/auth/widgets/otp_screen.dart';
 import '../ui/auth/widgets/reset_password_screen.dart';
 import '../ui/auth/widgets/signup_screen.dart';
 import '../ui/home/widgets/home_screen.dart';
+import '../ui/library/widgets/library_screen.dart';
+import '../ui/settings/widgets/about_screen.dart';
+import '../ui/settings/widgets/appearance_screen.dart';
+import '../ui/settings/widgets/settings_screen.dart';
+import '../ui/shell/widgets/main_shell.dart';
 import '../ui/splash/widgets/splash_screen.dart';
 import 'routes.dart';
 import 'view_model_scope.dart';
@@ -114,54 +119,89 @@ GoRouter createAppRouter(GlobalKey<NavigatorState> navigatorKey) => GoRouter(
         ),
       ],
     ),
-    GoRoute(
-      path: Routes.home,
-      builder: (context, state) => ViewModelScope(
-        create: () => BrixSessionController<User>(Dependencies.sessionFlow()),
-        child: const HomeScreen(),
-      ),
-      routes: [
-        GoRoute(
-          path: 'profile',
-          builder: (context, state) => ViewModelScope(
-            create: () => ProfileViewModel(
-              ProfileFlow(
-                account: Dependencies.account,
-                feedback: Dependencies.feedback,
-                store: Dependencies.session,
-              ),
+    // The logged in part: three tabs under one bottom bar.
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, shell) => MainShell(shell: shell),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.home,
+              builder: (context, state) => const HomeScreen(),
             ),
-            child: const ProfileScreen(),
-          ),
+          ],
         ),
-        GoRoute(
-          path: 'change-password',
-          builder: (context, state) => ViewModelScope(
-            create: () => BrixChangePasswordController(
-              ChangePasswordFlow(
-                account: Dependencies.account,
-                store: Dependencies.session,
-                navigator: Dependencies.navigator,
-                feedback: Dependencies.feedback,
-              ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.library,
+              builder: (context, state) => const LibraryScreen(),
             ),
-            child: const ChangePasswordScreen(),
-          ),
+          ],
         ),
-        GoRoute(
-          path: 'delete-account',
-          builder: (context, state) => ViewModelScope(
-            create: () => BrixDeleteAccountController(
-              DeleteAccountFlow(
-                account: Dependencies.account,
-                store: Dependencies.session,
-                navigator: Dependencies.navigator,
-                feedback: Dependencies.feedback,
-                identifier: state.extra as String? ?? '',
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.settings,
+              builder: (context, state) => ViewModelScope(
+                create: () =>
+                    BrixSessionController<User>(Dependencies.sessionFlow()),
+                child: const SettingsScreen(),
               ),
+              routes: [
+                GoRoute(
+                  path: 'profile',
+                  builder: (context, state) => ViewModelScope(
+                    create: () => ProfileViewModel(
+                      ProfileFlow(
+                        account: Dependencies.account,
+                        feedback: Dependencies.feedback,
+                        store: Dependencies.session,
+                      ),
+                    ),
+                    child: const ProfileScreen(),
+                  ),
+                ),
+                GoRoute(
+                  path: 'change-password',
+                  builder: (context, state) => ViewModelScope(
+                    create: () => BrixChangePasswordController(
+                      ChangePasswordFlow(
+                        account: Dependencies.account,
+                        store: Dependencies.session,
+                        navigator: Dependencies.navigator,
+                        feedback: Dependencies.feedback,
+                      ),
+                    ),
+                    child: const ChangePasswordScreen(),
+                  ),
+                ),
+                GoRoute(
+                  path: 'delete-account',
+                  builder: (context, state) => ViewModelScope(
+                    create: () => BrixDeleteAccountController(
+                      DeleteAccountFlow(
+                        account: Dependencies.account,
+                        store: Dependencies.session,
+                        navigator: Dependencies.navigator,
+                        feedback: Dependencies.feedback,
+                        identifier: state.extra as String? ?? '',
+                      ),
+                    ),
+                    child: const DeleteAccountScreen(),
+                  ),
+                ),
+                GoRoute(
+                  path: 'appearance',
+                  builder: (context, state) => const AppearanceScreen(),
+                ),
+                GoRoute(
+                  path: 'about',
+                  builder: (context, state) => const AboutScreen(),
+                ),
+              ],
             ),
-            child: const DeleteAccountScreen(),
-          ),
+          ],
         ),
       ],
     ),

@@ -40,8 +40,8 @@ class CodeBoxes extends StatelessWidget {
                   filled: true,
                   fillColor: brix.colors.surface,
                   contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                  border: edge(Colors.transparent, 0),
-                  enabledBorder: edge(Colors.transparent, 0),
+                  border: edge(brix.colors.border, 1),
+                  enabledBorder: edge(brix.colors.border, 1),
                   focusedBorder: edge(brix.colors.primary, 2),
                 ),
                 onChanged: (value) {

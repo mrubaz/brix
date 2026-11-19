@@ -11,6 +11,7 @@ import '../domain/models/signup_request.dart';
 import '../domain/models/user.dart';
 import '../routing/app_navigator.dart';
 import '../routing/app_router.dart';
+import '../ui/settings/view_models/appearance_viewmodel.dart';
 import 'dev_tools.dart';
 
 /// The app's backend: auth and account. `main.dart` passes your API,
@@ -33,8 +34,12 @@ abstract final class Dependencies {
     BrixStorage? storage,
     DevTools? devTools,
   }) {
+    final store = storage ?? BrixStorage();
+    Get.put<BrixStorage>(store, permanent: true);
+    // Light, dark or system, for the whole app (Settings, Appearance).
+    Get.put(AppearanceViewModel(store), permanent: true).load();
     final session = BrixSessionStore<User>(
-      storage: storage ?? BrixStorage(),
+      storage: store,
       userToJson: (user) => user.toJson(),
       userFromJson: (json) => User.fromJson(Json(json)),
     );

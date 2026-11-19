@@ -10,6 +10,7 @@ class SettingsRow extends StatelessWidget {
     required this.onTap,
     this.iconColor,
     this.destructive = false,
+    this.trailing,
   });
 
   final IconData icon;
@@ -21,6 +22,9 @@ class SettingsRow extends StatelessWidget {
 
   /// Red label, for actions like deleting the account.
   final bool destructive;
+
+  /// What shows on the right; default a chevron.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +57,11 @@ class SettingsRow extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: brix.colors.mutedText.withValues(alpha: 0.6),
-            ),
+            trailing ??
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: brix.colors.mutedText.withValues(alpha: 0.6),
+                ),
           ],
         ),
       ),

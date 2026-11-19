@@ -4,6 +4,7 @@ import 'package:brix_app/dev/local_accounts_service.dart';
 import 'package:brix_app/dev/local_backend.dart';
 import 'package:brix_app/dev/local_box.dart';
 import 'package:brix_app/main.dart';
+import 'package:brix_app/ui/library/widgets/library_screen.dart';
 import 'package:brix_storage/brix_storage.dart';
 import 'package:brix_ui/brix_ui.dart';
 import 'package:flutter/material.dart';
@@ -71,8 +72,9 @@ void main() {
 
     await enter(tester, 'Password', 'Strong@123');
     await tap(tester, find.widgetWithText(BrixButton, 'Log in'));
-    expect(find.text('Hello Ada'), findsOneWidget);
+    expect(find.text('Welcome, Ada'), findsOneWidget);
 
+    await openTab(tester, 'Settings');
     await tap(tester, find.text('Log out'));
     await tap(tester, find.text('Forgot password?'));
     await enter(tester, 'Email', 'ada@brix.dev');
@@ -82,15 +84,16 @@ void main() {
     await tap(tester, find.widgetWithText(BrixButton, 'Save password'));
 
     await logIn(tester, 'ada@brix.dev', 'Newer@123');
-    expect(find.text('Hello Ada'), findsOneWidget);
+    expect(find.text('Welcome, Ada'), findsOneWidget);
   });
 
   testWidgets('profile, change password, delete account', (tester) async {
     await start(tester);
     await logIn(tester, 'demo@brix.dev', 'Demo@1234');
-    expect(find.text('Hello Demo'), findsOneWidget);
+    expect(find.text('Welcome, Demo'), findsOneWidget);
 
     // Profile: change the name.
+    await openTab(tester, 'Settings');
     await tap(tester, find.text('Profile'));
     expect(find.text('demo@brix.dev'), findsOneWidget);
     await enter(tester, 'Name', 'Grace');
@@ -131,15 +134,47 @@ void main() {
     // Reset brings the demo account back, on this device only.
     await tap(tester, find.text('Reset local backend'));
     await logIn(tester, 'demo@brix.dev', 'Demo@1234');
-    expect(find.text('Hello Demo'), findsOneWidget);
+    expect(find.text('Welcome, Demo'), findsOneWidget);
   });
 
   testWidgets('skip login opens home as the test user', (tester) async {
     await start(tester);
     await tap(tester, find.text('Skip login'));
-    expect(find.text('Hello Demo'), findsOneWidget);
+    expect(find.text('Welcome, Demo'), findsOneWidget);
+  });
+
+  testWidgets('tabs: library, appearance, about', (tester) async {
+    await start(tester);
+    await tap(tester, find.text('Skip login'));
+
+    await openTab(tester, 'Library');
+    expect(find.text('BrixButton'), findsOneWidget);
+    // The dialog button sits low in the long list: scroll it into view.
+    await tester.drag(find.byType(LibraryScreen), const Offset(0, -600));
+    await settle(tester);
+    await tap(tester, find.text('Open a dialog'));
+    expect(find.text('It reads on any screen.'), findsOneWidget);
+    await tap(tester, find.text('OK'));
+
+    await openTab(tester, 'Settings');
+    await tap(tester, find.text('Appearance'));
+    await tap(tester, find.text('Dark'));
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(app.themeMode, ThemeMode.dark);
+    await tap(tester, find.byType(BackButton));
+
+    await tap(tester, find.text('About'));
+    expect(
+      find.textContaining('made this app with one command', findRichText: true),
+      findsOneWidget,
+    );
   });
 }
+
+/// Opens a tab of the bottom bar.
+Future<void> openTab(WidgetTester tester, String label) =>
+    // The bar is drawn after the page, so its label is the last match.
+    tap(tester, find.text(label).last);
 
 /// Types into the [BrixTextField] with this [label].
 Future<void> enter(WidgetTester tester, String label, String text) async {
