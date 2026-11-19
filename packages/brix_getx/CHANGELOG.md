@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Docs: new README in the pub.dev format (short description, features, contents, what is not included yet, the brix family with brix_bloc and brix_riverpod) and the new app screenshots.
+
 ## 1.0.3
 
 - Docs: the README tells the brix family story (new app: start with brix_cli; existing app: add the packages you need, each brings the core), with sharper screenshots and a clearer pub.dev description.

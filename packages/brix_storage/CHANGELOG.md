@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Docs: new README in the pub.dev format (short description, features, what is not included yet, the brix family with brix_bloc and brix_riverpod); images by absolute URL.
+
 ## 1.1.0
 
 - New `BrixOfflineCache`: a list that also works offline. Backend answers are saved on the device and used when the backend cannot be reached (`fetch` for a whole list, `search` for searches), and `BrixCached.fromCache` says when the data is the saved copy.
