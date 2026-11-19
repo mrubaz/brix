@@ -66,12 +66,19 @@ void main() {
 
   tearDown(() => work.deleteSync(recursive: true));
 
-  BrixCli cli(FakeRunner runner) => BrixCli(
-    runner: runner,
-    template: template,
-    out: lines.add,
-    workingDirectory: work.path,
-  );
+  /// [answers] are typed at the state library question; null: no
+  /// terminal (an AI agent or a script).
+  BrixCli cli(FakeRunner runner, {List<String>? answers = const ['1']}) {
+    final typed = [...?answers];
+    return BrixCli(
+      runner: runner,
+      template: template,
+      out: lines.add,
+      readLine: () => typed.isEmpty ? null : typed.removeAt(0),
+      hasTerminal: answers != null,
+      workingDirectory: work.path,
+    );
+  }
 
   String read(String path) =>
       File(p.join(work.path, 'shop', path)).readAsStringSync();
@@ -143,7 +150,7 @@ void main() {
       expect(read('test/app_test.dart'), "import 'package:shop/main.dart';");
       expect(read('pubspec.yaml'), 'name: shop');
       expect(read('README.md'), '# shop');
-      expect(read('brix.yaml'), 'structure: flutter');
+      expect(read('brix.yaml'), 'structure: flutter\nstate: bloc\n');
       expect(read('.vscode/launch.json'), '{"name": "shop"}');
       expect(lines.join('\n'), contains('cd shop'));
     });
@@ -193,24 +200,91 @@ void main() {
     });
   });
 
-  group('bundled template', () {
-    test('is found and has everything create copies', () async {
-      final bundled = await Template.bundled();
-      for (final entry in Template.entries) {
-        final path = p.join(bundled.directory.path, entry);
-        expect(
-          FileSystemEntity.typeSync(path),
-          isNot(FileSystemEntityType.notFound),
-          reason: entry,
-        );
-      }
+  group('bundled templates', () {
+    for (final state in StateLibrary.values) {
+      test('${state.name}: has everything create copies', () async {
+        final bundled = await Template.bundled(state);
+        for (final entry in Template.entries) {
+          final path = p.join(bundled.directory.path, entry);
+          expect(
+            FileSystemEntity.typeSync(path),
+            isNot(FileSystemEntityType.notFound),
+            reason: entry,
+          );
+        }
+      });
+
+      test('${state.name}: placeholder name and its state package', () async {
+        final bundled = await Template.bundled(state);
+        final pubspec = File(p.join(bundled.directory.path, 'pubspec.yaml'))
+            .readAsStringSync();
+        expect(pubspec, contains('name: ${Template.placeholder}'));
+        expect(pubspec, contains('brix_${state.name}:'));
+      });
+    }
+  });
+
+  group('state library', () {
+    test('the menu lists them and the pick is used', () async {
+      expect(
+        await cli(FakeRunner(), answers: ['2']).run(['create', 'shop']),
+        0,
+      );
+      final text = lines.join('\n');
+      expect(text, contains('1. Bloc'));
+      expect(text, contains('2. Riverpod'));
+      expect(text, contains('3. GetX'));
+      expect(text, contains('on Riverpod'));
+      expect(read('brix.yaml'), endsWith('state: riverpod\n'));
     });
 
-    test('uses the placeholder package name', () async {
-      final bundled = await Template.bundled();
-      final pubspec = File(p.join(bundled.directory.path, 'pubspec.yaml'))
-          .readAsStringSync();
-      expect(pubspec, contains('name: ${Template.placeholder}'));
+    test('a wrong or empty answer asks again; a name works too', () async {
+      final answers = ['x', '9', '', ' GetX '];
+      expect(
+        await cli(FakeRunner(), answers: answers).run(['create', 'shop']),
+        0,
+      );
+      expect(lines.where((line) => line == 'Pick 1-3:'), hasLength(4));
+      expect(read('brix.yaml'), endsWith('state: getx\n'));
+    });
+
+    test('input ends: nothing is made', () async {
+      final runner = FakeRunner();
+      expect(await cli(runner, answers: []).run(['create', 'shop']), 64);
+      expect(runner.calls, isEmpty);
+      expect(lines.last, contains('ask the user'));
+    });
+
+    test('no terminal and no --state: stops, tells agents to ask', () async {
+      final runner = FakeRunner();
+      expect(await cli(runner, answers: null).run(['create', 'shop']), 64);
+      expect(runner.calls, isEmpty);
+      expect(lines.join('\n'), contains('--state bloc|riverpod|getx'));
+      expect(lines.join('\n'), contains('ask the user'));
+    });
+
+    test('--state needs no terminal and skips the menu', () async {
+      final args = ['create', 'shop', '--state', 'riverpod'];
+      expect(await cli(FakeRunner(), answers: null).run(args), 0);
+      expect(lines.join('\n'), isNot(contains('Pick')));
+      expect(read('brix.yaml'), endsWith('state: riverpod\n'));
+    });
+
+    test('a wrong or missing --state value', () async {
+      for (final args in [
+        ['create', 'shop', '--state', 'redux'],
+        ['create', 'shop', '--state'],
+      ]) {
+        final runner = FakeRunner();
+        expect(await cli(runner).run(args), 64, reason: '$args');
+        expect(runner.calls, isEmpty);
+      }
+      expect(lines.last, contains('bloc|riverpod|getx'));
+    });
+
+    test('a bad name is reported before the question', () async {
+      expect(await cli(FakeRunner()).run(['create', 'My-App']), 64);
+      expect(lines.join('\n'), isNot(contains('Which state')));
     });
   });
 

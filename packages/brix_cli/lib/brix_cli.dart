@@ -7,4 +7,5 @@ export 'src/brix_cli.dart';
 export 'src/create_command.dart';
 export 'src/id_command.dart';
 export 'src/process_runner.dart';
+export 'src/state_library.dart';
 export 'src/template.dart';

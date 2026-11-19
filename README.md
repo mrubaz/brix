@@ -126,7 +126,7 @@ You write a few small classes once: your user, the class for your API and your n
 
 | Example | What you see |
 |---|---|
-| [brix_cli app template](packages/brix_cli/templates/app) | The app `brix create` makes: every screen, a local test backend and tests |
+| [brix_cli app templates](packages/brix_cli/templates) | The app `brix create` makes, one per state library: every screen, a local test backend and tests |
 | [brix_ui example](packages/brix_ui/example) | Every widget on one screen, light, dark and three brands |
 | [GetX demo](packages/brix_getx/example) | Login, signup with a code, password reset and logout on a demo backend |
 | [Riverpod demo](packages/brix_riverpod/example) | The same app on Riverpod notifiers |

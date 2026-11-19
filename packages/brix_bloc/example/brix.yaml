@@ -2,3 +2,4 @@
 # files go. Folders follow the Flutter architecture guide:
 # https://docs.flutter.dev/app-architecture/case-study
 structure: flutter
+state: bloc

@@ -1,3 +1,12 @@
+## 2.0.0
+
+Breaking: `brix create` asks which state library the app is built on and never picks one for you. A script or CI job that ran `brix create my_app` without a terminal now stops with exit code 64; add `--state`.
+
+- `brix create my_app` asks: 1 Bloc, 2 Riverpod, 3 GetX. A wrong or empty answer asks again.
+- `--state bloc|riverpod|getx` for AI agents, scripts and CI. Without a terminal and without `--state`, it stops and tells AI agents to ask the user.
+- Three app templates with the same screens, local test backend and tests: GetX (as before), Bloc (`brix_bloc`) and Riverpod (`brix_riverpod` 2.0.0).
+- `brix.yaml` in the new app records the choice (`state: bloc`).
+
 ## 1.1.1
 
 - Docs: the README tells the brix family story (new app: start with brix_cli; existing app: add the packages you need, each brings the core), with sharper screenshots and a clearer pub.dev description.

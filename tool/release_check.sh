@@ -46,24 +46,27 @@ check_flutter brix_riverpod lib test example/lib example/test
 check_app packages/brix_riverpod/example
 check_flutter brix_bloc lib test example/lib example/test
 check_app packages/brix_bloc/example
-check_dart brix_cli lib test bin templates/app/lib templates/app/test
-check_app packages/brix_cli/templates/app
+check_dart brix_cli lib test bin templates/*/lib templates/*/test
+for state in getx bloc riverpod; do
+  check_app "packages/brix_cli/templates/$state"
+done
 
 step "brix create"
 app_dir="$(mktemp -d)"
 trap 'rm -rf "$app_dir"' EXIT
 cd "$app_dir"
-dart run "$root/packages/brix_cli/bin/brix.dart" create check_app > /dev/null
-cat > check_app/pubspec_overrides.yaml <<YAML
+for state in getx bloc riverpod; do
+  dart run "$root/packages/brix_cli/bin/brix.dart" create "check_$state" --state "$state" > /dev/null
+  cat > "check_$state/pubspec_overrides.yaml" <<YAML
 dependency_overrides:
   brix: {path: $root/packages/brix}
-  brix_getx: {path: $root/packages/brix_getx}
+  brix_$state: {path: $root/packages/brix_$state}
   brix_network: {path: $root/packages/brix_network}
   brix_storage: {path: $root/packages/brix_storage}
   brix_ui: {path: $root/packages/brix_ui}
 YAML
-check_app_dir="$app_dir/check_app"
-(cd "$check_app_dir" && flutter pub get > /dev/null && flutter analyze --fatal-infos && flutter test)
+  (cd "$app_dir/check_$state" && flutter pub get > /dev/null && flutter analyze --fatal-infos && flutter test)
+done
 
 step "Public API"
 "$root/tool/api_check.sh"
