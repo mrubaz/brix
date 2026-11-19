@@ -146,6 +146,9 @@ abstract class CodeEntryFlow extends BrixFlow<CodeEntryState> {
     emit(state.copyWith(isResending: true));
     try {
       final result = await sendCode(identifier);
+      // The screen closed while the code was on its way: no toast, and no
+      // cooldown timer that nothing would cancel.
+      if (isDisposed) return;
       switch (result) {
         case Success(:final message):
           feedback.success(message);
