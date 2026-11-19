@@ -29,6 +29,7 @@ void main() {
     'lib/ui/core/widgets/auth_page.dart',
     'lib/ui/core/widgets/settings_group.dart',
     'lib/ui/core/widgets/settings_row.dart',
+    'lib/ui/core/widgets/setup_steps.dart',
     'lib/ui/core/widgets/tab_page.dart',
     'lib/ui/home',
     'lib/ui/library',
@@ -36,6 +37,7 @@ void main() {
     'lib/ui/shell',
     'test/config',
     'test/dev',
+    'test/ui',
   ];
 
   String root(String template) => p.join('templates', template);

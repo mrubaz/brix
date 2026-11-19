@@ -139,6 +139,8 @@ void main() {
     await start(tester);
     await tap(tester, find.text('Skip login'));
     expect(find.text('Welcome, Demo'), findsOneWidget);
+    // While developing, home lists the steps before going live.
+    expect(find.text('Connect your API'), findsOneWidget);
   });
 
   testWidgets('tabs: library, appearance, about', (tester) async {

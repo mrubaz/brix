@@ -6,6 +6,7 @@ Breaking: `brix create` asks which state library the app is built on and never p
 - `--state bloc|riverpod|getx` for AI agents, scripts and CI. Without a terminal and without `--state`, it stops and tells AI agents to ask the user.
 - Three app templates with the same screens, local test backend and tests: GetX (as before), Bloc (`brix_bloc`) and Riverpod (`brix_riverpod` 2.0.0).
 - `brix.yaml` in the new app records the choice (`state: bloc`).
+- Home (while developing) and the setup screen (a release without an API) list the steps before going live: API, backend, brand, removing the test backend, and an app without login.
 
 ## 1.1.1
 
