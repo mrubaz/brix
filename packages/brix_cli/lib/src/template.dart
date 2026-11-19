@@ -3,13 +3,16 @@ import 'dart:isolate';
 
 import 'package:path/path.dart' as p;
 
-/// The app `brix create` copies: `templates/app` inside this package.
+import 'state_library.dart';
+
+/// The app `brix create` copies: `templates/<state library>` inside this
+/// package.
 /// Its package name `brix_app` becomes the new app's name.
 class Template {
   const Template(this.directory);
 
-  /// The template that ships with brix_cli.
-  static Future<Template> bundled() async {
+  /// The template for [state] that ships with brix_cli.
+  static Future<Template> bundled(StateLibrary state) async {
     final lib = await Isolate.resolvePackageUri(
       Uri.parse('package:brix_cli/brix_cli.dart'),
     );
@@ -17,7 +20,7 @@ class Template {
       throw StateError('brix_cli: cannot find the bundled app template.');
     }
     final root = p.dirname(p.dirname(lib.toFilePath()));
-    return Template(Directory(p.join(root, 'templates', 'app')));
+    return Template(Directory(p.join(root, 'templates', state.name)));
   }
 
   static const placeholder = 'brix_app';

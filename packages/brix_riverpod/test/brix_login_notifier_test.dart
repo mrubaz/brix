@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:brix/testing.dart';
 import 'package:brix_riverpod/brix_riverpod.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,57 +36,21 @@ void main() {
         ),
       ),
     );
-    container = ProviderContainer();
+    container = ProviderContainer.test();
   });
 
-  tearDown(() => container.dispose());
-
   _LoginNotifier create() {
-    container.read(loginProvider);
+    container.listen(loginProvider, (_, _) {});
     return container.read(loginProvider.notifier);
   }
 
   BrixLoginState read() => container.read(loginProvider);
 
-  /// A form whose fields are required, like a real login screen.
-  Future<void> pumpForm(WidgetTester tester, _LoginNotifier notifier) =>
-      tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Form(
-              key: notifier.formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: notifier.identifierController,
-                    validator: (value) => value!.isEmpty ? 'required' : null,
-                  ),
-                  TextFormField(
-                    controller: notifier.passwordController,
-                    validator: (value) => value!.isEmpty ? 'required' : null,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-
-  testWidgets('invalid form sends nothing', (tester) async {
-    final notifier = create();
-    await pumpForm(tester, notifier);
-
-    await notifier.login();
-
-    expect(provider.loginCalls, isEmpty);
-  });
-
-  testWidgets('valid form logs in with the typed values', (tester) async {
-    final notifier = create();
-    await pumpForm(tester, notifier);
-    notifier.identifierController.text = ' a@b.com ';
-    notifier.passwordController.text = ' pw ';
-    notifier.toggleRememberMe();
+  test('logs in with the typed values', () async {
+    final notifier = create()
+      ..identifierChanged(' a@b.com ')
+      ..passwordChanged(' pw ')
+      ..toggleRememberMe();
 
     await notifier.login();
 
@@ -96,11 +59,10 @@ void main() {
     expect(navigator.visits, ['home']);
   });
 
-  testWidgets('isSubmitting follows the flow', (tester) async {
-    final notifier = create();
-    await pumpForm(tester, notifier);
-    notifier.identifierController.text = 'a@b.com';
-    notifier.passwordController.text = 'pw';
+  test('isSubmitting follows the flow', () async {
+    final notifier = create()
+      ..identifierChanged('a@b.com')
+      ..passwordChanged('pw');
     provider.gate = Completer<void>();
 
     final login = notifier.login();
@@ -111,42 +73,38 @@ void main() {
     expect(read().isSubmitting, isFalse);
   });
 
-  testWidgets('remembered details fill the form on start', (tester) async {
+  test('remembered details fill the state on start', () async {
     store.rememberedCredentials = const RememberedCredentials(
       identifier: 'a@b.com',
       password: 'pw',
     );
 
-    final notifier = create();
-    await tester.pump();
+    create();
+    await pumpEventQueue();
 
-    expect(notifier.identifierController.text, 'a@b.com');
-    expect(notifier.passwordController.text, 'pw');
+    expect(read().identifier, 'a@b.com');
+    expect(read().password, 'pw');
     expect(read().rememberMe, isTrue);
   });
 
-  testWidgets('prefill keeps the password only for the remembered account', (
-    tester,
-  ) async {
+  test('prefill keeps the password only for the remembered account', () async {
     store.rememberedCredentials = const RememberedCredentials(
       identifier: 'a@b.com',
       password: 'pw',
     );
     final notifier = create();
-    await tester.pump();
+    await pumpEventQueue();
 
     await notifier.prefillIdentifier('other@b.com');
+    expect(read().identifier, 'other@b.com');
+    expect(read().password, isEmpty);
 
-    expect(notifier.identifierController.text, 'other@b.com');
-    expect(notifier.passwordController.text, isEmpty);
+    await notifier.prefillIdentifier('a@b.com');
+    expect(read().password, 'pw');
   });
 
-  testWidgets('toggles flip password visibility and remember me', (
-    tester,
-  ) async {
-    final notifier = create();
-
-    notifier
+  test('toggles flip password visibility and remember me', () {
+    create()
       ..togglePasswordVisibility()
       ..toggleRememberMe();
 
@@ -154,30 +112,11 @@ void main() {
     expect(read().rememberMe, isTrue);
   });
 
-  testWidgets('disposing the provider disposes the flow and fields', (
-    tester,
-  ) async {
-    final notifier = create();
-    final flow = notifier.flow;
+  test('disposing the container disposes the flow', () {
+    final flow = create().flow;
 
     container.dispose();
 
     expect(flow.isDisposed, isTrue);
-    expect(
-      () => notifier.identifierController.addListener(() {}),
-      throwsFlutterError,
-    );
-  });
-
-  testWidgets('a rebuild makes a new flow and drops the old one', (
-    tester,
-  ) async {
-    final first = create().flow;
-
-    container.invalidate(loginProvider);
-    final second = create().flow;
-
-    expect(first.isDisposed, isTrue);
-    expect(second.isDisposed, isFalse);
   });
 }

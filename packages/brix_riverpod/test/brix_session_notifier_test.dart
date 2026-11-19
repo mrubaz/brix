@@ -33,10 +33,8 @@ void main() {
     sessionProvider = NotifierProvider<_SessionNotifier, SessionState>(
       () => _SessionNotifier(flow),
     );
-    container = ProviderContainer();
+    container = ProviderContainer.test();
   });
-
-  tearDown(() => container.dispose());
 
   _SessionNotifier create() {
     container.read(sessionProvider);

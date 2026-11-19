@@ -1,37 +1,64 @@
 import 'package:brix/auth.dart';
+import 'package:equatable/equatable.dart';
 
-/// What a signup screen shows: the loader, show / hide for both password
-/// fields and the rules the typed password does not meet yet.
-class BrixSignupState {
+/// What a signup screen shows: the typed email and passwords, show / hide
+/// for both password fields, the rules the password does not meet yet and
+/// the loader.
+class BrixSignupState extends Equatable {
   BrixSignupState({
-    this.isSubmitting = false,
+    this.identifier = '',
+    this.password = '',
+    this.confirmPassword = '',
     this.obscurePassword = true,
     this.obscureConfirmPassword = true,
     List<PasswordRule> unmetPasswordRules = const [],
+    this.isSubmitting = false,
   }) : unmetPasswordRules = List.unmodifiable(unmetPasswordRules);
 
-  /// A signup call is running; the button should show a loader.
-  final bool isSubmitting;
-
+  final String identifier;
+  final String password;
+  final String confirmPassword;
   final bool obscurePassword;
-
   final bool obscureConfirmPassword;
 
   /// Rules the typed password does not meet yet; empty = allowed.
   final List<PasswordRule> unmetPasswordRules;
 
+  /// A signup call is running; the button should show a loader.
+  final bool isSubmitting;
+
   bool get passwordRulesMet => unmetPasswordRules.isEmpty;
 
+  /// The confirm field matches the password.
+  bool get passwordsMatch => password == confirmPassword;
+
   BrixSignupState copyWith({
-    bool? isSubmitting,
+    String? identifier,
+    String? password,
+    String? confirmPassword,
     bool? obscurePassword,
     bool? obscureConfirmPassword,
     List<PasswordRule>? unmetPasswordRules,
+    bool? isSubmitting,
   }) => BrixSignupState(
-    isSubmitting: isSubmitting ?? this.isSubmitting,
+    identifier: identifier ?? this.identifier,
+    password: password ?? this.password,
+    confirmPassword: confirmPassword ?? this.confirmPassword,
     obscurePassword: obscurePassword ?? this.obscurePassword,
     obscureConfirmPassword:
         obscureConfirmPassword ?? this.obscureConfirmPassword,
     unmetPasswordRules: unmetPasswordRules ?? this.unmetPasswordRules,
+    isSubmitting: isSubmitting ?? this.isSubmitting,
   );
+
+  @override
+  List<Object?> get props => [
+    identifier,
+    password,
+    confirmPassword,
+    obscurePassword,
+    obscureConfirmPassword,
+    unmetPasswordRules,
+    isSubmitting,
+  ];
 }

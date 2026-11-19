@@ -1,6 +1,5 @@
 import 'package:brix/testing.dart';
 import 'package:brix_riverpod/brix_riverpod.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,40 +11,30 @@ class _Body {
   final String name;
 }
 
-/// An app's signup notifier: one extra field and its own check.
+/// An app's signup notifier: one extra value and its own check.
 class _AppSignupNotifier extends BrixSignupNotifier<_Body, String> {
   _AppSignupNotifier(this._flow);
 
   final SignupFlow<_Body, String> Function() _flow;
 
-  late TextEditingController nameController;
+  String _name = '';
   bool termsAccepted = true;
 
   @override
   SignupFlow<_Body, String> createFlow() => _flow();
 
-  @override
-  void initFields() {
-    super.initFields();
-    nameController = TextEditingController();
-  }
-
-  @override
-  void disposeFields() {
-    nameController.dispose();
-    super.disposeFields();
-  }
+  void nameChanged(String value) => _name = value;
 
   @override
   _Body buildRequest({required String identifier, required String password}) =>
-      _Body(identifier, password, nameController.text.trim());
+      _Body(identifier, password, _name.trim());
 
   @override
   Future<bool> beforeSubmit() async => termsAccepted;
 }
 
-class _ChangePasswordNotifier extends BrixChangePasswordNotifier {
-  _ChangePasswordNotifier(this._flow);
+class _ChangeNotifier extends BrixChangePasswordNotifier {
+  _ChangeNotifier(this._flow);
 
   final ChangePasswordFlow Function() _flow;
 
@@ -64,33 +53,8 @@ void main() {
     navigator = RecordingAuthNavigator();
     feedback = RecordingAuthFeedback();
     store = InMemoryAuthSessionStore();
-    container = ProviderContainer();
+    container = ProviderContainer.test();
   });
-
-  tearDown(() => container.dispose());
-
-  Future<void> pumpForm(
-    WidgetTester tester,
-    GlobalKey<FormState> key,
-    List<TextEditingController> fields,
-  ) => tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        body: Form(
-          key: key,
-          child: Column(
-            children: [
-              for (final field in fields)
-                TextFormField(
-                  controller: field,
-                  validator: (value) => value!.isEmpty ? 'required' : null,
-                ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
 
   group('BrixSignupNotifier', () {
     late FakeAuthProvider<_Body, String> provider;
@@ -111,27 +75,19 @@ void main() {
           ),
         ),
       );
-      container.read(signupProvider);
+      container.listen(signupProvider, (_, _) {});
       notifier = container.read(signupProvider.notifier);
     });
 
     BrixSignupState read() => container.read(signupProvider);
 
-    Future<void> fill(WidgetTester tester) async {
-      await pumpForm(tester, notifier.formKey, [
-        notifier.nameController,
-        notifier.identifierController,
-        notifier.passwordController,
-      ]);
-      notifier.nameController.text = ' Rubaz ';
-      notifier.identifierController.text = ' a@b.com ';
-      notifier.passwordController.text = ' $strong';
-    }
+    void fill() => notifier
+      ..nameChanged(' Rubaz ')
+      ..identifierChanged(' a@b.com ')
+      ..passwordChanged(' $strong');
 
-    testWidgets('builds the app body and opens the code screen', (
-      tester,
-    ) async {
-      await fill(tester);
+    test('builds the app body and opens the code screen', () async {
+      fill();
 
       await notifier.signup();
 
@@ -142,8 +98,8 @@ void main() {
       expect(navigator.visits, ['otp:signup:a@b.com']);
     });
 
-    testWidgets('the app check can stop the call', (tester) async {
-      await fill(tester);
+    test('the app check can stop the call', () async {
+      fill();
       notifier.termsAccepted = false;
 
       await notifier.signup();
@@ -151,19 +107,14 @@ void main() {
       expect(provider.registerCalls, isEmpty);
     });
 
-    testWidgets('invalid form sends nothing', (tester) async {
-      await pumpForm(tester, notifier.formKey, [notifier.identifierController]);
-
-      await notifier.signup();
-
-      expect(provider.registerCalls, isEmpty);
-    });
-
-    testWidgets('unmet rules and toggles', (tester) async {
-      notifier.passwordController.text = 'abc';
+    test('unmet rules, matching confirm and toggles', () {
+      notifier.passwordChanged('abc');
       expect(read().passwordRulesMet, isFalse);
-      notifier.passwordController.text = strong;
+      notifier
+        ..passwordChanged(strong)
+        ..confirmPasswordChanged(strong);
       expect(read().passwordRulesMet, isTrue);
+      expect(read().passwordsMatch, isTrue);
 
       notifier
         ..togglePasswordVisibility()
@@ -171,30 +122,19 @@ void main() {
       expect(read().obscurePassword, isFalse);
       expect(read().obscureConfirmPassword, isFalse);
     });
-
-    testWidgets('app fields are made again after a rebuild', (tester) async {
-      final oldName = notifier.nameController;
-
-      container.invalidate(signupProvider);
-      container.read(signupProvider);
-
-      expect(() => oldName.addListener(() {}), throwsFlutterError);
-      expect(notifier.nameController, isNot(same(oldName)));
-      notifier.nameController.text = 'still works';
-    });
   });
 
   group('BrixChangePasswordNotifier', () {
     late FakeAccountProvider account;
-    late NotifierProvider<_ChangePasswordNotifier, BrixChangePasswordState>
+    late NotifierProvider<_ChangeNotifier, BrixChangePasswordState>
     changeProvider;
-    late _ChangePasswordNotifier notifier;
+    late _ChangeNotifier notifier;
 
     setUp(() {
       account = FakeAccountProvider();
       changeProvider =
-          NotifierProvider<_ChangePasswordNotifier, BrixChangePasswordState>(
-            () => _ChangePasswordNotifier(
+          NotifierProvider<_ChangeNotifier, BrixChangePasswordState>(
+            () => _ChangeNotifier(
               () => ChangePasswordFlow(
                 account: account,
                 store: store,
@@ -203,45 +143,33 @@ void main() {
               ),
             ),
           );
-      container.read(changeProvider);
+      container.listen(changeProvider, (_, _) {});
       notifier = container.read(changeProvider.notifier);
     });
 
-    testWidgets('valid form changes the password and closes', (tester) async {
-      await pumpForm(tester, notifier.formKey, [
-        notifier.currentPasswordController,
-        notifier.newPasswordController,
-      ]);
-      notifier.currentPasswordController.text = 'Asdf@_123';
-      notifier.newPasswordController.text = strong;
+    BrixChangePasswordState read() => container.read(changeProvider);
+
+    test('changes the password with what is typed and closes', () async {
+      notifier
+        ..currentPasswordChanged('Asdf@_123')
+        ..newPasswordChanged(strong);
 
       await notifier.submit();
 
       expect(account.changePasswordCalls, ['Asdf@_123|$strong']);
       expect(navigator.visits, ['back']);
-      expect(container.read(changeProvider).passwordRulesMet, isTrue);
+      expect(read().passwordRulesMet, isTrue);
     });
 
-    testWidgets('invalid form sends nothing', (tester) async {
-      await pumpForm(tester, notifier.formKey, [
-        notifier.currentPasswordController,
-      ]);
-
-      await notifier.submit();
-
-      expect(account.changePasswordCalls, isEmpty);
-    });
-
-    testWidgets('three show / hide toggles', (tester) async {
+    test('three show / hide toggles', () {
       notifier
         ..toggleCurrentPasswordVisibility()
         ..toggleNewPasswordVisibility()
         ..toggleConfirmPasswordVisibility();
 
-      final state = container.read(changeProvider);
-      expect(state.obscureCurrentPassword, isFalse);
-      expect(state.obscureNewPassword, isFalse);
-      expect(state.obscureConfirmPassword, isFalse);
+      expect(read().obscureCurrentPassword, isFalse);
+      expect(read().obscureNewPassword, isFalse);
+      expect(read().obscureConfirmPassword, isFalse);
     });
   });
 }

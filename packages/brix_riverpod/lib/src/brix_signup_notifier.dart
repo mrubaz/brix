@@ -1,82 +1,86 @@
 import 'package:brix/auth.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'brix_auth_form_notifier.dart';
 import 'brix_signup_state.dart';
 
-/// Riverpod notifier for a signup screen, built on brix [SignupFlow].
+/// Riverpod notifier for a signup screen, built on brix [SignupFlow]: email,
+/// password and confirm with show / hide and the unmet password rules in
+/// the state. No Flutter objects inside.
 ///
-/// Holds the fields every signup has (email, password, confirm password)
-/// with show / hide and the unmet password rules in the state. The app
-/// adds its own fields in `initFields` / `disposeFields` and overrides
-/// [buildRequest] (its typed body) and, for its own checks such as
-/// accepted terms, [beforeSubmit].
+/// Extend it for the app's own values and body: keep extra values in your
+/// subclass (for example `nameChanged`), build the typed body in
+/// [buildRequest], and add checks such as accepted terms in [beforeSubmit].
 abstract class BrixSignupNotifier<TSignup, TUser>
-    extends BrixAuthFormNotifier<SignupFlow<TSignup, TUser>, BrixSignupState> {
-  late TextEditingController identifierController;
-  late TextEditingController passwordController;
-  late TextEditingController confirmPasswordController;
+    extends Notifier<BrixSignupState> {
+  late SignupFlow<TSignup, TUser> flow;
+
+  /// Makes the flow, usually from the app's own providers.
+  @protected
+  SignupFlow<TSignup, TUser> createFlow();
 
   /// Every rule of the policy, in checklist order.
   List<PasswordRule> get passwordRules => flow.passwordPolicy.rules;
 
   @override
-  void initFields() {
-    super.initFields();
-    identifierController = TextEditingController();
-    passwordController = TextEditingController();
-    confirmPasswordController = TextEditingController();
-    passwordController.addListener(
-      () => state = state.copyWith(
-        unmetPasswordRules: flow.passwordPolicy.unmetRules(
-          passwordController.text,
-        ),
-      ),
+  BrixSignupState build() {
+    flow = createFlow();
+    final subscription = flow.changes.listen(
+      (form) => _set(state.copyWith(isSubmitting: form.isSubmitting)),
+    );
+    ref.onDispose(() {
+      subscription.cancel();
+      flow.dispose();
+    });
+    return BrixSignupState(
+      unmetPasswordRules: flow.passwordPolicy.unmetRules(''),
     );
   }
 
-  @override
-  BrixSignupState initialState() =>
-      BrixSignupState(unmetPasswordRules: flow.passwordPolicy.unmetRules(''));
+  void _set(BrixSignupState next) {
+    if (ref.mounted) state = next;
+  }
 
-  @override
-  BrixSignupState withSubmitting(BrixSignupState current, bool isSubmitting) =>
-      current.copyWith(isSubmitting: isSubmitting);
+  void identifierChanged(String value) =>
+      _set(state.copyWith(identifier: value));
+
+  void passwordChanged(String value) => _set(
+    state.copyWith(
+      password: value,
+      unmetPasswordRules: flow.passwordPolicy.unmetRules(value),
+    ),
+  );
+
+  void confirmPasswordChanged(String value) =>
+      _set(state.copyWith(confirmPassword: value));
 
   void togglePasswordVisibility() =>
-      state = state.copyWith(obscurePassword: !state.obscurePassword);
+      _set(state.copyWith(obscurePassword: !state.obscurePassword));
 
-  void toggleConfirmPasswordVisibility() => state = state.copyWith(
-    obscureConfirmPassword: !state.obscureConfirmPassword,
+  void toggleConfirmPasswordVisibility() => _set(
+    state.copyWith(obscureConfirmPassword: !state.obscureConfirmPassword),
   );
 
   /// The app's signup body. [identifier] is trimmed; put [password] in
   /// exactly as given.
   TSignup buildRequest({required String identifier, required String password});
 
-  /// App checks after the form is valid and before the call. Return false
-  /// to stop (show your own message).
+  /// App checks before the call. Return false to stop (show your own
+  /// message).
   @protected
   Future<bool> beforeSubmit() async => true;
 
-  /// Validates the form, runs [beforeSubmit], then signs up.
+  /// Runs [beforeSubmit], then signs up with what is typed. Check the form
+  /// first.
   Future<void> signup() async {
-    if (state.isSubmitting || !validateForm()) return;
+    if (state.isSubmitting) return;
     if (!await beforeSubmit()) return;
-    final identifier = identifierController.text.trim();
-    final password = passwordController.text;
+    final identifier = state.identifier.trim();
+    final password = state.password;
     await flow.submit(
       request: buildRequest(identifier: identifier, password: password),
       identifier: identifier,
       password: password,
     );
-  }
-
-  @override
-  void disposeFields() {
-    identifierController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.disposeFields();
   }
 }

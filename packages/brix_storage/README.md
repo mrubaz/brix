@@ -1,32 +1,24 @@
-# brix_storage
-
-[![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
-[![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
-[![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
-[![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
-[![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
-[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
-
-> Part of the [brix](https://github.com/mrubaz/brix) family. Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) sets this package up for you. Adding it to an app you already have? It brings the core, [brix](https://pub.dev/packages/brix), with it.
-
 Local storage that handles the tricky parts for you: plain values, secrets, and a ready session store for [brix](https://pub.dev/packages/brix).
 
-Values go to `shared_preferences` and secrets to the Keychain or Keystore (through `flutter_secure_storage`), all behind one class.
+[![pub](https://img.shields.io/pub/v/brix_storage)](https://pub.dev/packages/brix_storage)
+[![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-It is safe after a reinstall. iOS keeps Keychain items when an app is deleted, so a new install could log in as the last user. brix_storage clears them on a fresh install.
+![What BrixStorage does with each call](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_storage/doc/screenshots/storage.png)
 
-It never crashes on a broken Keystore, which can happen on Android after a backup restore. The read simply returns `null` and the error goes to `onError`.
+Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) sets brix_storage up for you.
 
-It moves old plain-text secrets into secure storage the first time they are read.
+## Features
 
-`BrixSessionStore` is a complete brix `AuthSessionStore`: tokens and the remembered password are kept as secrets and the user as JSON.
-
-![What BrixStorage does with each call](doc/screenshots/storage.png)
+- Values go to `shared_preferences` and secrets to the Keychain or Keystore (through `flutter_secure_storage`), all behind one class.
+- It is safe after a reinstall. iOS keeps Keychain items when an app is deleted, so a new install could log in as the last user. brix_storage clears them on a fresh install.
+- It never crashes on a broken Keystore, which can happen on Android after a backup restore. The read simply returns `null` and the error goes to `onError`.
+- It moves old plain-text secrets into secure storage the first time they are read.
+- `BrixSessionStore` is a complete brix `AuthSessionStore`: tokens and the remembered password are kept as secrets and the user as JSON.
 
 ## Install
 
-```
+```bash
 flutter pub add brix_storage
 ```
 
@@ -112,19 +104,28 @@ Search answers are merged into the copy (by `idOf`, newest kept, at most `maxIte
 final storage = BrixStorage(values: MemoryStore(), secrets: MemoryStore());
 ```
 
+## Not included yet
+
+- A database: brix_storage keeps values, secrets and small offline copies, not tables or queries.
+- Offline writes that sync later: planned.
+
+## The brix family
+
+| Package | What it does |
+|---|---|
+| [brix_cli](https://pub.dev/packages/brix_cli) | Start here: `brix create` makes the whole app on Bloc, Riverpod or GetX |
+| [brix_ui](https://pub.dev/packages/brix_ui) | Widgets and theme, light and dark |
+| [brix_bloc](https://pub.dev/packages/brix_bloc) | Cubits for every account screen |
+| [brix_riverpod](https://pub.dev/packages/brix_riverpod) | Riverpod notifiers for every account screen |
+| [brix_getx](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
+| [brix_network](https://pub.dev/packages/brix_network) | API calls that return a result, never throw |
+| [brix_storage](https://pub.dev/packages/brix_storage) | Tokens, settings and offline copies, kept safe |
+| [brix](https://pub.dev/packages/brix) | The core: login, signup and account flows in pure Dart |
+
+## Help
+
+Questions, bugs and ideas: [GitHub issues](https://github.com/mrubaz/brix/issues).
+
 ## License
 
 MIT
-
-## The brix packages
-
-brix_storage is one part of [brix](https://github.com/mrubaz/brix). New app? Start with [brix_cli](https://pub.dev/packages/brix_cli). Existing app? Take only the packages you need; each brings the core with it.
-
-| Package | Version | What it does |
-|---|---|---|
-| [brix_cli](https://pub.dev/packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app`: a new app on every package below. Start here |
-| [brix_ui](https://pub.dev/packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, fields, select, sheets, dialogs, toasts, light and dark |
-| [brix_getx](https://pub.dev/packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
-| [brix_network](https://pub.dev/packages/brix_network) | [![pub](https://img.shields.io/pub/v/brix_network?label=)](https://pub.dev/packages/brix_network) | REST calls that return a `Result` |
-| [brix_storage](https://pub.dev/packages/brix_storage) | [![pub](https://img.shields.io/pub/v/brix_storage?label=)](https://pub.dev/packages/brix_storage) | Values, secrets and a session store |
-| [brix](https://pub.dev/packages/brix) | [![pub](https://img.shields.io/pub/v/brix?label=)](https://pub.dev/packages/brix) | The core every package builds on: flows, `Result`, `Json`, `BrixLogger` |

@@ -1,38 +1,45 @@
 import 'package:brix/auth.dart';
-import 'package:flutter/widgets.dart';
-
-import 'brix_code_entry_notifier.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Riverpod notifier for the signup code screen, built on brix
-/// [OtpVerificationFlow]. The last digit submits on its own; a rejected
-/// code clears the boxes. The state is the flow's own [CodeEntryState].
+/// [OtpVerificationFlow]. The state is the flow's own [CodeEntryState]; it
+/// starts right after the build.
 ///
-/// Extend it and return the app's flow from [createFlow], like
-/// `BrixLoginNotifier`.
-abstract class BrixOtpNotifier<TUser>
-    extends BrixCodeEntryNotifier<OtpVerificationFlow<TUser>, CodeEntryState> {
+/// The screen owns the code boxes: it calls [verify] with the typed code
+/// (for example when the last digit is typed) and clears its boxes when
+/// `failedAttempts` goes up.
+abstract class BrixOtpNotifier<TUser> extends Notifier<CodeEntryState> {
+  late OtpVerificationFlow<TUser> flow;
+
+  /// Makes the flow, usually from the app's own providers.
+  @protected
+  OtpVerificationFlow<TUser> createFlow();
+
+  /// Digits in a code, for the boxes.
+  int get otpLength => flow.otpLength;
+
   @override
   CodeEntryState build() {
-    final initial = super.build();
-    startAfterBuild(flow.start);
-    return initial;
+    flow = createFlow();
+    final subscription = flow.changes.listen((code) {
+      if (ref.mounted) state = code;
+    });
+    ref.onDispose(() {
+      subscription.cancel();
+      flow.dispose();
+    });
+    // Inside build the state is not set yet; start right after it.
+    Future.microtask(() {
+      if (ref.mounted) flow.start();
+    });
+    return flow.state;
   }
 
-  @override
-  CodeEntryState initialState(CodeEntryState code) => code;
+  /// Checks [code].
+  Future<void> verify(String code) => flow.verify(code);
 
-  @override
-  CodeEntryState withCodeEntry(CodeEntryState current, CodeEntryState code) =>
-      code;
-
-  @override
-  void Function()? get onCodeCompleted => verify;
-
-  /// Checks the code. Also runs on its own after the last digit.
-  Future<void> verify() {
-    FocusManager.instance.primaryFocus?.unfocus();
-    return flow.verify(boxes.code);
-  }
+  Future<void> resend() => flow.resend();
 
   /// Wrong email: back to signup.
   Future<void> changeIdentifier() => flow.changeIdentifier();

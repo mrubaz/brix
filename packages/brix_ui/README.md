@@ -1,20 +1,37 @@
-# brix_ui
-
-[![brix_cli](https://img.shields.io/pub/v/brix_cli?label=brix_cli)](https://pub.dev/packages/brix_cli)
-[![brix_ui](https://img.shields.io/pub/v/brix_ui?label=brix_ui)](https://pub.dev/packages/brix_ui)
-[![brix_getx](https://img.shields.io/pub/v/brix_getx?label=brix_getx)](https://pub.dev/packages/brix_getx)
-[![brix_network](https://img.shields.io/pub/v/brix_network?label=brix_network)](https://pub.dev/packages/brix_network)
-[![brix_storage](https://img.shields.io/pub/v/brix_storage?label=brix_storage)](https://pub.dev/packages/brix_storage)
-[![brix](https://img.shields.io/pub/v/brix?label=brix)](https://pub.dev/packages/brix)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
-
-> Part of the [brix](https://github.com/mrubaz/brix) family. Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) sets this package up for you. Adding it to an app you already have? It brings the core, [brix](https://pub.dev/packages/brix), with it.
-
 Buttons, text fields, a select, cards, dialogs, sheets, toasts and a loader that look like your app. They take every colour, font and size from one theme, so switching to dark mode changes nothing in your screens.
 
-![One kit in three brands](doc/screenshots/your_brand.png)
+[![pub](https://img.shields.io/pub/v/brix_ui)](https://pub.dev/packages/brix_ui)
+[![CI](https://github.com/mrubaz/brix/actions/workflows/ci.yml/badge.svg)](https://github.com/mrubaz/brix/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mrubaz/brix/blob/main/LICENSE)
 
-What you get:
+![One kit in three brands](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/your_brand.png)
+
+Starting a new app? `brix create my_app` from [brix_cli](https://pub.dev/packages/brix_cli) sets brix_ui up with a theme for you.
+
+## Contents
+
+- [Features](#features)
+- [Install](#install)
+- [Start](#start)
+- [Buttons](#buttons)
+- [Text fields](#text-fields)
+- [Dialogs](#dialogs)
+- [Dialog, sheet or toast?](#dialog-sheet-or-toast)
+- [Sheets](#sheets)
+- [Select](#select)
+- [Search](#search)
+- [Cards](#cards)
+- [Toasts](#toasts)
+- [Text styles](#text-styles)
+- [Responsive](#responsive)
+- [Make it yours](#make-it-yours)
+- [With brix auth](#with-brix-auth)
+- [Example](#example)
+- [Screenshots](#screenshots)
+- [Not included yet](#not-included-yet)
+- [The brix family](#the-brix-family)
+
+## Features
 
 - Your look. Colours, font, corners, heights, texts and icons all come from `BrixTheme`. Nothing is fixed in the widgets.
 - Light and dark from the start. Theme changes animate.
@@ -26,7 +43,7 @@ What you get:
 
 ## Install
 
-```
+```bash
 flutter pub add brix_ui
 ```
 
@@ -54,7 +71,7 @@ MaterialApp(
 - Already have a `ThemeData`? Add the tokens to it: `ThemeData(extensions: [BrixTheme.light()])`.
 - No theme at all? The widgets still work, with iOS-like defaults for the app's brightness.
 
-![Light and dark](doc/screenshots/light_dark.png)
+![Light and dark](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/light_dark.png)
 
 ## Buttons
 
@@ -70,7 +87,7 @@ BrixButton.destructive(label: 'Delete account', icon: Icons.delete_outline, onPr
 - A light haptic and a small press scale (turn haptics off with `haptics: false`).
 - Full width by default (forms); `expand: false` fits the label.
 
-![Buttons](doc/screenshots/buttons.png)
+![Buttons](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/buttons.png)
 
 ## Text fields
 
@@ -103,7 +120,7 @@ AutofillGroup(
 - **Errors:** your `validator`, or `errorText` from outside (e.g. the backend's field error).
 - **Read-only / disabled** have their own look (a read-only field can open a picker on tap).
 
-![Text fields](doc/screenshots/text_fields.png)
+![Text fields](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/text_fields.png)
 
 ## Dialogs
 
@@ -126,7 +143,7 @@ final delete = await BrixDialog.show<bool>(
 - `show` returns the tapped button's value. Two buttons sit side by side, more are stacked.
 - Long messages scroll; the screen below cannot be tapped.
 
-![Dialogs](doc/screenshots/dialogs.png)
+![Dialogs](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/dialogs.png)
 
 ## Dialog, sheet or toast?
 
@@ -156,7 +173,7 @@ final folder = await BrixSheet.show<String>(
 - Drag it down or tap outside to close it; `dismissible: false` keeps it open until your code closes it.
 - `show` returns the value you close it with, or `null` when it was dragged away.
 
-![Sheets](doc/screenshots/sheets.png)
+![Sheets](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/sheets.png)
 
 ## Select
 
@@ -179,7 +196,7 @@ BrixSelect<String>(
 - Inside a `Form`, a required select checks that something is chosen.
 - `mode: BrixSelectMode.menu` or `.sheet` picks the way it opens yourself.
 
-![Select](doc/screenshots/select.png)
+![Select](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/select.png)
 
 ## Search
 
@@ -207,7 +224,7 @@ BrixSearchField<City>(
 - `initialValue` fills the field with a saved value (or pass your own `controller`). Required check, form validation, `minLength` and the looks of the field (`fieldStyle`) and the list (`style`) work like the other widgets.
 - Works offline too when `search` reads through `BrixOfflineCache` from [brix_storage](https://pub.dev/packages/brix_storage): the backend when online, the saved copy when not.
 
-![Search](doc/screenshots/search.png)
+![Search](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/search.png)
 
 ## Cards
 
@@ -227,7 +244,7 @@ BrixCard(
 - A tappable card is a button for screen readers; `semanticLabel` gives it one short label.
 - Four levels to change it: the theme colours and `shape.radius`, every card with `BrixTheme(card: BrixCardStyle(...))`, one card with `style:`, or a completely own card with `cardBuilder` (brix keeps the tap and the pressed state).
 
-![Cards](doc/screenshots/card.png)
+![Cards](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/card.png)
 
 ## Toasts
 
@@ -238,7 +255,7 @@ BrixToast.success('We sent a code to ada@brix.dev', title: 'Check your email');
 
 Slides in at the top, hides after 3 seconds (or on tap / swipe up), never blocks the screen, and screen readers announce it.
 
-![Toasts](doc/screenshots/toast.png)
+![Toasts](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/toast.png)
 
 ## Text styles
 
@@ -262,7 +279,7 @@ Text('3 new orders', style: context.brix.typography.headline)
 
 Change the font of all of them with `BrixTypography(fontFamily: 'Inter')`, or any one style: `BrixTypography(headline: GoogleFonts.poppins(fontSize: 18))`.
 
-![Text styles](doc/screenshots/text_scale.png)
+![Text styles](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/text_scale.png)
 
 ## Responsive
 
@@ -347,7 +364,7 @@ BrixTheme.light(
 
 Dialogs use your button too, so the whole app matches.
 
-![Default, theme style and own builder](doc/screenshots/buttons_custom.png)
+![Default, theme style and own builder](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/buttons_custom.png)
 
 ### Text fields your way
 
@@ -378,7 +395,7 @@ BrixTheme.light(
 )
 ```
 
-![Default, theme style and own builder](doc/screenshots/text_fields_custom.png)
+![Default, theme style and own builder](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/text_fields_custom.png)
 
 ### Dialogs and toasts your way
 
@@ -411,7 +428,7 @@ BrixTheme.light(
 
 One dialog only: `BrixDialog.show(style: ..., builder: ...)`.
 
-![Default, theme style, own dialog card and own bottom toast](doc/screenshots/dialogs_toasts_custom.png)
+![Default, theme style, own dialog card and own bottom toast](https://raw.githubusercontent.com/mrubaz/brix/main/packages/brix_ui/doc/screenshots/dialogs_toasts_custom.png)
 
 Read the tokens in your own widgets too, so they match:
 
@@ -437,31 +454,37 @@ When the backend sends no message (e.g. no connection), brix's default text is s
 
 ## Example
 
-[`example/`](example) shows every widget on one screen. Switch light and dark and three brands live; see [`example/lib/brands.dart`](example/lib/brands.dart) for how each brand is set up.
+[`example/`](https://github.com/mrubaz/brix/tree/main/packages/brix_ui/example) shows every widget on one screen. Switch light and dark and three brands live; see [`example/lib/brands.dart`](https://github.com/mrubaz/brix/tree/main/packages/brix_ui/example/lib/brands.dart) for how each brand is set up.
 
 ## Screenshots
 
 The images on this page are rendered from the real widgets by `tool/screenshots_test.dart`:
 
-```
+```bash
 flutter test tool/screenshots_test.dart --update-goldens            # widgets
 ```
 
-## More brix
+## Not included yet
 
-brix_ui is part of [brix](https://github.com/mrubaz/brix): auth, account, network, storage and GetX blocks that work together, each its own package.
+- Charts, date pickers and data tables: use your favourite package inside the brix theme.
 
-MIT licensed.
+## The brix family
 
-## The brix packages
+| Package | What it does |
+|---|---|
+| [brix_cli](https://pub.dev/packages/brix_cli) | Start here: `brix create` makes the whole app on Bloc, Riverpod or GetX |
+| [brix_ui](https://pub.dev/packages/brix_ui) | Widgets and theme, light and dark |
+| [brix_bloc](https://pub.dev/packages/brix_bloc) | Cubits for every account screen |
+| [brix_riverpod](https://pub.dev/packages/brix_riverpod) | Riverpod notifiers for every account screen |
+| [brix_getx](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
+| [brix_network](https://pub.dev/packages/brix_network) | API calls that return a result, never throw |
+| [brix_storage](https://pub.dev/packages/brix_storage) | Tokens, settings and offline copies, kept safe |
+| [brix](https://pub.dev/packages/brix) | The core: login, signup and account flows in pure Dart |
 
-brix_ui is one part of [brix](https://github.com/mrubaz/brix). New app? Start with [brix_cli](https://pub.dev/packages/brix_cli). Existing app? Take only the packages you need; each brings the core with it.
+## Help
 
-| Package | Version | What it does |
-|---|---|---|
-| [brix_cli](https://pub.dev/packages/brix_cli) | [![pub](https://img.shields.io/pub/v/brix_cli?label=)](https://pub.dev/packages/brix_cli) | `brix create my_app`: a new app on every package below. Start here |
-| [brix_ui](https://pub.dev/packages/brix_ui) | [![pub](https://img.shields.io/pub/v/brix_ui?label=)](https://pub.dev/packages/brix_ui) | Buttons, fields, select, sheets, dialogs, toasts, light and dark |
-| [brix_getx](https://pub.dev/packages/brix_getx) | [![pub](https://img.shields.io/pub/v/brix_getx?label=)](https://pub.dev/packages/brix_getx) | GetX controllers for every account screen |
-| [brix_network](https://pub.dev/packages/brix_network) | [![pub](https://img.shields.io/pub/v/brix_network?label=)](https://pub.dev/packages/brix_network) | REST calls that return a `Result` |
-| [brix_storage](https://pub.dev/packages/brix_storage) | [![pub](https://img.shields.io/pub/v/brix_storage?label=)](https://pub.dev/packages/brix_storage) | Values, secrets and a session store |
-| [brix](https://pub.dev/packages/brix) | [![pub](https://img.shields.io/pub/v/brix?label=)](https://pub.dev/packages/brix) | The core every package builds on: flows, `Result`, `Json`, `BrixLogger` |
+Questions, bugs and ideas: [GitHub issues](https://github.com/mrubaz/brix/issues).
+
+## License
+
+MIT

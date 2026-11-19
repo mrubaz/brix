@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'app_id.dart';
 import 'app_name.dart';
 import 'process_runner.dart';
+import 'state_library.dart';
 import 'template.dart';
 
 /// `brix create <name>`: a new Flutter app on brix that runs at once.
@@ -13,16 +14,31 @@ class CreateCommand {
     required this.runner,
     required this.template,
     required this.out,
+    required this.readLine,
+    required this.hasTerminal,
     String? workingDirectory,
   }) : workingDirectory = workingDirectory ?? Directory.current.path;
 
   final ProcessRunner runner;
-  final Template template;
+
+  /// The app to copy for the chosen state library.
+  final Future<Template> Function(StateLibrary state) template;
+
+  /// One line typed by the user, or null when input ended.
+  final String? Function() readLine;
+
+  /// Whether a person can answer the state library question.
+  final bool hasTerminal;
   final void Function(String line) out;
   final String workingDirectory;
 
-  /// Creates the app; returns the exit code (0 on success).
-  Future<int> run(String name, {String org = 'com.example'}) async {
+  /// Creates the app on [state]; without it, asks which library. Returns
+  /// the exit code (0 on success).
+  Future<int> run(
+    String name, {
+    String org = 'com.example',
+    StateLibrary? state,
+  }) async {
     final problem = AppName.problem(name);
     if (problem != null) {
       out('Cannot use "$name" as the app name. $problem');
@@ -38,6 +54,8 @@ class CreateCommand {
       out('A folder named "$name" is already here. Pick another name.');
       return 73;
     }
+    final chosen = state ?? _askState();
+    if (chosen == null) return 64;
 
     out('Creating $name ...');
     final created = await runner.run('flutter', [
@@ -53,8 +71,13 @@ class CreateCommand {
     }
     out('  ✓ Flutter project');
 
-    await template.copyTo(target, name);
-    out('  ✓ Login, signup, theme, network and storage');
+    await (await template(chosen)).copyTo(target, name);
+    // Later brix commands read which library the app is on.
+    final brixYaml = File(p.join(target.path, 'brix.yaml'));
+    final yaml = brixYaml.readAsStringSync();
+    final lineBreak = yaml.isEmpty || yaml.endsWith('\n') ? '' : '\n';
+    brixYaml.writeAsStringSync('$yaml${lineBreak}state: ${chosen.name}\n');
+    out('  ✓ Login, signup, theme, network and storage on ${chosen.title}');
 
     final got = await runner.run('flutter', [
       'pub',
@@ -76,6 +99,34 @@ class CreateCommand {
     out('Your API goes in lib/config/app_config.dart.');
     out('App id: $org.$name (change it any time with "brix id").');
     return 0;
+  }
+
+  /// Asks for the state library until a valid answer. No default: an app
+  /// is never made on a library nobody chose.
+  StateLibrary? _askState() {
+    if (!hasTerminal) return _noAnswer();
+    out('Which state management?');
+    for (final (index, state) in StateLibrary.values.indexed) {
+      out('  ${index + 1}. ${state.title}');
+    }
+    final count = StateLibrary.values.length;
+    while (true) {
+      out('Pick 1-$count:');
+      final answer = readLine();
+      if (answer == null) return _noAnswer();
+      final number = int.tryParse(answer.trim());
+      if (number != null && number >= 1 && number <= count) {
+        return StateLibrary.values[number - 1];
+      }
+      final named = StateLibrary.parse(answer);
+      if (named != null) return named;
+    }
+  }
+
+  StateLibrary? _noAnswer() {
+    out('Which state management? Add --state ${StateLibrary.choices}.');
+    out('AI agents and scripts: ask the user which one, never pick it.');
+    return null;
   }
 
   int _failed(String step, ProcessResult result) {

@@ -93,8 +93,14 @@ void main() {
     await tester.runAsync(
       () => BrixCli(
         runner: _QuietRunner(),
-        template: Template(Directory('../../packages/brix_cli/templates/app')),
+        template: Template(Directory('../../packages/brix_cli/templates/bloc')),
         out: lines.add,
+        // The user picks Bloc at the state library question.
+        readLine: () {
+          lines.add('1');
+          return '1';
+        },
+        hasTerminal: true,
         workingDirectory: work.path,
       ).run(['create', 'my_app', '--org', 'com.mycompany']),
     );
@@ -102,7 +108,7 @@ void main() {
       tester,
       '$_out/terminal.png',
       Terminal(title: 'Terminal', lines: lines),
-      size: const Size(760, 430),
+      size: const Size(760, 540),
     );
   });
 

@@ -201,6 +201,25 @@ void main() {
       expect(provider.resendOtpCalls, hasLength(1));
       await flow.dispose();
     });
+
+    test('closed while the code is on its way: no toast, no timer', () {
+      fakeAsync((async) {
+        provider.resendOtpResult = const Success(null, message: 'Sent');
+        final flow = create();
+        flow.start();
+        async.elapse(const Duration(seconds: 30));
+        provider.gate = Completer<void>();
+
+        flow.resend();
+        async.flushMicrotasks();
+        flow.dispose();
+        provider.gate!.complete();
+        async.flushMicrotasks();
+
+        expect(feedback.successes, isEmpty);
+        expect(async.pendingTimers, isEmpty);
+      });
+    });
   });
 
   test('change email: pending cleared, back to signup', () async {
