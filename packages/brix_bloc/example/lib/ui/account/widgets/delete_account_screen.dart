@@ -36,15 +36,11 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<BrixDeleteAccountCubit, CodeEntryState>(
-      listener: (context, state) {
-        // The boxes appear once the code is sent: start typing there. A
-        // wrong code clears them.
-        if (state.isCodeSent && !_boxes.focusNodes.first.hasFocus) {
-          WidgetsBinding.instance.addPostFrameCallback(
-            (_) => _boxes.focusNodes.first.requestFocus(),
-          );
-        }
-      },
+      // The boxes appear once the code is sent, and a wrong code empties
+      // them: either way start typing in the first box. After the frame,
+      // so the boxes are on screen.
+      listener: (context, state) =>
+          WidgetsBinding.instance.addPostFrameCallback((_) => _boxes.clear()),
       listenWhen: (before, now) =>
           (!before.isCodeSent && now.isCodeSent) ||
           now.failedAttempts != before.failedAttempts,
